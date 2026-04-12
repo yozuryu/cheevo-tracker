@@ -1,6 +1,6 @@
 # Changelog
 
-## v26.04.12 — Watchlist, Mobile Polish & Settings
+## v26.04.12 — Watchlist, Mobile Polish, Settings & Game Details
 
 ### RetroAchievements
 
@@ -20,6 +20,21 @@
 - Added `/settings/` page with General (Changelog, Refresh Data) and Account (username display, Log Out) sections
 - Extracted shared `Topbar` and `Footer` into `assets/ui.js` — all pages now use the same components; `ui.js` uses `React.createElement` to stay compatible with the native ES module loader (not transpiled by Babel standalone)
 - Unified topbar breadcrumb pattern across all pages: `Cheevo Tracker › [Page]`; "Cheevo Tracker" is a link on non-profile pages
+
+### Game Details Page
+
+- Achievement list filter/sort controls redesigned to match profile modal and Watchlist tab: two labeled rows of pill buttons (Status: All / Unlocked / Locked in blue; Sort: Default / Points / Unlocked in neutral), with a count readout (`n / total`) on the right
+- Hero info row: icons added for each metadata field (Monitor → console, Tag → genre, Code → developer, Calendar → year), each item wraps as a self-contained unit instead of `·`-separated text
+- Stats strip: uses `grid-flow-col auto-cols-fr` on mobile so all stat cells share equal width without horizontal scroll; smaller text on mobile (`text-[11px]` values, `text-[8px]` labels)
+- Game page now has three tabs — Achievements (existing list), Details (media gallery + metadata + links), Hashes (supported ROMs via `API_GetGameHashes`); hashes lazy-load on first tab open
+- Achievement list breadcrumb updated: `Cheevo Tracker › Game › [Game Name]`
+- Achievement rows redesigned to match profile Activity and gaming-hub gamecard modal: card-style rows with colored left-border accent (gold HC, gray SC, dark locked), linked badge with lock overlay, linked gold title, `pts` pill badge, trueRatio multiplier, type icons with hover tooltips (`.pop-wrap`), dual HC/casual global unlock % bars with Flame/Feather icons, unlock date in blue
+- Type icon colors aligned with profile: Progression → Trophy gold, Win Condition → Crown red, Missable → AlertTriangle orange
+- New `/game/?id=` page replaces RA site links for all game references across the app
+- Shows game hero (background, icon, title, console, genre, developer, year, award badge), completion bar, and stats strip (achievements, points, hardcore count, playtime, player count)
+- Full achievement list with badge images, descriptions, type badges (Progression / Win Condition / Missable), per-achievement global unlock % bar, and per-user unlock date + hardcore indicator
+- Filter by All / Unlocked / Locked; sort by Display Order / Points / Unlock Date
+- Dimmed + grayscale treatment for locked achievements; HC/SC unlock badge on earned achievements
 
 ## v26.04.11 — Initial Release
 

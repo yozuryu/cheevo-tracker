@@ -224,7 +224,7 @@ export const transformData = (data) => {
 
       statsLeft: [
         { label: "Points", value: `${data.coreProfile.totalPoints.toLocaleString()} (${data.coreProfile.totalTruePoints.toLocaleString()})` },
-        { label: "Site rank", value: `#${data.userSummary?.rank?.toLocaleString() || 'N/A'} of ${data.userSummary?.totalRanked?.toLocaleString() || 'N/A'}` },
+        { label: "Site rank", value: data.userSummary?.rank ? `#${data.userSummary.rank.toLocaleString()} of ${data.userSummary.totalRanked?.toLocaleString() || '?'}` : "requires points", dim: !data.userSummary?.rank },
         { label: "Achievements unlocked", value: totalUnlocked.toLocaleString() },
         { label: "RetroRatio", value: retroRatio },
         { label: "Points earned in the last 7 days", value: points7Days.toLocaleString() },
@@ -233,7 +233,7 @@ export const transformData = (data) => {
       ],
       statsRight: [
         { label: "Points (softcore)", value: data.coreProfile.totalSoftcorePoints.toLocaleString() },
-        { label: "Softcore rank", value: data.userSummary?.softcoreRank ? `#${data.userSummary.softcoreRank.toLocaleString()}` : "requires 250 points" },
+        { label: "Softcore rank", value: data.userSummary?.softcoreRank ? `#${data.userSummary.softcoreRank.toLocaleString()}` : "requires 250 points", dim: !data.userSummary?.softcoreRank },
         { label: "Achievements unlocked (softcore)", value: (totalUnlocked - totalHardcoreUnlocked).toLocaleString() },
         { label: "Started games beaten", value: startedGamesBeatenPct },
         { label: "Total games beaten", value: beatenGamesCount.toString() },
