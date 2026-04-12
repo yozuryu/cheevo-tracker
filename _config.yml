@@ -4,5 +4,8 @@ exclude:
   - package.json
   - package-lock.json
   - .env
+  - .gitignore
   - .claude/
   - node_modules/
+  - profile/utils/CLAUDE.md
+  - profile/utils/ra-api.md
