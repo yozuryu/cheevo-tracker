@@ -1,6 +1,6 @@
 {
   "name": "Cheevo Tracker",
-  "short_name": "Cheevo",
+  "short_name": "Cheevo Tracker",
   "description": "Personal RetroAchievements profile tracker",
   "start_url": "./",
   "scope": "./",
