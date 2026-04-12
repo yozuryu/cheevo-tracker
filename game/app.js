@@ -51,7 +51,7 @@ function AchievementRow({ ach, totalPlayersCasual, totalPlayersHardcore }) {
         ? hardcore
           ? 'border-l-[#e5b143] bg-[#202d39] hover:bg-[#253444]'
           : 'border-l-[#8f98a0] bg-[#202d39] hover:bg-[#253444]'
-        : 'border-l-[#323f4c] bg-[#171a21] opacity-75'
+        : 'border-l-[#323f4c] bg-[#1b2838] opacity-60'
     }`}>
 
       {/* Badge */}
@@ -189,7 +189,7 @@ function GameApp() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#171a21] flex flex-col">
+    <div className="min-h-screen bg-[#171a21] flex flex-col [overflow-x:clip]">
       <Topbar crumbs={crumbs} />
 
       {loading && (
@@ -229,7 +229,7 @@ function GameApp() {
                 style={{ backgroundImage: `url(${getMediaUrl(game.imageIngame || game.imageTitle)})` }}
               />
             )}
-            <div className="relative max-w-4xl mx-auto px-4 md:px-8 pt-8 pb-5 md:pt-5">
+            <div className="relative max-w-4xl mx-auto px-4 md:px-8 pt-8 pb-4 md:pt-5">
               <div className="flex gap-4 items-start">
 
                 {/* Icon */}
@@ -272,7 +272,7 @@ function GameApp() {
 
                   {/* Completion bar */}
                   <div className="flex items-center gap-2">
-                    <div className="flex-1 max-w-xs bg-[#101214] h-[5px] rounded-full overflow-hidden">
+                    <div className="flex-1 bg-[#101214] h-[5px] rounded-full overflow-hidden">
                       <div
                         className="h-full rounded-full transition-all"
                         style={{
@@ -288,27 +288,27 @@ function GameApp() {
                 </div>
               </div>
             </div>
-          </div>
 
-          {/* ── Stats strip ── */}
-          <div className="bg-[#131a22] border-b border-[#2a475e]">
-            <div className="max-w-4xl mx-auto px-4 md:px-8 py-2 grid grid-flow-col auto-cols-fr md:flex md:gap-8">
-              {[
-                { label: 'Cheevos',  value: `${unlockedCount}`, sub: `/ ${achList.length}`,                         color: '#66c0f4' },
-                { label: 'Points',   value: earnedPoints.toLocaleString(), sub: `/ ${totalPoints.toLocaleString()}`, color: '#e5b143' },
-                { label: 'Hardcore', value: game.numAwardedToUserHardcore.toString(),                                color: '#e5b143' },
-                playtime ? { label: 'Playtime', value: playtime,                                                     color: '#8f98a0' }
-                         : { label: 'Players',  value: game.numDistinctPlayersCasual.toLocaleString(),               color: '#546270' },
-                playtime ? { label: 'Players',  value: game.numDistinctPlayersCasual.toLocaleString(),               color: '#546270' } : null,
-              ].filter(Boolean).map((s, i) => (
-                <div key={i} className="flex flex-col items-center shrink-0 py-1 min-w-0">
-                  <div className="flex items-baseline gap-1">
-                    <span className="text-[11px] md:text-[13px] font-bold" style={{ color: s.color }}>{s.value}</span>
-                    {s.sub && <span className="text-[8px] md:text-[10px] text-[#546270]">{s.sub}</span>}
+            {/* ── Stats strip ── */}
+            <div className="relative border-t border-[#101214] bg-[#131a22]/50">
+              <div className="max-w-4xl mx-auto px-2 md:px-8 py-2.5 grid grid-flow-col auto-cols-fr">
+                {[
+                  { label: 'Cheevos',  value: `${unlockedCount}`, sub: `/ ${achList.length}`,                         color: '#66c0f4' },
+                  { label: 'Points',   value: earnedPoints.toLocaleString(), sub: `/ ${totalPoints.toLocaleString()}`, color: '#e5b143' },
+                  { label: 'Hardcore', value: game.numAwardedToUserHardcore.toString(),                                color: '#e5b143' },
+                  playtime ? { label: 'Playtime', value: playtime,                                                     color: '#8f98a0' }
+                           : { label: 'Players',  value: game.numDistinctPlayersCasual.toLocaleString(),               color: '#546270' },
+                  playtime ? { label: 'Players',  value: game.numDistinctPlayersCasual.toLocaleString(),               color: '#546270' } : null,
+                ].filter(Boolean).map((s, i) => (
+                  <div key={i} className="flex flex-col items-center py-1 px-2 min-w-0">
+                    <div className="flex items-baseline gap-1">
+                      <span className="text-[12px] md:text-[14px] font-bold" style={{ color: s.color }}>{s.value}</span>
+                      {s.sub && <span className="text-[9px] md:text-[10px] text-[#546270]">{s.sub}</span>}
+                    </div>
+                    <span className="text-[8px] md:text-[9px] text-[#546270] uppercase tracking-[0.07em] whitespace-nowrap">{s.label}</span>
                   </div>
-                  <span className="text-[8px] md:text-[9px] text-[#546270] uppercase tracking-[0.07em] whitespace-nowrap">{s.label}</span>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </div>
 
@@ -317,7 +317,7 @@ function GameApp() {
             <div className="max-w-4xl mx-auto px-4 md:px-8 py-2.5 flex items-center gap-2">
               {[
                 { id: 'achievements', label: 'Achievements' },
-                { id: 'details',      label: 'Details'      },
+                { id: 'details',      label: 'Info'         },
                 { id: 'hashes',       label: 'Hashes'       },
               ].map(t => (
                 <button key={t.id} type="button" onClick={() => setTab(t.id)}
@@ -395,7 +395,7 @@ function GameApp() {
               {/* Media gallery */}
               {(game.imageBoxArt || game.imageTitle || game.imageIngame) && (
                 <div className="mb-5">
-                  <div className="flex items-center gap-2 mb-2">
+                  <div className="flex items-center gap-2 pb-2 mb-3 border-b border-[#2a475e]">
                     <span className="w-[3px] h-[14px] bg-[#66c0f4] rounded-[1px] shrink-0" />
                     <span className="text-[13px] text-white tracking-wide uppercase font-medium">Media</span>
                   </div>
@@ -419,7 +419,7 @@ function GameApp() {
 
               {/* Metadata */}
               <div className="mb-5">
-                <div className="flex items-center gap-2 mb-2">
+                <div className="flex items-center gap-2 pb-2 mb-3 border-b border-[#2a475e]">
                   <span className="w-[3px] h-[14px] bg-[#66c0f4] rounded-[1px] shrink-0" />
                   <span className="text-[13px] text-white tracking-wide uppercase font-medium">Info</span>
                 </div>
@@ -434,7 +434,7 @@ function GameApp() {
                     <div key={r.label} className="flex items-center gap-3 px-3 py-2">
                       <span className="text-[#546270] shrink-0">{r.icon}</span>
                       <span className="text-[9px] uppercase tracking-wider text-[#546270] w-20 shrink-0">{r.label}</span>
-                      <span className="text-[11px] text-[#c6d4df]">{r.value}</span>
+                      <span className="text-[11px] text-[#c6d4df] break-words min-w-0">{r.value}</span>
                     </div>
                   ))}
                 </div>
@@ -443,7 +443,7 @@ function GameApp() {
               {/* Links */}
               {(game.guideUrl || game.forumTopicId) && (
                 <div>
-                  <div className="flex items-center gap-2 mb-2">
+                  <div className="flex items-center gap-2 pb-2 mb-3 border-b border-[#2a475e]">
                     <span className="w-[3px] h-[14px] bg-[#66c0f4] rounded-[1px] shrink-0" />
                     <span className="text-[13px] text-white tracking-wide uppercase font-medium">Links</span>
                   </div>
@@ -469,7 +469,7 @@ function GameApp() {
           {/* ── Hashes tab ── */}
           {tab === 'hashes' && (
             <div className="flex-1 max-w-4xl mx-auto w-full px-4 md:px-8 py-4">
-              <div className="flex items-center gap-2 mb-3">
+              <div className="flex items-center gap-2 pb-2 mb-3 border-b border-[#2a475e]">
                 <span className="w-[3px] h-[14px] bg-[#66c0f4] rounded-[1px] shrink-0" />
                 <span className="text-[13px] text-white tracking-wide uppercase font-medium">Supported ROMs</span>
                 {hashes && <span className="text-[11px] text-[#546270]">({hashes.length})</span>}
@@ -496,7 +496,7 @@ function GameApp() {
                         )}
                       </div>
                       <div className="flex items-center gap-2 flex-wrap">
-                        <code className="text-[9px] text-[#546270] font-mono tracking-wider">{h.md5}</code>
+                        <code className="text-[9px] text-[#546270] font-mono tracking-wider break-all">{h.md5}</code>
                         {h.labels.map(l => {
                           const lc = l.toLowerCase();
                           const color = lc === 'nointro' ? '#66c0f4' : lc === 'rapatches' ? '#e5b143' : lc === 'unverified' ? '#ff6b6b' : '#8f98a0';

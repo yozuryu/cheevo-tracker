@@ -1872,7 +1872,7 @@ export default function App() {
                 </>
               )}
               {activeTab === 'recent' && (
-                <div className="flex items-center gap-2 mb-3">
+                <div className="flex md:hidden items-center gap-2 pb-2 mb-3 border-b border-[#2a475e]">
                   <span className="w-[3px] h-[14px] bg-[#66c0f4] rounded-[1px] shrink-0" />
                   <span className="text-[13px] text-white tracking-wide uppercase font-medium">Recently Played</span>
                 </div>

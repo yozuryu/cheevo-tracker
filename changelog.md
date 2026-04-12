@@ -23,18 +23,31 @@
 
 ### Game Details Page
 
+- Stats strip moved inside the hero section — hero background now extends to cover both the game info and the stats row, giving a taller unified header; stats strip uses semi-transparent `bg-[#131a22]/50` so the blurred game screenshot bleeds through
+- Tab bar redesigned as compact pill buttons (matching existing filter controls on the same page) instead of profile's underline style — three compact tabs fit better than five wide ones
+- Tab bar sticky fixed: root div changed from `overflow-x: hidden` to `overflow-x: clip` — `hidden` was creating a scroll container that broke `position: sticky`; `clip` cuts off overflow visually without becoming a scroll container
+- "Details" tab renamed to "Info"
+- Genre and released date removed from hero info row — both fields already appear in the Info tab metadata table
+- Console icon changed from Monitor to Gamepad2 (controller)
+- Separator lines added under each section title in Info and Hashes tabs (`border-b border-[#2a475e]`)
+- Info tab metadata table: `divide-y divide-[#2a475e]` for visible row dividers (was using card background color, making dividers invisible)
+- Info tab values use `break-words min-w-0`; Hashes MD5 uses `break-all` — fixes horizontal scroll on mobile
+- Locked achievement rows changed from `bg-[#171a21]` (same as page background, invisible) to `bg-[#1b2838] opacity-60` — locked rows now visually distinct but clearly dimmer than unlocked ones
 - Achievement list filter/sort controls redesigned to match profile modal and Watchlist tab: two labeled rows of pill buttons (Status: All / Unlocked / Locked in blue; Sort: Default / Points / Unlocked in neutral), with a count readout (`n / total`) on the right
-- Hero info row: icons added for each metadata field (Monitor → console, Tag → genre, Code → developer, Calendar → year), each item wraps as a self-contained unit instead of `·`-separated text
-- Stats strip: uses `grid-flow-col auto-cols-fr` on mobile so all stat cells share equal width without horizontal scroll; smaller text on mobile (`text-[11px]` values, `text-[8px]` labels)
-- Game page now has three tabs — Achievements (existing list), Details (media gallery + metadata + links), Hashes (supported ROMs via `API_GetGameHashes`); hashes lazy-load on first tab open
+- Hero info row: icons added for each metadata field (Gamepad2 → console, Code → developer), each item wraps as a self-contained unit
+- Stats strip: uses `grid-flow-col auto-cols-fr` so all stat cells share equal width without horizontal scroll
 - Achievement list breadcrumb updated: `Cheevo Tracker › Game › [Game Name]`
 - Achievement rows redesigned to match profile Activity and gaming-hub gamecard modal: card-style rows with colored left-border accent (gold HC, gray SC, dark locked), linked badge with lock overlay, linked gold title, `pts` pill badge, trueRatio multiplier, type icons with hover tooltips (`.pop-wrap`), dual HC/casual global unlock % bars with Flame/Feather icons, unlock date in blue
 - Type icon colors aligned with profile: Progression → Trophy gold, Win Condition → Crown red, Missable → AlertTriangle orange
 - New `/game/?id=` page replaces RA site links for all game references across the app
-- Shows game hero (background, icon, title, console, genre, developer, year, award badge), completion bar, and stats strip (achievements, points, hardcore count, playtime, player count)
+- Shows game hero (background, icon, title, console, developer, award badge), completion bar, and stats strip (achievements, points, hardcore count, playtime, player count)
 - Full achievement list with badge images, descriptions, type badges (Progression / Win Condition / Missable), per-achievement global unlock % bar, and per-user unlock date + hardcore indicator
 - Filter by All / Unlocked / Locked; sort by Display Order / Points / Unlock Date
 - Dimmed + grayscale treatment for locked achievements; HC/SC unlock badge on earned achievements
+
+### Profile
+
+- Recently Played section header hidden on desktop (`md:hidden`), shown on mobile only with a separator line below — desktop layout makes the header redundant since the tab context is visible
 
 ## v26.04.11 — Initial Release
 
