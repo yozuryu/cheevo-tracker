@@ -1,0 +1,10 @@
+{
+  "name": "cheevo-tracker",
+  "version": "1.0.0",
+  "description": "Personal RetroAchievements profile tracker",
+  "license": "ISC",
+  "author": "yozuryu",
+  "scripts": {
+    "start": "npx serve ."
+  }
+}

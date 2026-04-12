@@ -1,0 +1,8 @@
+exclude:
+  - CLAUDE.md
+  - TODO.md
+  - package.json
+  - package-lock.json
+  - .env
+  - .claude/
+  - node_modules/
