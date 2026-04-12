@@ -30,7 +30,7 @@ export function clearCredentials() {
 
 // ── Session cache (5 min TTL) ─────────────────────────────────────────────────
 
-export const CACHE_TTL = 5 * 60 * 1000;
+export const CACHE_TTL = 1 * 60 * 1000;
 
 function cacheGet(key) {
   try {
