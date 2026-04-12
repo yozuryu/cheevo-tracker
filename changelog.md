@@ -1,6 +1,6 @@
 # Changelog
 
-## v26.04.12 — Watchlist & Mobile Polish
+## v26.04.12 — Watchlist, Mobile Polish & Settings
 
 ### RetroAchievements
 
@@ -8,6 +8,18 @@
 - Watchlist: console column now visible on mobile in "None" grouping; "Status" grouping shows console as subtitle under the title instead
 - Watchlist: mastered progress cell now shows `X/Y` achievement count instead of a "Mastered" badge — status label below the title already conveys mastery
 - Watchlist: skeleton persists until `BACKLOG.games` is populated, preventing empty-table flash when `watchlistData` arrives but `transformData` hasn't re-run yet
+
+### Mobile Nav
+
+- Replaced "Log" nav tab with "Settings" — navigates to a dedicated `/settings/` page with: Changelog link, Refresh Data (clears sessionStorage + reloads), and Log Out; signed-in username shown in Account section
+- Profile breadcrumb simplified to `Cheevo Tracker › Profile`; page title updated to match
+- Changelog: version label moved to its own line below the version number, fixing overflow on mobile
+
+### Structure
+
+- Added `/settings/` page with General (Changelog, Refresh Data) and Account (username display, Log Out) sections
+- Extracted shared `Topbar` and `Footer` into `assets/ui.js` — all pages now use the same components; `ui.js` uses `React.createElement` to stay compatible with the native ES module loader (not transpiled by Babel standalone)
+- Unified topbar breadcrumb pattern across all pages: `Cheevo Tracker › [Page]`; "Cheevo Tracker" is a link on non-profile pages
 
 ## v26.04.11 — Initial Release
 

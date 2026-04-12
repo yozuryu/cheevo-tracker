@@ -8,6 +8,7 @@ import {
   getCredentials, clearCredentials,
   fetchProfile, fetchAchievementsChunk, fetchWatchlist, fetchGameDetails,
 } from './utils/ra-api.js';
+import { Topbar, Footer } from '../assets/ui.js';
 
 // --- JSX Helpers ---
 const renderTildeTags = (tags) => {
@@ -1282,19 +1283,18 @@ export default function App() {
   return (
     <div className="min-h-screen bg-[#171a21] text-[#c6d4df] font-sans selection:bg-[#66c0f4] selection:text-[#171a21] flex flex-col">
       
-      {/* Topbar */}
-      <div className="page-topbar sticky top-0 z-50 bg-[#131a22] border-b border-[#101214] px-4 md:px-8 py-1.5 flex items-center gap-2 text-[10px]">
-        <span className="text-[#546270] font-bold tracking-[0.15em] uppercase">Cheevo Tracker</span>
-        <span className="text-[#2a475e]">›</span>
-        <span className="text-[#c6d4df]">RetroAchievements</span>
-        <button
-          onClick={() => { clearCredentials(); window.location.replace('../'); }}
-          className="ml-auto text-[#546270] hover:text-[#ff6b6b] transition-colors uppercase tracking-[0.08em] font-semibold"
-          title="Log out"
-        >
-          Log out
-        </button>
-      </div>
+      <Topbar
+        crumbs={[{ label: 'Cheevo Tracker' }, { label: 'Profile' }]}
+        right={
+          <button
+            onClick={() => { clearCredentials(); window.location.replace('../'); }}
+            className="text-[#546270] hover:text-[#ff6b6b] transition-colors uppercase tracking-[0.08em] font-semibold"
+            title="Log out"
+          >
+            Log out
+          </button>
+        }
+      />
 
       {/* Header */}
       <header className={`bg-[#1b2838] border-b border-[#2a475e] px-4 md:px-8 pt-8 pb-5 md:pt-5 shadow-md${activeTab !== 'recent' ? ' hidden md:block' : ''}`}>
@@ -1894,18 +1894,10 @@ export default function App() {
 
       </main>
 
-      {/* Footer B */}
-      <footer className="bg-[#1b2838] border-t-2 border-[#2a475e] px-4 md:px-8 py-2.5 flex items-center gap-3 mt-6">
-        <div className="w-[3px] h-[18px] rounded-[1px] bg-[#66c0f4] opacity-50 shrink-0"></div>
-        <p className="text-[10px] text-[#546270]">
-          Generated from <span className="text-[#8f98a0]">RetroAchievements API</span>
-          <span className="mx-2 text-[#2a475e]">·</span>
-          Data as of <span className="text-[#8f98a0]">{rawData?.metadata?.extractionTimestamp ? new Date(rawData.metadata.extractionTimestamp).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '—'}</span>
-        </p>
-        <a href={SITE_URL} target="_blank" rel="noreferrer" className="ml-auto text-[10px] text-[#546270] hover:text-[#66c0f4] transition-colors shrink-0">
-          retroachievements.org ↗
-        </a>
-      </footer>
+      <Footer
+        label={<>Generated from <span className="text-[#8f98a0]">RetroAchievements API</span><span className="mx-2 text-[#2a475e]">·</span>Data as of <span className="text-[#8f98a0]">{rawData?.metadata?.extractionTimestamp ? new Date(rawData.metadata.extractionTimestamp).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '—'}</span></>}
+        right={<a href={SITE_URL} target="_blank" rel="noreferrer" className="text-[10px] text-[#546270] hover:text-[#66c0f4] transition-colors">retroachievements.org ↗</a>}
+      />
 
       {/* Scroll-to-top button */}
       {showScrollTop && (

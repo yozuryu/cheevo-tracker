@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
 import { ChevronDown, GitCommit } from 'lucide-react';
+import { Topbar, Footer } from '../assets/ui.js';
 
 // ── Parser ─────────────────────────────────────────────────────────────────────
 // Parses the changelog markdown into: [{ date, sections: [{ title, entries[] }] }]
@@ -108,10 +109,12 @@ const Release = ({ date, summary, sections, defaultOpen }) => {
                 className="w-full flex items-center gap-3 group outline-none"
             >
                 <div className="w-2.5 h-2.5 rounded-full border-2 border-[#66c0f4] bg-[#171a21] shrink-0 group-hover:bg-[#66c0f4] transition-colors" />
-                <span className="text-[13px] font-semibold text-[#c6d4df] group-hover:text-white transition-colors">
-                    {formatted}
-                    {label && <span className="text-[#546270] font-normal ml-2">— {label}</span>}
-                </span>
+                <div className="flex flex-col items-start min-w-0">
+                    <span className="text-[13px] font-semibold text-[#c6d4df] group-hover:text-white transition-colors leading-snug">
+                        {formatted}
+                    </span>
+                    {label && <span className="text-[10px] text-[#546270] font-normal leading-snug truncate max-w-full">{label}</span>}
+                </div>
                 <div className="flex-1 h-px bg-[#1e2d3a]" />
                 <span className="text-[9px] text-[#546270] shrink-0">
                     {totalEntries} change{totalEntries !== 1 ? 's' : ''}
@@ -149,12 +152,7 @@ const App = () => {
     return (
         <div className="bg-[#171a21] text-[#c6d4df] min-h-screen flex flex-col font-sans selection:bg-[#66c0f4] selection:text-[#171a21]">
 
-            {/* Topbar */}
-            <div className="page-topbar sticky top-0 z-50 bg-[#131a22] border-b border-[#101214] px-4 md:px-8 py-1.5 flex items-center gap-2 text-[10px]">
-                <a href="../profile/" className="text-[#546270] font-bold tracking-[0.15em] uppercase hover:text-[#8f98a0] transition-colors">Cheevo Tracker</a>
-                <span className="text-[#2a475e]">›</span>
-                <span className="text-[#c6d4df]">Changelog</span>
-            </div>
+            <Topbar crumbs={[{ label: 'Cheevo Tracker', href: '../profile/' }, { label: 'Changelog' }]} />
 
             {/* Header */}
             <header className="bg-[#1b2838] border-b border-[#2a475e] px-4 md:px-8 pt-8 pb-5 md:pt-5 shadow-md">
@@ -196,12 +194,7 @@ const App = () => {
                 )}
             </main>
 
-            {/* Footer */}
-            <footer className="bg-[#1b2838] border-t-2 border-[#2a475e] px-4 md:px-8 py-2.5 flex items-center gap-3 mt-auto">
-                <div className="w-[3px] h-[18px] rounded-[1px] bg-[#66c0f4] opacity-50 shrink-0" />
-                <p className="text-[10px] text-[#546270]">Cheevo Tracker · Changelog</p>
-                <a href="../profile/" className="ml-auto text-[10px] text-[#546270] hover:text-[#66c0f4] transition-colors">← Back to profile</a>
-            </footer>
+            <Footer label="Cheevo Tracker · Changelog" />
 
         </div>
     );
