@@ -51,6 +51,7 @@ export const transformData = (data) => {
       const existing = gameMap.get(game.gameId) || {
         id: game.gameId,
         title: game.title,
+        ...parseTitle(game.title),
         console: game.consoleName,
         playtime: "Unknown",
         lastPlayedStr: game.mostRecentAwardedDate,

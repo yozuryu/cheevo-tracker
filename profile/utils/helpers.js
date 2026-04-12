@@ -41,7 +41,8 @@ export const parseTitle = (title) => {
   const tags = [];
   const withoutTags = title.replace(/~([^~]+)~\s*/g, (_, tag) => { tags.push(tag); return ''; }).trim();
 
-  const subsetMatch = withoutTags.match(/^(.+?)\s*\[Subset\s*[-–]\s*(.+?)\]$/);
+  // Match [Subset - Name] with any dash variant (hyphen, en-dash, em-dash)
+  const subsetMatch = withoutTags.match(/^(.+?)\s*\[Subset\s*[-\u2013\u2014]\s*(.+?)\]\s*$/i);
   if (subsetMatch) {
     return { baseTitle: subsetMatch[1].trim(), subsetName: subsetMatch[2].trim(), isSubset: true, tags };
   }
