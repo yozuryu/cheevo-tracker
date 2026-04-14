@@ -346,7 +346,7 @@ export async function getAchievementsEarnedOnDay(username, apiKey, { u, d } = {}
  */
 export async function getUserWantToPlayList(username, apiKey, { u } = {}) {
   const results = await paginate('API_GetUserWantToPlayList.php', username, apiKey,
-    { u: u || username }, 100);
+    { u: u || username }, 500);
   return results.map(g => ({
     id:                    g.ID,
     title:                 g.Title,
@@ -615,7 +615,7 @@ export async function getGameExtended(username, apiKey, { i, f = 3 } = {}) {
     numDistinctPlayersCasual:   raw.NumDistinctPlayersCasual  || 0,
     numDistinctPlayersHardcore: raw.NumDistinctPlayersHardcore || 0,
     numAchievements:            raw.NumAchievements           || 0,
-    claims:                     raw.Claims                    || [],
+    claims:                     (Array.isArray(raw.Claims) ? raw.Claims : []).map(mapClaim),
     achievements,
   };
 }
@@ -1153,7 +1153,7 @@ export async function fetchWatchlist(username, apiKey) {
   const cached = cacheGet(cacheKey);
   if (cached) return cached;
 
-  const results = await paginate('API_GetUserWantToPlayList.php', username, apiKey, {}, 100);
+  const results = await paginate('API_GetUserWantToPlayList.php', username, apiKey, {}, 500);
   const result = {
     total: results.length,
     results: results.map(g => ({

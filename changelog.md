@@ -1,5 +1,26 @@
 # Changelog
 
+## v26.04.14 — Game Page: Community Tab, Info Tab Enhancements
+
+### RetroAchievements
+
+- Game page: new **Community** tab (between Info and Hashes) with Recent Masters and Comments sections
+- Game page: Community tab lazy-loads on first open — fetches `getGameRankAndScore(t=1)` + first 25 comments in parallel
+- Game page: Comments support "Load more" (25 at a time) showing remaining count
+- Game page: Recent Masters and Comments displayed side by side on desktop, stacked on mobile; Recent Masters scrollable at fixed height (~5 rows) on all screen sizes
+- Game page: Info tab now lazy-loads `getGameProgression` on first open; `getGameExtended` fetched eagerly on mount alongside main data
+- Game page: new **Time to Beat** section showing median Beat (Casual) / Beat (HC) / Complete / Master times; hidden if all values are null; shimmer skeleton while loading
+- Game page: Info table gains **Last Updated** row (from `getGameExtended`) and **Parent Game** link for subset games
+- Game page: active dev claim banner now sourced from `API_GetActiveClaims` (filtered to current game) — reliably shows only truly active claims, not stale historical ones from `getGameExtended`
+- Game page: active claim banner moved above the tab bar so it's visible on all tabs, not buried in Info
+- Game page: **In Dev** badge in hero title row tied to same active claims check as the banner
+- Game page: achievement rows now show author and creation date (`by {author} · added {date}`) once `getGameExtended` data loads
+- Game page: empty achievement list shows "This game has no achievements yet." instead of the filter-mismatch message
+- Game page: tab state persists in URL (`?tab=`) via `history.replaceState`; restored on reload
+- `ra-api.js`: `getGameExtended` now maps `claims` through `mapClaim` for consistent camelCase fields
+
+---
+
 ## v26.04.12 — Watchlist, Mobile Polish, Settings & Game Details
 
 ### RetroAchievements

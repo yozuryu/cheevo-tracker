@@ -1,5 +1,30 @@
 # Todo
 
+## Profile Page — Social Timeline Tab
+
+Add a **Social Timeline** tab to the profile page showing a unified Steam-style activity feed of achievement unlocks from the logged-in user and everyone they follow.
+
+### Data
+- `API_GetUserFollowing` — list of users the logged-in user follows
+- `API_GetUserRecentAchievements?u={user}&c=50` (or `API_GetAchievementsEarnedBetween`) — recent achievements per user
+- Own achievements already available via `achievementChunks`
+
+### Behaviour
+- Lazy-load on first tab open: fetch following list, then fan-out one `API_GetUserRecentAchievements` call per followed user in parallel (cap concurrency to avoid rate limits)
+- Merge own recent achievements + all followed users' achievements, sorted by date descending
+- Manual refresh button (no auto-polling — RA API has no push)
+- Loading state: shimmer skeletons; per-user progress optional
+- Empty states: "You're not following anyone yet" / "No recent activity"
+
+### UI
+- Feed row per unlock: user avatar (28px, linked to RA profile) · username (gold) · "earned" · achievement icon · achievement name (white) · "in" · game title (muted) · timestamp (relative, right-aligned)
+- Game art thumbnail as left accent or background tint (optional)
+- Group consecutive unlocks from the same user+game into a collapsible card ("X earned 5 achievements in [Game]")
+- Own unlocks styled slightly differently (e.g. cyan `#57cbde` username) to distinguish from friends
+- Section accent: blue `#66c0f4` (engagement/social)
+
+---
+
 ## Game Page — Leaderboards Tab
 
 Add a **Leaderboards** tab between Info and Hashes (final tab order: Achievements · Info · Leaderboards · Community · Hashes).
@@ -26,77 +51,6 @@ Add a **Leaderboards** tab between Info and Hashes (final tab order: Achievement
 - **Board card** (collapsed): title left, format badge right; description in muted text; "Your Entry: Rank #N · score" pill if user has one; top entry preview (👑 user · score) bottom-right
 - **Board card** (expanded): compact table rows — rank | 28px avatar | username | formatted score | date; user's own row highlighted `bg-[#202d39]` with cyan `#57cbde` left border
 - Format badge colors: TIME → blue `#66c0f4`, SCORE → gold `#e5b143`, VALUE / other → gray `#8f98a0`
-
----
-
-## Game Page — Community Tab
-
-Add a **Community** tab (between Leaderboards and Hashes).
-
-### Data
-- `getGameRankAndScore(username, apiKey, { g: gameId, t: 1 })` — latest masters (user, date, numAchievements, totalScore)
-- `getComments(username, apiKey, { i: gameId, t: 1, c: 25, sort: '-submitted' })` — game wall comments, newest first
-  - Fields per comment: `user`, `ulid`, `submitted`, `commentText`
-- Pagination on comments only: "Load more" appends next 25 with `o` offset
-
-### Behaviour
-- Lazy-load on first tab open; fetch `getGameRankAndScore(t=1)` + first comments page in parallel
-- "Load more" button appends next 25 comments
-- Loading state: shimmer skeletons for both sections
-- Empty states: hide Recent Masters section if empty; "No comments yet" for comments
-
-### UI
-- **Recent Masters** section at top: compact row per user — 28px avatar · username (gold) · date (muted, relative) · "Mastered" badge; max 10 entries; gold `#e5b143` section accent
-- **Comments** section below: avatar left (28px, linked), username (gold, `text-[11px]`) + timestamp (muted `text-[9px]`, relative) inline, comment text below (`text-[11px] text-[#c6d4df] leading-snug`); rows separated by `border-b border-[#1b2838]`
-- "Load more" button: centered pill, shows "Load more (N remaining)" if total known; blue `#66c0f4` section accent
-
----
-
-## Game Page — Info Tab Enhancements
-
-Enrich the existing **Info** tab with data from two lazy-loaded endpoints (both fetched in parallel on first Info tab open).
-
-### New endpoints
-- `getGameProgression(username, apiKey, { i: gameId })` — median completion times
-  - Fields: `medianTimeToBeat`, `medianTimeToBeatHardcore`, `medianTimeToComplete`, `medianTimeToMaster` (all in seconds, nullable)
-- `getGameExtended(username, apiKey, { i: gameId })` — extended metadata
-  - Fields used: `updated` (last set update date), `claims` (`[]` or array of active dev claims), per-achievement `author` + `dateCreated` + `dateModified`
-
-### New sections in Info tab
-
-**1. Time to Beat** (from `getGameProgression`) — shown only if at least one value is non-null
-- 2×2 grid (or 4-col on desktop) using the same stat-cell pattern as the hero stats strip
-- Cells: Beat (Casual) / Beat (HC) / Complete / Master — formatted via `fmtPlaytime`
-- Muted label below each value; omit cells where value is null
-- Section accent: gold `#e5b143`
-
-**2. Set Info** (from `getGameExtended`) — shown only if `updated` or `claims` exist
-- `updated`: "Last updated: {date}" as a metadata row in the existing Info table
-- `claims`: if `claims.length > 0`, show an amber notice banner below the Info table:
-  `"Achievement set actively claimed by {claimant} — set may still be changing"`
-  - Amber `#e5b143` left border, `bg-[rgba(229,177,67,0.06)]` bg, amber text for claimant name
-
-### Hero additions (free — data already fetched)
-
-**`isFinal === false` badge**: show an amber "In Dev" badge in the hero title row alongside Subset/Award badges
-- Same badge style as existing badges: `text-[8px] font-bold uppercase tracking-[0.07em] px-1.5 py-[2px] rounded-[2px]`
-- Color: amber `#e5b143`, only shown when `isFinal === false`
-
-**`parentGameId` link**: for subset games, add a "Parent Game" row in the Info metadata table
-- Value: clickable link → `/game/?id={parentGameId}` (internal page link, no `target="_blank"`)
-- Icon: `ExternalLink` (already imported), label: "Parent"
-
-### Achievement row additions (from `getGameExtended`)
-
-Show author per achievement — requires merging `getGameExtended` achievements into the existing list by achievement ID:
-- Add `author` + `dateCreated` as small muted text below the description in each `AchievementRow`
-- Format: `"by {author} · added {formatDate(dateCreated)}"` — `text-[9px] text-[#546270]`
-- Only render if `getGameExtended` data has been loaded (graceful — no change until data arrives)
-
-### Fetch strategy
-- On first Info tab open: fire `getGameProgression` + `getGameExtended` in parallel, store in state (`gameProgression`, `gameExtended`)
-- `gameExtended.achievements` merged into achievement rows reactively (same pattern as `detailedGameProgress` in profile)
-- Loading state: shimmer placeholder for Time to Beat section while fetching; Info table renders immediately with existing data
 
 ---
 
