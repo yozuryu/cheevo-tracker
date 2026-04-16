@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { createRoot } from 'react-dom/client';
-import { Gamepad2, Activity, BarChart2, Award, Star, ChevronDown, AlertCircle, Trophy, Crown, Lock, Unlock, AlertTriangle, Flame, Feather, Medal, ShieldOff, CircleDashed, X, Clock, Layers, Users } from 'lucide-react';
+import { Gamepad2, Activity, BarChart2, Award, Star, ChevronDown, AlertCircle, Trophy, Crown, Lock, Unlock, AlertTriangle, Flame, Feather, Medal, ShieldOff, CircleDashed, X, Clock, Layers, Users, ArrowLeftRight } from 'lucide-react';
 import { MEDIA_URL, SITE_URL, TILDE_TAG_COLORS } from './utils/constants.js';
 import { getMediaUrl, parseTitle, formatTimeAgo } from './utils/helpers.js';
 import { transformData } from './utils/transform.js';
@@ -1072,18 +1072,17 @@ const SocialUserRow = ({ user, isMutual }) => (
       className="w-7 h-7 rounded-full border border-[#101214] shrink-0 object-cover bg-[#131a22]"
       onError={e => { e.currentTarget.style.visibility = 'hidden'; }}
     />
-    <a href={`https://retroachievements.org/user/${user.user}`} target="_blank" rel="noreferrer"
-      className="text-[11px] font-medium text-[#e5b143] hover:underline flex-1 min-w-0 truncate">
-      {user.user}
-    </a>
+    <div className="flex items-center gap-1.5 flex-1 min-w-0">
+      <a href={`https://retroachievements.org/user/${user.user}`} target="_blank" rel="noreferrer"
+        className="text-[11px] font-medium text-[#e5b143] hover:underline truncate">
+        {user.user}
+      </a>
+      {isMutual && (
+        <ArrowLeftRight size={11} className="shrink-0" style={{ color: '#66c0f4' }} />
+      )}
+    </div>
     {user.points != null && (
-      <span className="text-[10px] text-[#546270] shrink-0">{user.points.toLocaleString()} pts</span>
-    )}
-    {isMutual && (
-      <span className="text-[9px] font-bold uppercase tracking-[0.07em] px-1.5 py-[2px] rounded-[2px] shrink-0"
-        style={{ color: '#66c0f4', background: 'rgba(102,192,244,0.1)', border: '1px solid rgba(102,192,244,0.3)' }}>
-        Mutual
-      </span>
+      <span className="text-[10px] text-[#e5b143] shrink-0">{user.points.toLocaleString()} pts</span>
     )}
   </div>
 );
