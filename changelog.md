@@ -1,5 +1,26 @@
 # Changelog
 
+## v26.04.16 — Achievement Page, Leaderboards Tab
+
+### RetroAchievements
+
+- New **Achievement page** (`/achievement/?id=`) — dedicated page per achievement showing badge, title, description, type badge, points/trueRatio, author, global unlock stats (HC / Softcore / Total Players), your personal unlock status (HC or SC with date), and a paginated recent-unlocks list
+- Achievement page: breadcrumb follows `Cheevo Tracker › Game › [Game Name] › [Achievement]` pattern; game name links back to the game page
+- Achievement page: badge image sourced from `getGameInfoAndUserProgress` data (same source as game page) with fallback to `getAchievementUnlocks` achievement object; fixes broken image when `BadgeName` is absent from the achievement sub-object
+- Achievement page: game link uses top-level `game.id` from the API response instead of `achievement.gameId` (sub-object field not always populated); fixes game name not appearing in breadcrumb
+- Achievement page: recent unlocks show relative timestamps (e.g. "2 hrs ago") instead of raw dates
+- Game page: achievement badge and title links now navigate to the internal `/achievement/` page in the same tab instead of opening RA site in a new tab
+- `ra-api.js`: `getAchievementUnlocks` now properly maps the `achievement` object to camelCase (was passed as raw PascalCase); `console` and `game` objects also mapped
+- Game page: "Subset of" breadcrumb now has a `bg-black/40 backdrop-blur-sm` pill background and brighter text (`#8f98a0` / `#c6d4df`) so it stays legible on dark hero images
+- Game page: new **Leaderboards** tab (between Info and Community) — final tab order: Achievements · Info · Leaderboards · Community · Hashes
+- Game page: Leaderboards tab lazy-loads on first open — fetches `getGameLeaderboards` + `getUserGameLeaderboards` + `getGameRankAndScore(t=0)` in parallel
+- Game page: **Top Scorers** card at top with rank, avatar, username, and score; top 3 ranks gold/silver/bronze coloured
+- Game page: board list with accordion expand — clicking a board lazy-loads top 25 entries (cached per board ID)
+- Game page: collapsed board shows format badge (TIME/SCORE/VALUE), description, top entry preview, and "Your Entry" pill if the user has a score
+- Game page: expanded board highlights the logged-in user's row with cyan left border and username
+
+---
+
 ## v26.04.14 — Game Page: Community Tab, Info Tab Enhancements
 
 ### RetroAchievements

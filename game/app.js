@@ -3,7 +3,7 @@ import { createRoot } from 'react-dom/client';
 import { Trophy, Crown, Medal, Lock, ExternalLink, AlertCircle, AlertTriangle, Flame, Feather, Gamepad2, Tag, Code, Calendar, BookOpen, MessageSquare, Loader } from 'lucide-react';
 import { MEDIA_URL, SITE_URL } from '../profile/utils/constants.js';
 import { getMediaUrl, parseTitle, formatDate, formatTimeAgo } from '../profile/utils/helpers.js';
-import { getCredentials, clearCredentials, getGameInfoAndUserProgress, getGameHashes, getGameProgression, getGameExtended, getActiveClaims, getGameRankAndScore, getComments } from '../profile/utils/ra-api.js';
+import { getCredentials, clearCredentials, getGameInfoAndUserProgress, getGameHashes, getGameProgression, getGameExtended, getActiveClaims, getGameRankAndScore, getComments, getGameLeaderboards, getUserGameLeaderboards, getLeaderboardEntries, getGame } from '../profile/utils/ra-api.js';
 import { Topbar, Footer } from '../assets/ui.js';
 
 // ── Constants ─────────────────────────────────────────────────────────────────
@@ -55,7 +55,7 @@ function AchievementRow({ ach, totalPlayersCasual, totalPlayersHardcore, extAch 
     }`}>
 
       {/* Badge */}
-      <a href={`${SITE_URL}/achievement/${ach.id}`} target="_blank" rel="noreferrer"
+      <a href={`../achievement/?id=${ach.id}`}
         className="relative shrink-0 w-10 h-10 rounded-[2px] border border-[#101214] overflow-hidden bg-black hover:scale-105 transition-transform block">
         <img
           src={`${MEDIA_URL}/Badge/${ach.badgeName || '00001'}.png`}
@@ -68,7 +68,7 @@ function AchievementRow({ ach, totalPlayersCasual, totalPlayersHardcore, extAch 
       {/* Content */}
       <div className="flex-1 min-w-0 flex flex-col justify-center">
         <div className="flex items-center gap-2 mb-1 flex-wrap">
-          <a href={`${SITE_URL}/achievement/${ach.id}`} target="_blank" rel="noreferrer"
+          <a href={`../achievement/?id=${ach.id}`}
             className={`text-[12px] font-medium tracking-wide leading-tight hover:underline ${unlocked ? 'text-[#e5b143]' : 'text-[#8f98a0]'}`}>
             {ach.title}
           </a>
@@ -127,7 +127,7 @@ function GameApp() {
   const [error, setError]       = useState(null);
   const [tab, setTab]           = useState(() => {
     const t = params.get('tab');
-    return ['achievements', 'details', 'community', 'hashes'].includes(t) ? t : 'achievements';
+    return ['achievements', 'details', 'leaderboards', 'community', 'hashes'].includes(t) ? t : 'achievements';
   });
   const [filter, setFilter]     = useState('all');          // all | unlocked | locked
   const [sort, setSort]         = useState('order');        // order | points | date
@@ -143,6 +143,14 @@ function GameApp() {
   const [commentsOffset, setCommentsOffset]     = useState(0);
   const [loadingCommunity, setLoadingCommunity] = useState(false);
   const [loadingMoreComments, setLoadingMoreComments] = useState(false);
+  const [leaderboards, setLeaderboards]         = useState(null);
+  const [topScorers, setTopScorers]             = useState(null);
+  const [userLbMap, setUserLbMap]               = useState({});
+  const [boardEntries, setBoardEntries]         = useState({});
+  const [expandedBoardId, setExpandedBoardId]   = useState(null);
+  const [loadingLeaderboards, setLoadingLeaderboards] = useState(false);
+  const [loadingBoardId, setLoadingBoardId]     = useState(null);
+  const [parentGame, setParentGame]             = useState(null);
 
   const creds = getCredentials();
 
@@ -161,6 +169,11 @@ function GameApp() {
         setGameExtended(ext);
         setActiveClaims(claims.filter(c => String(c.gameId) === String(gameId)));
         document.title = `Cheevo Tracker · ${data.title}`;
+        if (data.parentGameId) {
+          getGame(creds.username, creds.apiKey, { i: data.parentGameId })
+            .then(pg => setParentGame(pg))
+            .catch(() => {});
+        }
       })
       .catch(err => {
         if (err.message === 'AUTH_ERROR') handleAuthError();
@@ -206,6 +219,43 @@ function GameApp() {
       if (err.message === 'AUTH_ERROR') handleAuthError();
     } finally {
       setLoadingMoreComments(false);
+    }
+  }
+
+  useEffect(() => {
+    if (tab !== 'leaderboards' || leaderboards !== null || loadingLeaderboards || !gameId || !creds) return;
+    setLoadingLeaderboards(true);
+    Promise.all([
+      getGameLeaderboards(creds.username, creds.apiKey, { i: gameId }),
+      getUserGameLeaderboards(creds.username, creds.apiKey, { i: gameId, u: creds.username }).catch(() => ({ results: [] })),
+      getGameRankAndScore(creds.username, creds.apiKey, { g: gameId, t: 0 }),
+    ])
+      .then(([lbs, userLbs, scorers]) => {
+        setLeaderboards(lbs.results);
+        setTopScorers(scorers);
+        const map = {};
+        for (const lb of userLbs.results) {
+          if (lb.userEntry) map[lb.id] = lb.userEntry;
+        }
+        setUserLbMap(map);
+      })
+      .catch(err => { if (err.message === 'AUTH_ERROR') handleAuthError(); })
+      .finally(() => setLoadingLeaderboards(false));
+  }, [tab, gameId]);
+
+  async function toggleBoard(boardId) {
+    if (expandedBoardId === boardId) { setExpandedBoardId(null); return; }
+    setExpandedBoardId(boardId);
+    if (boardEntries[boardId] !== undefined) return;
+    setLoadingBoardId(boardId);
+    try {
+      const data = await getLeaderboardEntries(creds.username, creds.apiKey, { i: boardId, c: 25 });
+      setBoardEntries(prev => ({ ...prev, [boardId]: data.results }));
+    } catch (err) {
+      if (err.message === 'AUTH_ERROR') handleAuthError();
+      else setBoardEntries(prev => ({ ...prev, [boardId]: [] }));
+    } finally {
+      setLoadingBoardId(null);
     }
   }
 
@@ -292,12 +342,16 @@ function GameApp() {
           {/* ── Hero ── */}
           <div className="relative overflow-hidden bg-[#1b2838] border-b border-[#2a475e]">
             {/* Background */}
-            {(game.imageIngame || game.imageTitle) && (
-              <div
-                className="absolute inset-0 bg-cover bg-center opacity-25"
-                style={{ backgroundImage: `url(${getMediaUrl(game.imageIngame || game.imageTitle)})` }}
-              />
-            )}
+            {(() => {
+              const isFallback = img => !img || img.includes('000002');
+              const heroBg = (!isFallback(game.imageIngame) ? game.imageIngame : null)
+                          || (!isFallback(game.imageTitle)  ? game.imageTitle  : null)
+                          || parentGame?.imageIngame || parentGame?.imageTitle;
+              return heroBg ? (
+                <div className="absolute inset-0 bg-cover bg-center opacity-25"
+                  style={{ backgroundImage: `url(${getMediaUrl(heroBg)})` }} />
+              ) : null;
+            })()}
             <div className="relative max-w-4xl mx-auto px-4 md:px-8 pt-8 pb-4 md:pt-5">
               <div className="flex gap-4 items-start">
 
@@ -337,6 +391,18 @@ function GameApp() {
 
                   {parsed?.isSubset && parsed?.subsetName && (
                     <div className="text-[11px] text-[#c8a84b] mb-1">{parsed.subsetName}</div>
+                  )}
+
+                  {parsed?.isSubset && parentGame && (
+                    <div className="flex items-center gap-1.5 mb-2 bg-black/40 backdrop-blur-sm rounded-[3px] px-1.5 py-[3px] w-fit">
+                      <img src={getMediaUrl(parentGame.imageIcon)} alt={parentGame.title}
+                        className="w-4 h-4 rounded-[2px] border border-[#101214] object-cover shrink-0 bg-black" />
+                      <span className="text-[10px] text-[#8f98a0]">Subset of</span>
+                      <a href={`?id=${game.parentGameId}`}
+                        className="text-[10px] text-[#c6d4df] hover:text-white hover:underline transition-colors truncate max-w-[200px]">
+                        {parseTitle(parentGame.title).baseTitle}
+                      </a>
+                    </div>
                   )}
 
                   <div className="flex items-center gap-x-3 gap-y-1 flex-wrap text-[10px] mb-3">
@@ -409,15 +475,16 @@ function GameApp() {
 
           {/* ── Tab bar ── */}
           <div className="bg-[#131a22] border-b border-[#2a475e] sticky top-0 md:top-[26px] z-40">
-            <div className="max-w-4xl mx-auto px-4 md:px-8 py-2.5 flex items-center gap-2">
+            <div className="max-w-4xl mx-auto px-4 md:px-8 py-2.5 flex items-center gap-2 overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
               {[
-                { id: 'achievements', label: 'Achievements' },
-                { id: 'details',      label: 'Info'         },
-                { id: 'community',    label: 'Community'    },
-                { id: 'hashes',       label: 'Hashes'       },
+                { id: 'achievements',  label: 'Achievements'  },
+                { id: 'details',       label: 'Info'          },
+                { id: 'leaderboards',  label: 'Leaderboards'  },
+                { id: 'community',     label: 'Community'     },
+                { id: 'hashes',        label: 'Hashes'        },
               ].map(t => (
                 <button key={t.id} type="button" onClick={() => switchTab(t.id)}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-sm text-[11px] font-semibold uppercase tracking-wider border transition-colors ${
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-sm text-[11px] font-semibold uppercase tracking-wider border transition-colors shrink-0 ${
                     tab === t.id
                       ? 'bg-[#1b2838] text-[#c6d4df] border-[#66c0f4]'
                       : 'text-[#546270] border-[#323f4c] hover:text-[#8f98a0] hover:border-[#546270]'
@@ -500,9 +567,9 @@ function GameApp() {
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                     {[
-                      { src: game.imageBoxArt,  label: 'Box Art'      },
-                      { src: game.imageTitle,   label: 'Title Screen' },
-                      { src: game.imageIngame,  label: 'In-Game'      },
+                      { src: game.imageBoxArt  && !game.imageBoxArt.includes('000002')  ? game.imageBoxArt  : parentGame?.imageBoxArt,  label: 'Box Art'      },
+                      { src: game.imageTitle   && !game.imageTitle.includes('000002')   ? game.imageTitle   : parentGame?.imageTitle,   label: 'Title Screen' },
+                      { src: game.imageIngame  && !game.imageIngame.includes('000002')  ? game.imageIngame  : parentGame?.imageIngame,  label: 'In-Game'      },
                     ].filter(m => m.src).map(m => (
                       <div key={m.label} className="flex flex-col gap-1">
                         <a href={getMediaUrl(m.src)} target="_blank" rel="noreferrer"
@@ -574,14 +641,6 @@ function GameApp() {
                     gameExtended?.updated
                       ? { label: 'Updated', value: formatDate(gameExtended.updated), icon: <Calendar size={11} /> }
                       : null,
-                    game.parentGameId
-                      ? { label: 'Parent', value: (
-                          <a href={`/game/?id=${game.parentGameId}`}
-                            className="flex items-center gap-1 text-[#66c0f4] hover:underline">
-                            <ExternalLink size={10} />View parent game
-                          </a>
-                        ), icon: <ExternalLink size={11} /> }
-                      : null,
                   ].filter(Boolean).filter(r => r.value).map(r => (
                     <div key={r.label} className="flex items-center gap-3 px-3 py-2">
                       <span className="text-[#546270] shrink-0">{r.icon}</span>
@@ -613,6 +672,145 @@ function GameApp() {
                         <MessageSquare size={12} /> Forum Thread
                       </a>
                     )}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* ── Leaderboards tab ── */}
+          {tab === 'leaderboards' && (
+            <div className="flex-1 max-w-4xl mx-auto w-full px-4 md:px-8 py-4">
+
+              {loadingLeaderboards && (
+                <div className="flex items-center gap-2 py-8 justify-center text-[#546270] text-[11px]">
+                  <Loader size={14} className="animate-spin" /> Loading leaderboards…
+                </div>
+              )}
+
+              {leaderboards && leaderboards.length === 0 && (
+                <div className="py-8 text-center text-[11px] text-[#546270]">No leaderboards for this game.</div>
+              )}
+
+              {leaderboards && leaderboards.length > 0 && (
+                <div className="flex flex-col md:flex-row gap-5 md:items-start">
+
+                  {/* Top Scorers */}
+                  {topScorers && topScorers.length > 0 && (
+                    <div className="w-full md:w-[200px] md:shrink-0">
+                      <div className="flex items-center gap-2 pb-2 mb-2 border-b border-[#2a475e]">
+                        <span className="w-[3px] h-[14px] bg-[#e5b143] rounded-[1px] shrink-0" />
+                        <span className="text-[13px] text-white tracking-wide uppercase font-medium">Top Scorers</span>
+                      </div>
+                      <div className="bg-[#1b2838] border border-[#2a475e] rounded-[2px] divide-y divide-[#2a475e] overflow-y-auto max-h-[220px]">
+                        {topScorers.map((s, i) => (
+                          <div key={s.ulid || s.user} className="flex items-center gap-3 px-3 py-2">
+                            <span className="text-[10px] font-bold w-5 text-right shrink-0"
+                              style={{ color: i === 0 ? '#e5b143' : i === 1 ? '#8f98a0' : i === 2 ? '#cd7f32' : '#546270' }}>
+                              #{i + 1}
+                            </span>
+                            <img src={`${MEDIA_URL}/UserPic/${s.user}.png`} alt={s.user}
+                              className="w-6 h-6 rounded-full border border-[#2a475e] bg-[#131a22] object-cover shrink-0" />
+                            <a href={`${SITE_URL}/user/${s.user}`} target="_blank" rel="noreferrer"
+                              className="flex-1 text-[11px] font-medium hover:underline truncate"
+                              style={{ color: s.user === creds?.username ? '#57cbde' : '#c6d4df' }}>
+                              {s.user}
+                            </a>
+                            <span className="text-[11px] font-bold text-[#e5b143] shrink-0">{s.totalScore.toLocaleString()}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Board list */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 pb-2 mb-2 border-b border-[#2a475e]">
+                      <span className="w-[3px] h-[14px] bg-[#66c0f4] rounded-[1px] shrink-0" />
+                      <span className="text-[13px] text-white tracking-wide uppercase font-medium">Boards</span>
+                      <span className="text-[11px] text-[#546270]">({leaderboards.length})</span>
+                    </div>
+                  <div className="flex flex-col gap-1.5">
+                    {leaderboards.map(lb => {
+                      const fmtColor = lb.format === 'SCORE' ? '#e5b143' : ['TIME', 'TIMESECS', 'MILLISECS'].includes(lb.format) ? '#66c0f4' : '#8f98a0';
+                      const userEntry = userLbMap[lb.id];
+                      const isExpanded = expandedBoardId === lb.id;
+                      const entries = boardEntries[lb.id];
+                      const isLoadingThis = loadingBoardId === lb.id;
+
+                      return (
+                        <div key={lb.id} className="bg-[#1b2838] border border-[#2a475e] rounded-[2px] overflow-hidden">
+                          {/* Collapsed header — clickable */}
+                          <button type="button" onClick={() => toggleBoard(lb.id)}
+                            className="w-full text-left px-3 py-2.5 hover:bg-[#202d39] transition-colors">
+                            <div className="flex items-start justify-between gap-2 mb-1">
+                              <span className="text-[12px] font-medium text-[#c6d4df] leading-snug">{lb.title}</span>
+                              <div className="flex items-center gap-1.5 shrink-0">
+                                <span className="text-[8px] font-bold uppercase tracking-wider px-1.5 py-[2px] rounded-sm border"
+                                  style={{ color: fmtColor, borderColor: `${fmtColor}40`, background: `${fmtColor}14` }}>
+                                  {({ SCORE: 'Score', TIME: 'Time', TIMESECS: 'Time (s)', MILLISECS: 'Time (ms)', VALUE: 'Value' })[lb.format] ?? lb.format}
+                                </span>
+                                <span className="text-[#546270]" style={{ fontSize: 10 }}>{isExpanded ? '▲' : '▼'}</span>
+                              </div>
+                            </div>
+                            {lb.description && (
+                              <p className="text-[10px] text-[#546270] leading-snug mb-1.5">{lb.description}</p>
+                            )}
+                            <div className="flex items-center justify-between gap-2 flex-wrap">
+                              {userEntry ? (
+                                <span className="text-[9px] px-1.5 py-[2px] rounded-sm border"
+                                  style={{ color: '#57cbde', borderColor: 'rgba(87,203,222,0.3)', background: 'rgba(87,203,222,0.08)' }}>
+                                  Your Entry: #{userEntry.rank} · {userEntry.formattedScore}
+                                </span>
+                              ) : <span />}
+                              {lb.topEntry && (
+                                <span className="text-[9px] text-[#546270]">
+                                  👑 {lb.topEntry.user} · {lb.topEntry.formattedScore}
+                                </span>
+                              )}
+                            </div>
+                          </button>
+
+                          {/* Expanded entries */}
+                          {isExpanded && (
+                            <div className="border-t border-[#2a475e]">
+                              {isLoadingThis && (
+                                <div className="flex items-center gap-2 py-4 justify-center text-[#546270] text-[11px]">
+                                  <Loader size={12} className="animate-spin" /> Loading…
+                                </div>
+                              )}
+                              {entries && entries.length === 0 && (
+                                <div className="py-4 text-center text-[11px] text-[#546270]">No entries yet.</div>
+                              )}
+                              {entries && entries.length > 0 && (
+                                <div className="divide-y divide-[#2a475e]">
+                                  {entries.map(e => {
+                                    const isMe = e.user === creds?.username;
+                                    return (
+                                      <div key={e.ulid || e.user}
+                                        className={`flex items-center gap-3 px-3 py-2 border-l-[3px] ${isMe ? 'bg-[#202d39]' : ''}`}
+                                        style={{ borderLeftColor: isMe ? '#57cbde' : 'transparent' }}>
+                                        <span className="text-[10px] font-bold w-5 text-right shrink-0 text-[#546270]">#{e.rank}</span>
+                                        <img src={`${MEDIA_URL}/UserPic/${e.user}.png`} alt={e.user}
+                                          className="w-6 h-6 rounded-full border border-[#2a475e] bg-[#131a22] object-cover shrink-0" />
+                                        <a href={`${SITE_URL}/user/${e.user}`} target="_blank" rel="noreferrer"
+                                          className="flex-1 text-[11px] hover:underline"
+                                          style={{ color: isMe ? '#57cbde' : '#c6d4df' }}>
+                                          {e.user}
+                                        </a>
+                                        <span className="text-[11px] font-bold text-[#e5b143]">{e.formattedScore}</span>
+                                        <span className="text-[9px] text-[#546270] shrink-0">{formatDate(e.dateSubmitted)}</span>
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
                   </div>
                 </div>
               )}

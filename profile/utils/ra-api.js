@@ -784,13 +784,28 @@ export async function getAchievementOfTheWeek(username, apiKey) {
  */
 export async function getAchievementUnlocks(username, apiKey, { a, c = 50, o = 0 } = {}) {
   const data = await raFetch('API_GetAchievementUnlocks.php', username, apiKey, { a, c, o });
+  const rawAch = data.Achievement || {};
   return {
-    achievement:          data.Achievement         || null,
-    console:              data.Console             || null,
-    game:                 data.Game                || null,
-    unlocksCount:         data.UnlocksCount        || 0,
+    achievement: {
+      id:           rawAch.ID           || null,
+      title:        rawAch.Title        || '',
+      description:  rawAch.Description  || '',
+      points:       rawAch.Points       || 0,
+      trueRatio:    rawAch.TrueRatio    || 0,
+      author:       rawAch.Author       || '',
+      dateCreated:  rawAch.DateCreated  || null,
+      dateModified: rawAch.DateModified || null,
+      badgeName:    rawAch.BadgeName    || '',
+      displayOrder: rawAch.DisplayOrder || 0,
+      gameId:       rawAch.GameID       || null,
+      consoleId:    rawAch.ConsoleID    || null,
+      type:         rawAch.Type         || null,
+    },
+    console: data.Console ? { id: data.Console.ID, title: data.Console.Title } : null,
+    game:    data.Game    ? { id: data.Game.ID, title: data.Game.Title || '', consoleId: data.Game.ConsoleID } : null,
+    unlocksCount:         data.UnlocksCount         || 0,
     unlocksHardcoreCount: data.UnlocksHardcoreCount || 0,
-    totalPlayers:         data.TotalPlayers        || 0,
+    totalPlayers:         data.TotalPlayers         || 0,
     unlocks: (data.Unlocks || []).map(u => ({
       user:             u.User,
       ulid:             u.ULID,

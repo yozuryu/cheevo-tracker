@@ -25,41 +25,6 @@ Add a **Social Timeline** tab to the profile page showing a unified Steam-style 
 
 ---
 
-## Game Page — Leaderboards Tab
-
-Add a **Leaderboards** tab between Info and Hashes (final tab order: Achievements · Info · Leaderboards · Community · Hashes).
-
-### Data
-- `getGameLeaderboards(username, apiKey, { i: gameId })` — list of all leaderboards for the game
-  - Fields: `id`, `title`, `description`, `format` (TIME, SCORE, VALUE, etc.), `rankAsc`, `topEntry` (`{ user, score, formattedScore }`)
-- `getLeaderboardEntries(username, apiKey, { i: leaderboardId, c: 25 })` — top entries for a selected board
-  - Fields per entry: `rank`, `user`, `ulid`, `score`, `formattedScore`, `dateSubmitted`
-- `getUserGameLeaderboards(username, apiKey, { i: gameId, u: username })` — the logged-in user's own entries across all boards for this game (for highlighting the user's rank)
-- `getGameRankAndScore(username, apiKey, { g: gameId, t: 0 })` — overall top scorers for the game (shown as a pinned "Top Scorers" card at the top of the tab)
-
-### Behaviour
-- Lazy-load on first tab open (same pattern as Hashes)
-- Initially fetch `getGameLeaderboards` + `getUserGameLeaderboards` + `getGameRankAndScore(t=0)` in parallel
-- Render a pinned "Top Scorers" card first (from `getGameRankAndScore`), then the board list
-- Clicking a board card expands it (accordion) and lazy-loads `getLeaderboardEntries` for that board (cached per board ID)
-- Highlight the logged-in user's row in expanded entries; show "Your Entry" summary pill on the collapsed card if user has an entry
-- Loading state: spinner while fetching; per-board spinner on expand
-- Empty state: "No leaderboards for this game"
-
-### UI
-- **Top Scorers card**: section header + compact rows (rank · avatar · username · score), top 10, gold accent
-- **Board card** (collapsed): title left, format badge right; description in muted text; "Your Entry: Rank #N · score" pill if user has one; top entry preview (👑 user · score) bottom-right
-- **Board card** (expanded): compact table rows — rank | 28px avatar | username | formatted score | date; user's own row highlighted `bg-[#202d39]` with cyan `#57cbde` left border
-- Format badge colors: TIME → blue `#66c0f4`, SCORE → gold `#e5b143`, VALUE / other → gray `#8f98a0`
-
----
-
-## Game Page — Final Tab Order (Mobile)
-
-`Achievements · Info · Leaderboards · Community · Hashes`
-
----
-
 ## Game Page — Desktop Single-Page Layout
 
 On desktop (`md:` and above), hide the tab bar and display all sections simultaneously in a structured layout. Mobile keeps the existing tab behaviour unchanged.
