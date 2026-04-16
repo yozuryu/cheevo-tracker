@@ -1,9 +1,27 @@
 # Changelog
 
-## v26.04.16 — Achievement Page, Leaderboards Tab
+## v26.04.16 — Achievement Page, Leaderboards Tab, Social Tab
 
 ### RetroAchievements
 
+- Profile page: new **Social tab** — shows Following and Followers lists, lazy-loaded on first open; each row shows avatar, username (RA link), points, and a "Mutual" badge when the follow is reciprocal
+- Profile page: removed redundant Log Out button from topbar — already accessible via the menu
+- Topbar menu + Settings page: added **Purge Cache** — deletes all PWA asset caches (`caches.keys()` + `caches.delete`) and reloads, forcing a full re-fetch of static assets
+- Mobile nav: added **Social** tab button (`/profile/?tab=social`) — shows Following and Followers lists, lazy-loaded on first open; each row shows avatar, username (RA link), points, and a "Mutual" badge when the follow is reciprocal
+- Breadcrumbs: three distinct styles — root ("Cheevo Tracker") is muted bold uppercase, intermediate crumbs with links are blue (`#66c0f4`), active/current page is light (`#c6d4df`); all intermediate crumbs now carry hrefs for back navigation
+- Breadcrumbs: dynamic crumbs (game title, achievement title) render as shimmer blocks while data is loading instead of placeholder text
+- Game page: removed orphan "Game" category label from breadcrumb — now `Cheevo Tracker › [Game Title]`
+- Achievement page: removed orphan "Game" category label — now `Cheevo Tracker › [Game Name] › [Achievement Title]`
+- Achievement page: hero redesigned to match game page — full-bleed `bg-[#1b2838]` section with optional game background art at `opacity-20`, stats strip as a dark bar below the hero, `max-w-4xl` throughout
+- Achievement page: metadata row now has icons (Star for pts, TrendingUp for ratio, User for author, Calendar for date added, ExternalLink for RA) with `|` separators between each item
+- Achievement page: game info row above the hero uses the same layout as the game page's metadata row — game icon + cyan link + Gamepad2 console chip
+- Game page: hero background art opacity reduced from 25% to 20% to match achievement page
+- Achievement page: desktop layout uses two-column grid (stats + your status left, recent unlocks right) with hero wrapped in a card; max-width widened to `max-w-3xl`
+- Achievement page: hero shows game info row (icon + name link + console) above the badge; badge larger on desktop (`md:w-28 md:h-28`)
+- Achievement page: added link to RetroAchievements achievement page in the metadata row
+- Achievement page: recent unlock rows now have left border stripes — gold (`#e5b143`) for hardcore, gray (`#8f98a0`) for softcore
+- Achievement page: "HC" label renamed to "Hardcore" with red color (`#ff6b6b`) everywhere it appears
+- Achievement page: Your Status card simplified — removed redundant "Unlocked — Hardcore/Softcore" label; shows unlock date prominently with a mode label below
 - New **Achievement page** (`/achievement/?id=`) — dedicated page per achievement showing badge, title, description, type badge, points/trueRatio, author, global unlock stats (HC / Softcore / Total Players), your personal unlock status (HC or SC with date), and a paginated recent-unlocks list
 - Achievement page: breadcrumb follows `Cheevo Tracker › Game › [Game Name] › [Achievement]` pattern; game name links back to the game page
 - Achievement page: badge image sourced from `getGameInfoAndUserProgress` data (same source as game page) with fallback to `getAchievementUnlocks` achievement object; fixes broken image when `BadgeName` is absent from the achievement sub-object

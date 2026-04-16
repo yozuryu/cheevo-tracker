@@ -1,6 +1,6 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import { FileText, RotateCcw, LogOut, ChevronRight } from 'lucide-react';
+import { FileText, RotateCcw, LogOut, ChevronRight, Trash2 } from 'lucide-react';
 import { Topbar, Footer } from '../assets/ui.js';
 
 function getCredentials() {
@@ -54,6 +54,15 @@ function SettingsApp() {
     location.reload();
   }
 
+  async function handlePurgeCache() {
+    sessionStorage.clear();
+    if ('caches' in window) {
+      const keys = await caches.keys();
+      await Promise.all(keys.map(k => caches.delete(k)));
+    }
+    location.reload();
+  }
+
   function handleLogout() {
     localStorage.removeItem('raCredentials');
     window.location.replace('../');
@@ -78,6 +87,13 @@ function SettingsApp() {
             label="Refresh Data"
             description="Clear cached API data and reload"
             onClick={handleRefresh}
+          />
+          <SettingsRow
+            icon={<Trash2 />}
+            iconColor="#8f98a0"
+            label="Purge Cache"
+            description="Delete all PWA asset caches and reload"
+            onClick={handlePurgeCache}
           />
         </SettingsSection>
 

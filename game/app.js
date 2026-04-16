@@ -303,8 +303,7 @@ function GameApp() {
 
   const crumbs = [
     { label: 'Cheevo Tracker', href: '../profile/' },
-    { label: 'Game' },
-    { label: loading ? 'Game Title' : (parsed?.baseTitle || game?.title || 'Game Title') },
+    { label: loading ? null : (parsed?.baseTitle || game?.title || null) },
   ];
 
   return (
@@ -348,7 +347,7 @@ function GameApp() {
                           || (!isFallback(game.imageTitle)  ? game.imageTitle  : null)
                           || parentGame?.imageIngame || parentGame?.imageTitle;
               return heroBg ? (
-                <div className="absolute inset-0 bg-cover bg-center opacity-25"
+                <div className="absolute inset-0 bg-cover bg-center opacity-15"
                   style={{ backgroundImage: `url(${getMediaUrl(heroBg)})` }} />
               ) : null;
             })()}
@@ -405,9 +404,13 @@ function GameApp() {
                     </div>
                   )}
 
-                  <div className="flex items-center gap-x-3 gap-y-1 flex-wrap text-[10px] mb-3">
+                  <div className="flex items-center gap-2 flex-wrap text-[10px] mb-3">
                     <span className="flex items-center gap-1 text-[#66c0f4]"><Gamepad2 size={10} className="shrink-0" />{game.consoleName}</span>
-                    {game.developer && <span className="flex items-center gap-1 text-[#8f98a0]"><Code size={10} className="shrink-0 text-[#546270]" />{game.developer}</span>}
+                    {game.developer && <>
+                      <span className="text-[#546270] select-none">·</span>
+                      <span className="flex items-center gap-1 text-[#8f98a0]"><Code size={10} className="shrink-0 text-[#546270]" />{game.developer}</span>
+                    </>}
+                    <span className="text-[#546270] select-none">·</span>
                     <a href={`${SITE_URL}/game/${gameId}`} target="_blank" rel="noreferrer" className="flex items-center gap-1 text-[#546270] hover:text-[#66c0f4] transition-colors"><ExternalLink size={10} className="shrink-0" />RA</a>
                   </div>
 

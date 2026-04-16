@@ -1,12 +1,13 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { createRoot } from 'react-dom/client';
-import { Gamepad2, Activity, BarChart2, Award, Star, ChevronDown, AlertCircle, Trophy, Crown, Lock, Unlock, AlertTriangle, Flame, Feather, Medal, ShieldOff, CircleDashed, X, Clock, Layers } from 'lucide-react';
+import { Gamepad2, Activity, BarChart2, Award, Star, ChevronDown, AlertCircle, Trophy, Crown, Lock, Unlock, AlertTriangle, Flame, Feather, Medal, ShieldOff, CircleDashed, X, Clock, Layers, Users } from 'lucide-react';
 import { MEDIA_URL, SITE_URL, TILDE_TAG_COLORS } from './utils/constants.js';
 import { getMediaUrl, parseTitle, formatTimeAgo } from './utils/helpers.js';
 import { transformData } from './utils/transform.js';
 import {
   getCredentials, clearCredentials,
   fetchProfile, fetchAchievementsChunk, fetchWatchlist, fetchGameDetails,
+  getUsersIFollow, getUsersFollowingMe,
 } from './utils/ra-api.js';
 import { Topbar, Footer } from '../assets/ui.js';
 
@@ -1061,10 +1062,91 @@ function SeriesProgressTab({ seriesData, gamesData, watchlistData }) {
   );
 }
 
+// ── Social Tab ────────────────────────────────────────────────────────────────
+
+const SocialUserRow = ({ user, isMutual }) => (
+  <div className="flex items-center gap-2.5 px-2.5 py-2 bg-[#1b2838] hover:bg-[#202d39] rounded-[2px] transition-colors">
+    <img
+      src={`https://media.retroachievements.org/UserPic/${user.user}.png`}
+      alt={user.user}
+      className="w-7 h-7 rounded-full border border-[#101214] shrink-0 object-cover bg-[#131a22]"
+      onError={e => { e.currentTarget.style.visibility = 'hidden'; }}
+    />
+    <a href={`https://retroachievements.org/user/${user.user}`} target="_blank" rel="noreferrer"
+      className="text-[11px] font-medium text-[#e5b143] hover:underline flex-1 min-w-0 truncate">
+      {user.user}
+    </a>
+    {user.points != null && (
+      <span className="text-[10px] text-[#546270] shrink-0">{user.points.toLocaleString()} pts</span>
+    )}
+    {isMutual && (
+      <span className="text-[9px] font-bold uppercase tracking-[0.07em] px-1.5 py-[2px] rounded-[2px] shrink-0"
+        style={{ color: '#66c0f4', background: 'rgba(102,192,244,0.1)', border: '1px solid rgba(102,192,244,0.3)' }}>
+        Mutual
+      </span>
+    )}
+  </div>
+);
+
+const SocialTab = ({ socialData }) => {
+  if (!socialData) {
+    return (
+      <div className="flex flex-col gap-5">
+        {[0, 1].map(s => (
+          <div key={s}>
+            <div className="shimmer h-3 w-24 rounded mb-3" />
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="flex items-center gap-2.5 px-2.5 py-2 mb-[2px] bg-[#1b2838] rounded-[2px]">
+                <div className="shimmer w-7 h-7 rounded-full shrink-0" />
+                <div className="shimmer h-2.5 w-32 rounded flex-1" />
+                <div className="shimmer h-2 w-12 rounded shrink-0" />
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  const followingUsers = socialData.following?.results || [];
+  const followerUsers  = socialData.followers?.results || [];
+
+  const sections = [
+    { title: 'Following', users: followingUsers, total: socialData.following?.total ?? 0,
+      isMutual: u => u.isFollowingMe },
+    { title: 'Followers', users: followerUsers,  total: socialData.followers?.total ?? 0,
+      isMutual: u => u.amIFollowing },
+  ];
+
+  return (
+    <div className="flex flex-col gap-6">
+      {sections.map(({ title, users, total, isMutual }) => (
+        <div key={title}>
+          <div className="flex items-center gap-2 mb-2">
+            <span className="w-[3px] h-[14px] bg-[#66c0f4] rounded-[1px] shrink-0" />
+            <span className="text-[13px] text-white tracking-wide uppercase font-medium">{title}</span>
+            <span className="text-[10px] text-[#546270] ml-1">{total}</span>
+          </div>
+          {users.length === 0 ? (
+            <div className="text-[11px] text-[#546270] py-3">None yet.</div>
+          ) : (
+            <div className="flex flex-col gap-[2px]">
+              {users.map(u => <SocialUserRow key={u.username} user={u} isMutual={isMutual(u)} />)}
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+};
+
+// ── App ───────────────────────────────────────────────────────────────────────
+
 export default function App() {
   // ── Split data state ─────────────────────────────────────
   const [profileData,   setProfileData]   = useState(null);
   const [watchlistData, setWatchlistData] = useState(null);
+  const [socialData,    setSocialData]    = useState(null);
   // gamesData stores only detailedGameProgress, lazy-loaded per game
   const [gamesData,     setGamesData]     = useState({ detailedGameProgress: {} });
   const [loadingGameDetailId, setLoadingGameDetailId] = useState(null);
@@ -1076,7 +1158,7 @@ export default function App() {
   const [loadingProfile, setLoadingProfile] = useState(true);
   const [error, setError] = useState(null);
 
-  const VALID_TABS = ['recent', 'progress', 'series', 'activity', 'backlog'];
+  const VALID_TABS = ['recent', 'progress', 'series', 'activity', 'backlog', 'social'];
   const initialTab = (() => {
     const p = new URLSearchParams(window.location.search).get('tab');
     return VALID_TABS.includes(p) ? p : 'recent';
@@ -1184,6 +1266,22 @@ export default function App() {
       });
   }, [activeTab]);
 
+  // ── Load social data when Social tab opens ──
+  useEffect(() => {
+    if (activeTab !== 'social' || socialData !== null) return;
+    const creds = getCredentials();
+    if (!creds) { handleAuthError(); return; }
+    Promise.all([
+      getUsersIFollow(creds.username, creds.apiKey),
+      getUsersFollowingMe(creds.username, creds.apiKey),
+    ]).then(([following, followers]) => {
+      setSocialData({ following, followers });
+    }).catch(err => {
+      if (err.message === 'AUTH_ERROR') handleAuthError();
+      else setSocialData({ following: { total: 0, results: [] }, followers: { total: 0, results: [] } });
+    });
+  }, [activeTab]);
+
   // ── Load all chunks when Activity tab opens ──
   useEffect(() => {
     if (activeTab !== 'activity') return;
@@ -1283,18 +1381,7 @@ export default function App() {
   return (
     <div className="min-h-screen bg-[#171a21] text-[#c6d4df] font-sans selection:bg-[#66c0f4] selection:text-[#171a21] flex flex-col">
       
-      <Topbar
-        crumbs={[{ label: 'Cheevo Tracker' }, { label: 'Profile' }]}
-        right={
-          <button
-            onClick={() => { clearCredentials(); window.location.replace('../'); }}
-            className="text-[#546270] hover:text-[#ff6b6b] transition-colors uppercase tracking-[0.08em] font-semibold"
-            title="Log out"
-          >
-            Log out
-          </button>
-        }
-      />
+      <Topbar crumbs={[{ label: 'Cheevo Tracker' }, { label: 'Profile' }]} />
 
       {/* Header */}
       <header className={`bg-[#1b2838] border-b border-[#2a475e] px-4 md:px-8 pt-8 pb-5 md:pt-5 shadow-md${activeTab !== 'recent' ? ' hidden md:block' : ''}`}>
@@ -1621,12 +1708,20 @@ export default function App() {
               <span className="hidden md:inline text-[11px] md:text-[14px] uppercase tracking-wide font-medium whitespace-nowrap">Watchlist</span>
               {activeTab === 'backlog' && <div className="absolute bottom-[-1px] left-0 w-full h-[3px] bg-[#66c0f4]" />}
             </button>
+            <button onClick={() => setTab('social')} className={`flex-1 md:flex-none flex flex-col md:flex-row items-center justify-center gap-1 md:gap-0 py-2.5 md:py-0 md:pb-2 px-1 md:px-0 transition-colors relative ${activeTab === 'social' ? 'text-white' : 'text-[#546270] hover:text-[#c6d4df]'}`}>
+              <Users size={18} className="block md:hidden shrink-0" />
+              <span className="block md:hidden text-[9px] font-semibold uppercase tracking-[0.06em] leading-none">Social</span>
+              <span className="hidden md:inline text-[11px] md:text-[14px] uppercase tracking-wide font-medium whitespace-nowrap">Social</span>
+              {activeTab === 'social' && <div className="absolute bottom-[-1px] left-0 w-full h-[3px] bg-[#57cbde]" />}
+            </button>
           </div>
         </div>
 
 
         <div className="flex flex-col gap-3">
-          {activeTab === 'series' ? (
+          {activeTab === 'social' ? (
+            <SocialTab socialData={socialData} />
+          ) : activeTab === 'series' ? (
             <SeriesProgressTab seriesData={seriesData} gamesData={gamesData} watchlistData={watchlistData} />
           ) : activeTab === 'activity' ? (
             loadedChunkCount === 0 && loadingChunkIndices.size > 0
