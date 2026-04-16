@@ -339,7 +339,7 @@ const RAchievementModal = ({ game, onClose, loadingDetails }) => {
               <div key={ach.id}
                 className={`flex items-center gap-3 p-2 rounded-[2px] border border-transparent border-l-[3px] transition-colors ${ach.isUnlocked ? 'bg-[#202d39] hover:bg-[#253444]' : 'bg-[#171a21] opacity-75 border-l-[#323f4c]'} ${ach.isHardcore ? 'border-l-[#e5b143]' : ach.isUnlocked ? 'border-l-[#8f98a0]' : ''}`}
               >
-                <a href={`${SITE_URL}/achievement/${ach.id}`} target="_blank" rel="noreferrer"
+                <a href={`../achievement/?id=${ach.id}`}
                   className="relative shrink-0 w-10 h-10 rounded-[2px] border border-[#101214] overflow-hidden bg-black hover:scale-105 transition-transform block">
                   <img src={`${MEDIA_URL}/Badge/${ach.badgeName || '00001'}.png`} alt={ach.title}
                     className={`w-full h-full object-cover ${!ach.isUnlocked ? 'grayscale brightness-40' : ''}`} />
@@ -348,7 +348,7 @@ const RAchievementModal = ({ game, onClose, loadingDetails }) => {
 
                 <div className="flex-1 min-w-0 flex flex-col justify-center">
                   <div className="flex items-center gap-2 mb-1 flex-wrap">
-                    <a href={`${SITE_URL}/achievement/${ach.id}`} target="_blank" rel="noreferrer"
+                    <a href={`../achievement/?id=${ach.id}`}
                       className={`text-[12px] font-medium tracking-wide leading-tight hover:underline ${ach.isUnlocked ? 'text-[#e5b143]' : 'text-[#8f98a0]'}`}>
                       {ach.title}
                     </a>
@@ -654,12 +654,12 @@ const ActivityTab = ({ achievements, refTime, heatmapData, loadingMore, allLoade
                         const ratio = ach.trueRatio && ach.points ? ach.trueRatio / ach.points : null;
                         return (
                           <div key={ai} className={`flex items-center gap-2 p-2 rounded-[2px] border border-[#2a475e] border-l-[2px] ${ach.hardcoreMode ? 'border-l-[#e5b143] bg-[#202d39]' : 'border-l-[#8f98a0] bg-[#1b2838]'} hover:bg-[#2a475e] transition-colors`}>
-                            <a href={`${SITE_URL}/achievement/${ach.achievementId}`} target="_blank" rel="noreferrer" className="shrink-0 w-8 h-8 rounded-[2px] overflow-hidden border border-[#101214] bg-black block hover:scale-105 transition-transform">
+                            <a href={`../achievement/?id=${ach.achievementId}`} className="shrink-0 w-8 h-8 rounded-[2px] overflow-hidden border border-[#101214] bg-black block hover:scale-105 transition-transform">
                               <img src={`${MEDIA_URL}/Badge/${ach.badgeName}.png`} alt={ach.title} className="w-full h-full object-cover" />
                             </a>
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-1.5 mb-0.5 flex-wrap">
-                                <a href={`${SITE_URL}/achievement/${ach.achievementId}`} target="_blank" rel="noreferrer" className={`text-[11px] font-medium hover:underline truncate ${ach.hardcoreMode ? 'text-[#e5b143]' : 'text-[#c6d4df]'}`}>
+                                <a href={`../achievement/?id=${ach.achievementId}`} className={`text-[11px] font-medium hover:underline truncate ${ach.hardcoreMode ? 'text-[#e5b143]' : 'text-[#c6d4df]'}`}>
                                   {ach.title}
                                 </a>
                                 <span className="text-[9px] font-bold text-[#66c0f4] bg-[#101214] border border-[#323f4c] px-1.5 py-[1px] rounded-sm shrink-0">{ach.points} pts</span>
@@ -1008,7 +1008,7 @@ function SeriesProgressTab({ seriesData, gamesData, watchlistData }) {
                     <span className="shrink-0 w-3.5 h-3.5 rounded-[1px] overflow-hidden border border-[#101214] bg-black block">
                       <img src={`${MEDIA_URL}/Badge/${latestAch.badgeName}.png`} alt="" className="w-full h-full object-cover" />
                     </span>
-                    <a href={`${SITE_URL}/achievement/${latestAch.achId}`} target="_blank" rel="noreferrer"
+                    <a href={`../achievement/?id=${latestAch.achId}`}
                       className="text-[9px] text-[#8f98a0] hover:text-[#c6d4df] truncate transition-colors">{latestAch.title}</a>
                     <span className="text-[9px] text-[#546270] shrink-0">in</span>
                     <a href={`../game/?id=${latestAch.gameId}`}
@@ -1425,12 +1425,12 @@ export default function App() {
               </h2>
               {PROFILE_DATA.mostRecentAchievement ? (
                 <div className="bg-[#1b2838]/80 border border-[#323f4c] border-l-[3px] border-l-[#e5b143] rounded-[3px] p-3 flex gap-3 hover:bg-[#202d39] transition-colors shadow-sm">
-                  <a href={`${SITE_URL}/achievement/${PROFILE_DATA.mostRecentAchievement.id}`} target="_blank" rel="noreferrer" className="shrink-0 w-12 h-12 rounded-[2px] overflow-hidden border border-[#101214] bg-black block hover:scale-105 transition-transform">
+                  <a href={`../achievement/?id=${PROFILE_DATA.mostRecentAchievement.id}`} className="shrink-0 w-12 h-12 rounded-[2px] overflow-hidden border border-[#101214] bg-black block hover:scale-105 transition-transform">
                     <img src={`${MEDIA_URL}/Badge/${PROFILE_DATA.mostRecentAchievement.badgeName}.png`} alt={PROFILE_DATA.mostRecentAchievement.title} className="w-full h-full object-cover" />
                   </a>
                   <div className="flex-1 min-w-0 flex flex-col justify-center">
                     <div className="flex items-center gap-2 flex-wrap mb-0.5">
-                      <a href={`${SITE_URL}/achievement/${PROFILE_DATA.mostRecentAchievement.id}`} target="_blank" rel="noreferrer" className="text-[13px] font-medium text-[#e5b143] hover:underline truncate leading-tight">
+                      <a href={`../achievement/?id=${PROFILE_DATA.mostRecentAchievement.id}`} className="text-[13px] font-medium text-[#e5b143] hover:underline truncate leading-tight">
                         {PROFILE_DATA.mostRecentAchievement.title}
                       </a>
                       <span className="text-[9px] font-bold text-[#66c0f4] bg-[#101214] border border-[#323f4c] px-1.5 py-[1px] rounded-sm shrink-0">{PROFILE_DATA.mostRecentAchievement.points} pts</span>

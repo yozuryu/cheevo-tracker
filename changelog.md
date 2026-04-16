@@ -10,6 +10,7 @@
 - Achievement page: game link uses top-level `game.id` from the API response instead of `achievement.gameId` (sub-object field not always populated); fixes game name not appearing in breadcrumb
 - Achievement page: recent unlocks show relative timestamps (e.g. "2 hrs ago") instead of raw dates
 - Game page: achievement badge and title links now navigate to the internal `/achievement/` page in the same tab instead of opening RA site in a new tab
+- Profile page: all achievement links (game modal, activity feed, recent achievement card) updated to internal `/achievement/` page; removed `target="_blank"`
 - `ra-api.js`: `getAchievementUnlocks` now properly maps the `achievement` object to camelCase (was passed as raw PascalCase); `console` and `game` objects also mapped
 - Game page: "Subset of" breadcrumb now has a `bg-black/40 backdrop-blur-sm` pill background and brighter text (`#8f98a0` / `#c6d4df`) so it stays legible on dark hero images
 - Game page: new **Leaderboards** tab (between Info and Community) — final tab order: Achievements · Info · Leaderboards · Community · Hashes
