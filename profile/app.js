@@ -1087,7 +1087,18 @@ const SocialUserRow = ({ user, isMutual }) => (
   </div>
 );
 
-const SocialTab = ({ socialData }) => {
+const SocialTab = ({ socialData, socialError, onRetry }) => {
+  if (socialError) {
+    return (
+      <div className="flex flex-col items-center gap-3 py-10 text-center">
+        <span className="text-[12px] text-[#8f98a0]">Failed to load social data.</span>
+        <button onClick={onRetry}
+          className="text-[11px] text-[#66c0f4] hover:underline transition-colors">
+          Try again
+        </button>
+      </div>
+    );
+  }
   if (!socialData) {
     return (
       <div className="flex flex-col gap-5">
@@ -1146,6 +1157,7 @@ export default function App() {
   const [profileData,   setProfileData]   = useState(null);
   const [watchlistData, setWatchlistData] = useState(null);
   const [socialData,    setSocialData]    = useState(null);
+  const [socialError,   setSocialError]   = useState(false);
   // gamesData stores only detailedGameProgress, lazy-loaded per game
   const [gamesData,     setGamesData]     = useState({ detailedGameProgress: {} });
   const [loadingGameDetailId, setLoadingGameDetailId] = useState(null);
@@ -1267,19 +1279,22 @@ export default function App() {
 
   // ── Load social data when Social tab opens ──
   useEffect(() => {
-    if (activeTab !== 'social' || socialData !== null) return;
+    if (activeTab !== 'social' || socialData !== null || socialError) return;
     const creds = getCredentials();
     if (!creds) { handleAuthError(); return; }
-    Promise.all([
-      getUsersIFollow(creds.username, creds.apiKey),
-      getUsersFollowingMe(creds.username, creds.apiKey),
-    ]).then(([following, followers]) => {
-      setSocialData({ following, followers });
-    }).catch(err => {
-      if (err.message === 'AUTH_ERROR') handleAuthError();
-      else setSocialData({ following: { total: 0, results: [] }, followers: { total: 0, results: [] } });
-    });
-  }, [activeTab]);
+    (async () => {
+      try {
+        const following = await getUsersIFollow(creds.username, creds.apiKey);
+        await new Promise(r => setTimeout(r, 500));
+        const followers = await getUsersFollowingMe(creds.username, creds.apiKey);
+        setSocialData({ following, followers });
+        setSocialError(false);
+      } catch (err) {
+        if (err.message === 'AUTH_ERROR') handleAuthError();
+        else setSocialError(true);
+      }
+    })();
+  }, [activeTab, socialError]);
 
   // ── Load all chunks when Activity tab opens ──
   useEffect(() => {
@@ -1719,7 +1734,7 @@ export default function App() {
 
         <div className="flex flex-col gap-3">
           {activeTab === 'social' ? (
-            <SocialTab socialData={socialData} />
+            <SocialTab socialData={socialData} socialError={socialError} onRetry={() => setSocialError(false)} />
           ) : activeTab === 'series' ? (
             <SeriesProgressTab seriesData={seriesData} gamesData={gamesData} watchlistData={watchlistData} />
           ) : activeTab === 'activity' ? (

@@ -46,6 +46,23 @@ function cacheSet(key, data) {
   try { sessionStorage.setItem(key, JSON.stringify({ ts: Date.now(), data })); } catch {}
 }
 
+// ── Retry helper ─────────────────────────────────────────────────────────────
+
+async function withRetry(fn, retries = 2, delayMs = 1000) {
+  let lastErr;
+  for (let i = 0; i <= retries; i++) {
+    try { return await fn(); } catch (e) {
+      if (e.message === 'AUTH_ERROR') throw e;
+      lastErr = e;
+      if (i < retries) {
+        const wait = e.message === 'HTTP 429' ? delayMs * 3 : delayMs;
+        await new Promise(r => setTimeout(r, wait));
+      }
+    }
+  }
+  throw lastErr;
+}
+
 // ── Core ──────────────────────────────────────────────────────────────────────
 
 const sleep = ms => new Promise(r => setTimeout(r, ms));
@@ -439,7 +456,7 @@ export async function getUserSetRequests(username, apiKey, { u, t = 0 } = {}) {
  * Params: { c (count, max 500, default 100), o (offset) }
  */
 export async function getUsersIFollow(username, apiKey, { c = 100, o = 0 } = {}) {
-  const data = await raFetch('API_GetUsersIFollow.php', username, apiKey, { c, o });
+  const data = await withRetry(() => raFetch('API_GetUsersIFollow.php', username, apiKey, { c, o }));
   return {
     count:   data.Count  || 0,
     total:   data.Total  || 0,
@@ -458,7 +475,7 @@ export async function getUsersIFollow(username, apiKey, { c = 100, o = 0 } = {})
  * Params: { c (count, max 500, default 100), o (offset) }
  */
 export async function getUsersFollowingMe(username, apiKey, { c = 100, o = 0 } = {}) {
-  const data = await raFetch('API_GetUsersFollowingMe.php', username, apiKey, { c, o });
+  const data = await withRetry(() => raFetch('API_GetUsersFollowingMe.php', username, apiKey, { c, o }));
   return {
     count:   data.Count  || 0,
     total:   data.Total  || 0,
@@ -1008,8 +1025,8 @@ export async function fetchProfile(username, apiKey) {
     raFetch('API_GetUserSummary.php',              username, apiKey, { u: username, g: 20, a: 5 }),
     paginate('API_GetUserCompletionProgress.php',  username, apiKey, {}),
     raFetch('API_GetUserAwards.php',               username, apiKey, { u: username }),
-    raFetch('API_GetAchievementsEarnedBetween.php', username, apiKey,
-      { u: username, f: chunk0From, t: nowTs }),
+    withRetry(() => raFetch('API_GetAchievementsEarnedBetween.php', username, apiKey,
+      { u: username, f: chunk0From, t: nowTs })),
   ]);
 
   const firstChunkAchievements = (Array.isArray(achRaw) ? achRaw : []).map(mapAchievementUnlock);
@@ -1152,8 +1169,8 @@ export async function fetchAchievementsChunk(username, apiKey, chunkIndex) {
   const toTs      = nowTs - chunkIndex * chunkSize;
   const fromTs    = toTs - chunkSize;
 
-  const raw = await raFetch('API_GetAchievementsEarnedBetween.php', username, apiKey,
-    { u: username, f: fromTs, t: toTs });
+  const raw = await withRetry(() => raFetch('API_GetAchievementsEarnedBetween.php', username, apiKey,
+    { u: username, f: fromTs, t: toTs }));
   const result = (Array.isArray(raw) ? raw : []).map(mapAchievementUnlock);
   cacheSet(cacheKey, result);
   return result;

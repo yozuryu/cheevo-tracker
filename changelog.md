@@ -1,5 +1,19 @@
 # Changelog
 
+## v26.04.17 — Social Tab Polish, Reliability Fixes
+
+### RetroAchievements
+
+- Social tab: "Mutual" badge replaced with an `ArrowLeftRight` icon inline next to the username
+- Social tab: points displayed in gold (`#e5b143`) instead of muted gray
+- Social tab: Following and Followers fetched sequentially (500ms gap) instead of in parallel — reduces request bursts and 429 rate-limit errors
+- Social tab: on fetch error, `socialData` stays `null` so switching away and back retries; shows error message with "Try again" button instead of silently showing empty lists
+- `ra-api.js`: added `withRetry` helper — 1 initial attempt + 2 retries, 1s between attempts, 3s on HTTP 429; applied to `API_GetAchievementsEarnedBetween` (both on mount and lazy chunk loads), `getUsersIFollow`, and `getUsersFollowingMe`
+- Profile page: removed Log Out button from topbar — already in the hamburger menu
+- Settings page + topbar menu: added **Purge Cache** — clears all PWA asset caches via Cache API and reloads
+
+---
+
 ## v26.04.16 — Achievement Page, Leaderboards Tab, Social Tab
 
 ### RetroAchievements
