@@ -69,7 +69,7 @@ function AchievementRow({ ach, totalPlayersCasual, totalPlayersHardcore, extAch 
       <div className="flex-1 min-w-0 flex flex-col justify-center">
         <div className="flex items-center gap-2 mb-1 flex-wrap">
           <a href={`../achievement/?id=${ach.id}`}
-            className={`text-[12px] font-medium tracking-wide leading-tight hover:underline ${unlocked ? 'text-[#e5b143]' : 'text-[#8f98a0]'}`}>
+            className={`text-[12px] font-medium tracking-wide leading-tight transition-colors ${unlocked ? 'text-[#e5b143] hover:text-[#f0c96a]' : 'text-[#8f98a0] hover:text-[#c6d4df]'}`}>
             {ach.title}
           </a>
           <span className="text-[9px] font-bold text-[#66c0f4] bg-[#101214] border border-[#323f4c] px-1.5 py-[1px] rounded-sm shrink-0">{ach.points} pts</span>
@@ -303,6 +303,9 @@ function GameApp() {
 
   const crumbs = [
     { label: 'Cheevo Tracker', href: '../profile/' },
+    ...(game?.consoleId
+      ? [{ label: game.consoleName, href: `../console/?id=${game.consoleId}` }]
+      : [{ label: null }]),
     { label: loading ? null : (parsed?.baseTitle || game?.title || null) },
   ];
 
@@ -410,7 +413,7 @@ function GameApp() {
                         className="w-4 h-4 rounded-[2px] border border-[#101214] object-cover shrink-0 bg-black" />
                       <span className="text-[10px] text-[#8f98a0]">Subset of</span>
                       <a href={`?id=${game.parentGameId}`}
-                        className="text-[10px] text-[#c6d4df] hover:text-white hover:underline transition-colors truncate max-w-[200px]">
+                        className="text-[10px] text-[#c6d4df] hover:text-white transition-colors truncate max-w-[200px]">
                         {parseTitle(parentGame.title).baseTitle}
                       </a>
                     </div>
@@ -477,8 +480,8 @@ function GameApp() {
                   Achievement set actively claimed by{' '}
                   {activeClaims.map((c, i, arr) => (
                     <span key={c.user}>
-                      <a href={`${SITE_URL}/user/${c.user}`} target="_blank" rel="noreferrer"
-                        className="hover:underline" style={{ color: '#e5b143' }}>{c.user}</a>
+                      <a href={`../user/?u=${c.user}`}
+                        className="transition-colors hover:text-[#f0c96a]" style={{ color: '#e5b143' }}>{c.user}</a>
                       {i < arr.length - 1 ? ', ' : ''}
                     </span>
                   ))}
@@ -724,10 +727,10 @@ function GameApp() {
                               style={{ color: i === 0 ? '#e5b143' : i === 1 ? '#8f98a0' : i === 2 ? '#cd7f32' : '#546270' }}>
                               #{i + 1}
                             </span>
-                            <img src={`${MEDIA_URL}/UserPic/${s.user}.png`} alt={s.user}
+                            <img src={s.userPic ? getMediaUrl(s.userPic) : `${MEDIA_URL}/UserPic/${s.user}.png`} alt={s.user}
                               className="w-6 h-6 rounded-full border border-[#2a475e] bg-[#131a22] object-cover shrink-0" />
-                            <a href={`${SITE_URL}/user/${s.user}`} target="_blank" rel="noreferrer"
-                              className="flex-1 text-[11px] font-medium hover:underline truncate"
+                            <a href={`../user/?u=${s.user}`}
+                              className="flex-1 text-[11px] font-medium transition-colors hover:text-white truncate"
                               style={{ color: s.user === creds?.username ? '#57cbde' : '#c6d4df' }}>
                               {s.user}
                             </a>
@@ -806,10 +809,10 @@ function GameApp() {
                                         className={`flex items-center gap-3 px-3 py-2 border-l-[3px] ${isMe ? 'bg-[#202d39]' : ''}`}
                                         style={{ borderLeftColor: isMe ? '#57cbde' : 'transparent' }}>
                                         <span className="text-[10px] font-bold w-5 text-right shrink-0 text-[#546270]">#{e.rank}</span>
-                                        <img src={`${MEDIA_URL}/UserPic/${e.user}.png`} alt={e.user}
+                                        <img src={e.userPic ? getMediaUrl(e.userPic) : `${MEDIA_URL}/UserPic/${e.user}.png`} alt={e.user}
                                           className="w-6 h-6 rounded-full border border-[#2a475e] bg-[#131a22] object-cover shrink-0" />
-                                        <a href={`${SITE_URL}/user/${e.user}`} target="_blank" rel="noreferrer"
-                                          className="flex-1 text-[11px] hover:underline"
+                                        <a href={`../user/?u=${e.user}`}
+                                          className="flex-1 text-[11px] transition-colors hover:text-white"
                                           style={{ color: isMe ? '#57cbde' : '#c6d4df' }}>
                                           {e.user}
                                         </a>
@@ -865,16 +868,16 @@ function GameApp() {
                       <div className="flex flex-col divide-y divide-[#1b2838] overflow-y-auto max-h-[220px]">
                         {communityMasters.map(m => (
                           <div key={m.ulid || m.user} className="flex items-center gap-2 py-2">
-                            <a href={`${SITE_URL}/user/${m.user}`} target="_blank" rel="noreferrer" className="shrink-0">
+                            <a href={`../user/?u=${m.user}`} className="shrink-0">
                               <img
-                                src={`${MEDIA_URL}/UserPic/${m.user}.png`}
+                                src={m.userPic ? getMediaUrl(m.userPic) : `${MEDIA_URL}/UserPic/${m.user}.png`}
                                 alt={m.user}
                                 className="w-6 h-6 rounded-full border border-[#2a475e] bg-[#131a22] object-cover"
                               />
                             </a>
                             <div className="flex-1 min-w-0">
-                              <a href={`${SITE_URL}/user/${m.user}`} target="_blank" rel="noreferrer"
-                                className="block text-[11px] font-medium text-[#e5b143] hover:underline truncate">{m.user}</a>
+                              <a href={`../user/?u=${m.user}`}
+                                className="block text-[11px] font-medium text-[#e5b143] hover:text-[#f0c96a] transition-colors truncate">{m.user}</a>
                               <span className="text-[9px] text-[#546270]">{formatTimeAgo(m.lastAward)}</span>
                             </div>
                           </div>
@@ -899,17 +902,17 @@ function GameApp() {
                       <div className="flex flex-col">
                         {communityComments.map((c, i) => (
                           <div key={`${c.ulid || c.user}-${i}`} className="flex gap-3 py-2.5 border-b border-[#1b2838]">
-                            <a href={`${SITE_URL}/user/${c.user}`} target="_blank" rel="noreferrer" className="shrink-0 mt-0.5">
+                            <a href={`../user/?u=${c.user}`} className="shrink-0 mt-0.5">
                               <img
-                                src={`${MEDIA_URL}/UserPic/${c.user}.png`}
+                                src={c.userPic ? getMediaUrl(c.userPic) : `${MEDIA_URL}/UserPic/${c.user}.png`}
                                 alt={c.user}
                                 className="w-7 h-7 rounded-full border border-[#2a475e] bg-[#131a22] object-cover"
                               />
                             </a>
                             <div className="flex-1 min-w-0">
                               <div className="flex items-baseline gap-2 mb-1">
-                                <a href={`${SITE_URL}/user/${c.user}`} target="_blank" rel="noreferrer"
-                                  className="text-[11px] font-medium text-[#e5b143] hover:underline shrink-0">{c.user}</a>
+                                <a href={`../user/?u=${c.user}`}
+                                  className="text-[11px] font-medium text-[#e5b143] hover:text-[#f0c96a] transition-colors shrink-0">{c.user}</a>
                                 <span className="text-[9px] text-[#546270]">{formatTimeAgo(c.submitted)}</span>
                               </div>
                               <p className="text-[11px] text-[#c6d4df] leading-snug break-words">{c.commentText}</p>

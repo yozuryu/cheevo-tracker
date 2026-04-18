@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { createRoot } from 'react-dom/client';
-import { Gamepad2, Activity, BarChart2, Award, Star, ChevronDown, AlertCircle, Trophy, Crown, Lock, Unlock, AlertTriangle, Flame, Feather, Medal, ShieldOff, CircleDashed, X, Clock, Layers, Users, ArrowLeftRight } from 'lucide-react';
+import { Gamepad2, Activity, BarChart2, Award, Star, ChevronDown, AlertCircle, Trophy, Crown, Lock, Unlock, AlertTriangle, Flame, Feather, Medal, ShieldOff, CircleDashed, X, Clock, Layers, Users } from 'lucide-react';
 import { MEDIA_URL, SITE_URL, TILDE_TAG_COLORS } from './utils/constants.js';
 import { getMediaUrl, parseTitle, formatTimeAgo } from './utils/helpers.js';
 import { transformData } from './utils/transform.js';
@@ -350,7 +350,7 @@ const RAchievementModal = ({ game, onClose, loadingDetails }) => {
                 <div className="flex-1 min-w-0 flex flex-col justify-center">
                   <div className="flex items-center gap-2 mb-1 flex-wrap">
                     <a href={`../achievement/?id=${ach.id}`}
-                      className={`text-[12px] font-medium tracking-wide leading-tight hover:underline ${ach.isUnlocked ? 'text-[#e5b143]' : 'text-[#8f98a0]'}`}>
+                      className={`text-[12px] font-medium tracking-wide leading-tight transition-colors ${ach.isUnlocked ? 'text-[#e5b143] hover:text-[#f0c96a]' : 'text-[#8f98a0] hover:text-[#c6d4df]'}`}>
                       {ach.title}
                     </a>
                     <span className="text-[9px] font-bold text-[#66c0f4] bg-[#101214] border border-[#323f4c] px-1.5 py-[1px] rounded-sm shrink-0">{ach.points} pts</span>
@@ -660,7 +660,7 @@ const ActivityTab = ({ achievements, refTime, heatmapData, loadingMore, allLoade
                             </a>
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-1.5 mb-0.5 flex-wrap">
-                                <a href={`../achievement/?id=${ach.achievementId}`} className={`text-[11px] font-medium hover:underline truncate ${ach.hardcoreMode ? 'text-[#e5b143]' : 'text-[#c6d4df]'}`}>
+                                <a href={`../achievement/?id=${ach.achievementId}`} className={`text-[11px] font-medium transition-colors truncate ${ach.hardcoreMode ? 'text-[#e5b143] hover:text-[#f0c96a]' : 'text-[#c6d4df] hover:text-[#66c0f4]'}`}>
                                   {ach.title}
                                 </a>
                                 <span className="text-[9px] font-bold text-[#66c0f4] bg-[#101214] border border-[#323f4c] px-1.5 py-[1px] rounded-sm shrink-0">{ach.points} pts</span>
@@ -1067,18 +1067,18 @@ function SeriesProgressTab({ seriesData, gamesData, backlogData }) {
 const SocialUserRow = ({ user, isMutual }) => (
   <div className="flex items-center gap-2.5 px-2.5 py-2 bg-[#1b2838] hover:bg-[#202d39] rounded-[2px] transition-colors">
     <img
-      src={`https://media.retroachievements.org/UserPic/${user.user}.png`}
+      src={user.userPic ? getMediaUrl(user.userPic) : `${MEDIA_URL}/UserPic/${user.user}.png`}
       alt={user.user}
       className="w-7 h-7 rounded-full border border-[#101214] shrink-0 object-cover bg-[#131a22]"
       onError={e => { e.currentTarget.style.visibility = 'hidden'; }}
     />
-    <div className="flex items-center gap-1.5 flex-1 min-w-0">
-      <a href={`https://retroachievements.org/user/${user.user}`} target="_blank" rel="noreferrer"
-        className="text-[11px] font-medium text-[#e5b143] hover:underline truncate">
+    <div className="flex flex-col min-w-0 flex-1">
+      <a href={`../user/?u=${user.user}`}
+        className="text-[11px] font-medium text-[#e5b143] hover:text-[#f0c96a] transition-colors truncate">
         {user.user}
       </a>
       {isMutual && (
-        <ArrowLeftRight size={11} className="shrink-0" style={{ color: '#66c0f4' }} />
+        <span className="text-[7px] font-bold uppercase tracking-[0.07em] px-1 py-[1px] rounded-[2px] border border-[rgba(102,192,244,0.3)] bg-[rgba(102,192,244,0.08)] text-[#66c0f4] w-fit">Mutual</span>
       )}
     </div>
     {user.points != null && (
@@ -1093,7 +1093,7 @@ const SocialTab = ({ socialData, socialError, onRetry }) => {
       <div className="flex flex-col items-center gap-3 py-10 text-center">
         <span className="text-[12px] text-[#8f98a0]">Failed to load social data.</span>
         <button onClick={onRetry}
-          className="text-[11px] text-[#66c0f4] hover:underline transition-colors">
+          className="text-[11px] text-[#66c0f4] hover:text-[#c6d4df] transition-colors">
           Try again
         </button>
       </div>
@@ -1531,7 +1531,7 @@ export default function App() {
                   </a>
                   <div className="flex-1 min-w-0 flex flex-col justify-center">
                     <div className="flex items-center gap-2 flex-wrap mb-0.5">
-                      <a href={`../achievement/?id=${PROFILE_DATA.mostRecentAchievement.id}`} className="text-[13px] font-medium text-[#e5b143] hover:underline truncate leading-tight">
+                      <a href={`../achievement/?id=${PROFILE_DATA.mostRecentAchievement.id}`} className="text-[13px] font-medium text-[#e5b143] hover:text-[#f0c96a] transition-colors truncate leading-tight">
                         {PROFILE_DATA.mostRecentAchievement.title}
                       </a>
                       <span className="text-[9px] font-bold text-[#66c0f4] bg-[#101214] border border-[#323f4c] px-1.5 py-[1px] rounded-sm shrink-0">{PROFILE_DATA.mostRecentAchievement.points} pts</span>

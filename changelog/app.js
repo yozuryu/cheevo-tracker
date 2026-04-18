@@ -47,6 +47,14 @@ const renderText = (text) => {
 const SECTION_ORDER = [
     'Auth',
     'RetroAchievements',
+    'Console Page',
+    'User Page',
+    'Profile',
+    'Achievement Page',
+    'Game Page',
+    'Navigation',
+    'Polish',
+    'Backlog',
     'Structure',
 ];
 
@@ -61,6 +69,14 @@ const sortSections = (sections) => {
 const SECTION_COLORS = {
     'Auth':              '#57cbde',
     'RetroAchievements': '#e5b143',
+    'Console Page':      '#e5b143',
+    'User Page':         '#e5b143',
+    'Profile':           '#66c0f4',
+    'Achievement Page':  '#57cbde',
+    'Game Page':         '#8f98a0',
+    'Navigation':        '#66c0f4',
+    'Polish':            '#546270',
+    'Backlog':           '#66c0f4',
     'Structure':         '#8f98a0',
 };
 

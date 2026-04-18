@@ -141,7 +141,8 @@ function AchievementApp() {
   const changelogEntries = comments ? comments.filter(c => c.user === 'Server') : [];
   const gameId      = achData?.game?.id;
   const gameName    = achData?.game?.title ? parseTitle(achData.game.title).baseTitle : null;
-  const consoleName = achData?.console?.name || userGame?.consoleName || null;
+  const consoleId   = achData?.console?.id   || achData?.achievement?.consoleId || null;
+  const consoleName = achData?.console?.title || userGame?.consoleName || null;
 
   const badgeSrc = userAch?.badgeName
     ? `${MEDIA_URL}/Badge/${userAch.badgeName}.png`
@@ -162,7 +163,7 @@ function AchievementApp() {
   if (loading) {
     return (
       <div className="min-h-screen bg-[#171a21] flex flex-col">
-        <Topbar crumbs={[{ label: 'Cheevo Tracker', href: '../profile/' }, { label: null }, { label: null }]} />
+        <Topbar crumbs={[{ label: 'Cheevo Tracker', href: '../profile/' }, { label: null }, { label: null }, { label: null }]} />
         <div className="relative overflow-hidden bg-[#1b2838] border-b border-[#2a475e]">
           <div className="relative max-w-3xl mx-auto px-4 md:px-8 pt-8 pb-4 md:pt-5">
             <div className="shimmer h-4 w-40 rounded mb-4" />
@@ -207,7 +208,7 @@ function AchievementApp() {
   if (error) {
     return (
       <div className="min-h-screen bg-[#171a21] flex flex-col">
-        <Topbar crumbs={[{ label: 'Cheevo Tracker', href: '../profile/' }, { label: null }, { label: null }]} />
+        <Topbar crumbs={[{ label: 'Cheevo Tracker', href: '../profile/' }, { label: null }, { label: null }, { label: null }]} />
         <div className="flex-1 flex items-center justify-center text-[#8f98a0] text-sm">{error}</div>
         <Footer label="cheevo-tracker · retroachievements.org" />
       </div>
@@ -220,6 +221,9 @@ function AchievementApp() {
     <div className="min-h-screen bg-[#171a21] flex flex-col">
       <Topbar crumbs={[
         { label: 'Cheevo Tracker', href: '../profile/' },
+        ...(consoleId && consoleName
+          ? [{ label: consoleName, href: `../console/?id=${consoleId}` }]
+          : consoleName ? [{ label: consoleName }] : [{ label: null }]),
         ...(gameName && gameId
           ? [{ label: gameName, href: `../game/?id=${gameId}` }]
           : [{ label: null }]),
@@ -243,15 +247,21 @@ function AchievementApp() {
               )}
               {gameName && gameId && (
                 <a href={`../game/?id=${gameId}`}
-                  className="text-[#66c0f4] hover:underline font-medium truncate max-w-[220px]">
+                  className="text-[#66c0f4] hover:text-[#c6d4df] transition-colors font-medium truncate max-w-[220px]">
                   {gameName}
                 </a>
               )}
               {consoleName && <>
                 <span className="text-[#2a475e] select-none">·</span>
-                <span className="flex items-center gap-1 text-[#546270]">
-                  <Gamepad2 size={10} className="shrink-0" />{consoleName}
-                </span>
+                {consoleId
+                  ? <a href={`../console/?id=${consoleId}`}
+                      className="flex items-center gap-1 text-[#8f98a0] hover:text-[#c6d4df] transition-colors">
+                      <Gamepad2 size={10} className="shrink-0" />{consoleName}
+                    </a>
+                  : <span className="flex items-center gap-1 text-[#8f98a0]">
+                      <Gamepad2 size={10} className="shrink-0" />{consoleName}
+                    </span>
+                }
               </>}
             </div>
           )}
@@ -296,13 +306,13 @@ function AchievementApp() {
                 </>}
                 {ach?.author && <>
                   <span className="text-[#2a475e] select-none">·</span>
-                  <span className="flex items-center gap-1 text-[#546270]">
+                  <span className="flex items-center gap-1 text-[#8f98a0]">
                     <User size={10} className="shrink-0" />{ach.author}
                   </span>
                 </>}
                 {ach?.dateCreated && <>
                   <span className="text-[#2a475e] select-none">·</span>
-                  <span className="flex items-center gap-1 text-[#546270]">
+                  <span className="flex items-center gap-1 text-[#8f98a0]">
                     <Calendar size={10} className="shrink-0" />{formatDate(ach.dateCreated)}
                   </span>
                 </>}
@@ -423,13 +433,13 @@ function AchievementApp() {
                     u.hardcoreMode ? 'border-l-[#e5b143]' : 'border-l-[#546270]'
                   }`}>
                   <img
-                    src={`${MEDIA_URL}/UserPic/${u.user}.png`}
+                    src={u.userPic ? getMediaUrl(u.userPic) : `${MEDIA_URL}/UserPic/${u.user}.png`}
                     alt={u.user}
                     className="w-7 h-7 rounded-full border border-[#101214] shrink-0 object-cover bg-[#131a22]"
                     onError={e => { e.currentTarget.style.visibility = 'hidden'; }}
                   />
-                  <a href={`${SITE_URL}/user/${u.user}`} target="_blank" rel="noreferrer"
-                    className="text-[11px] font-medium text-[#e5b143] hover:underline truncate flex-1 min-w-0">
+                  <a href={`../user/?u=${u.user}`}
+                    className="text-[11px] font-medium text-[#e5b143] hover:text-[#f0c96a] transition-colors truncate flex-1 min-w-0">
                     {u.user}
                   </a>
                   {u.hardcoreMode && (
@@ -477,17 +487,17 @@ function AchievementApp() {
               <div className="flex flex-col">
                 {userComments.map((c, i) => (
                   <div key={`${c.ulid || c.user}-${i}`} className="flex gap-3 py-2.5 border-b border-[#1b2838]">
-                    <a href={`${SITE_URL}/user/${c.user}`} target="_blank" rel="noreferrer" className="shrink-0 mt-0.5">
+                    <a href={`../user/?u=${c.user}`} className="shrink-0 mt-0.5">
                       <img
-                        src={`${MEDIA_URL}/UserPic/${c.user}.png`}
+                        src={c.userPic ? getMediaUrl(c.userPic) : `${MEDIA_URL}/UserPic/${c.user}.png`}
                         alt={c.user}
                         className="w-7 h-7 rounded-full border border-[#2a475e] bg-[#131a22] object-cover"
                       />
                     </a>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-baseline gap-2 mb-1">
-                        <a href={`${SITE_URL}/user/${c.user}`} target="_blank" rel="noreferrer"
-                          className="text-[11px] font-medium text-[#e5b143] hover:underline shrink-0">{c.user}</a>
+                        <a href={`../user/?u=${c.user}`}
+                          className="text-[11px] font-medium text-[#e5b143] hover:text-[#f0c96a] transition-colors shrink-0">{c.user}</a>
                         <span className="text-[9px] text-[#546270]">{formatTimeAgo(c.submitted)}</span>
                       </div>
                       <p className="text-[11px] text-[#c6d4df] leading-snug break-words">{c.commentText}</p>

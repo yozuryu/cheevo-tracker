@@ -160,7 +160,7 @@ function ConsoleListView({ onSelect }) {
   const grid = (list) => (
     <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
       {list.map(c => (
-        <ConsoleCard key={c.id} console={c} onClick={() => onSelect(c.id, c.name)} />
+        <ConsoleCard key={c.id} console={c} onClick={() => onSelect(c.id)} />
       ))}
     </div>
   );
@@ -233,9 +233,13 @@ function ConsoleListView({ onSelect }) {
 
 function GameListView({ consoleId, consoleName, onBack }) {
   const creds = getCredentials();
-  const [games, setGames]   = useState(null);
-  const [search, setSearch] = useState('');
-  const [error, setError]   = useState(null);
+  const [games, setGames]       = useState(null);
+  const [search, setSearch]     = useState('');
+  const [achFilter, setAchFilter] = useState(() => {
+    const f = new URLSearchParams(window.location.search).get('ach');
+    return ['all', 'with', 'without'].includes(f) ? f : 'with';
+  });
+  const [error, setError]       = useState(null);
 
   useEffect(() => {
     if (!creds) { handleAuthError(); return; }
@@ -251,17 +255,21 @@ function GameListView({ consoleId, consoleName, onBack }) {
 
   const filtered = useMemo(() => {
     if (!games) return [];
-    if (!search) return games;
-    const q = search.toLowerCase();
-    return games.filter(g => g.title.toLowerCase().includes(q));
-  }, [games, search]);
+    let result = games;
+    if (achFilter === 'with')    result = result.filter(g => g.numAchievements > 0);
+    if (achFilter === 'without') result = result.filter(g => g.numAchievements === 0);
+    if (search) {
+      const q = search.toLowerCase();
+      result = result.filter(g => g.title.toLowerCase().includes(q));
+    }
+    return result;
+  }, [games, search, achFilter]);
 
   return (
     <div className="min-h-screen bg-[#171a21] flex flex-col">
       <Topbar crumbs={[
         { label: 'Cheevo Tracker', href: '../profile/' },
-        { label: 'Consoles', href: '../console/' },
-        { label: consoleName || 'Games' },
+        { label: consoleName || null },
       ]} />
 
       <main className="flex-1 max-w-4xl mx-auto w-full px-4 md:px-8 pt-8 pb-5 md:pt-5">
@@ -280,22 +288,46 @@ function GameListView({ consoleId, consoleName, onBack }) {
           </div>
         </div>
 
-        {/* Search */}
-        <div className="relative mb-3">
-          <Search size={12} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[#546270]" />
-          <input
-            type="text"
-            placeholder="Search games…"
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            className="w-full bg-[#1b2838] border border-[#2a475e] focus:border-[#66c0f4] outline-none text-[11px] text-[#c6d4df] placeholder-[#546270] pl-7 pr-7 py-2 rounded-[3px] transition-colors"
-          />
-          {search && (
-            <button type="button" onClick={() => setSearch('')}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#546270] hover:text-[#c6d4df] transition-colors">
-              <X size={12} />
-            </button>
-          )}
+        {/* Search + filter */}
+        <div className="flex flex-col gap-2 mb-3">
+          <div className="relative">
+            <Search size={12} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[#546270]" />
+            <input
+              type="text"
+              placeholder="Search games…"
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              className="w-full bg-[#1b2838] border border-[#2a475e] focus:border-[#66c0f4] outline-none text-[11px] text-[#c6d4df] placeholder-[#546270] pl-7 pr-7 py-2 rounded-[3px] transition-colors"
+            />
+            {search && (
+              <button type="button" onClick={() => setSearch('')}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#546270] hover:text-[#c6d4df] transition-colors">
+                <X size={12} />
+              </button>
+            )}
+          </div>
+          <div className="flex items-center gap-1.5 overflow-x-auto">
+            <span className="text-[9px] text-[#546270] uppercase tracking-wider shrink-0">Achievements</span>
+            {[
+              { value: 'all',     label: 'All'     },
+              { value: 'with',    label: 'With'    },
+              { value: 'without', label: 'Without' },
+            ].map(opt => (
+              <button key={opt.value} type="button" onClick={() => {
+                setAchFilter(opt.value);
+                const sp = new URLSearchParams(window.location.search);
+                sp.set('ach', opt.value);
+                history.replaceState(null, '', '?' + sp.toString());
+              }}
+                className={`text-[9px] font-semibold uppercase tracking-wider px-2 py-[3px] rounded-[2px] border shrink-0 transition-colors ${
+                  achFilter === opt.value
+                    ? 'bg-[#1b2838] text-[#c6d4df] border-[#2a475e]'
+                    : 'bg-[#101214] text-[#546270] border-[#323f4c] hover:text-[#c6d4df] hover:border-[#546270]'
+                }`}>
+                {opt.label}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Game list */}
@@ -385,7 +417,14 @@ function GameListView({ consoleId, consoleName, onBack }) {
 function ConsoleApp() {
   const params = new URLSearchParams(window.location.search);
   const [consoleId,   setConsoleId]   = useState(params.get('id') ? Number(params.get('id')) : null);
-  const [consoleName, setConsoleName] = useState(params.get('name') || null);
+  const [consoles,    setConsoles]    = useState(null);
+
+  const creds = getCredentials();
+
+  useEffect(() => {
+    if (!creds) { handleAuthError(); return; }
+    fetchConsoles(creds.username, creds.apiKey).then(setConsoles).catch(() => {});
+  }, []);
 
   useEffect(() => {
     function onPop() {
@@ -393,27 +432,30 @@ function ConsoleApp() {
       const id = p.get('id');
       window.scrollTo(0, 0);
       setConsoleId(id ? Number(id) : null);
-      setConsoleName(p.get('name') || null);
     }
     window.addEventListener('popstate', onPop);
     return () => window.removeEventListener('popstate', onPop);
   }, []);
 
-  function selectConsole(id, name) {
-    const sp = new URLSearchParams();
+  const consoleName = consoles?.find(c => c.id === consoleId)?.name || null;
+
+  function selectConsole(id) {
+    const sp = new URLSearchParams(window.location.search); // preserve group param
     sp.set('id', id);
-    sp.set('name', name);
+    sp.delete('ach'); // reset ach filter for new console
     history.pushState(null, '', '?' + sp.toString());
     window.scrollTo(0, 0);
     setConsoleId(id);
-    setConsoleName(name);
   }
 
   function goBack() {
-    history.pushState(null, '', window.location.pathname);
+    const sp = new URLSearchParams(window.location.search); // preserve group param
+    sp.delete('id');
+    sp.delete('ach');
+    const qs = sp.toString();
+    history.pushState(null, '', qs ? '?' + qs : window.location.pathname);
     window.scrollTo(0, 0);
     setConsoleId(null);
-    setConsoleName(null);
   }
 
   if (consoleId) {

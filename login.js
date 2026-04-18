@@ -135,8 +135,8 @@ function LoginPage() {
                 <p className="text-[10px] text-[#8f98a0] font-semibold uppercase tracking-[0.08em]">How to get your API key</p>
                 <ol className="flex flex-col gap-1">
                   {[
-                    <>Log in at <a href="https://retroachievements.org" target="_blank" rel="noreferrer" className="text-[#66c0f4] hover:underline">retroachievements.org</a></>,
-                    <>Go to <a href="https://retroachievements.org/settings" target="_blank" rel="noreferrer" className="text-[#66c0f4] hover:underline">Settings</a> → <span className="text-[#c6d4df]">Keys</span> section</>,
+                    <>Log in at <a href="https://retroachievements.org" target="_blank" rel="noreferrer" className="text-[#66c0f4] hover:text-[#c6d4df] transition-colors">retroachievements.org</a></>,
+                    <>Go to <a href="https://retroachievements.org/settings" target="_blank" rel="noreferrer" className="text-[#66c0f4] hover:text-[#c6d4df] transition-colors">Settings</a> → <span className="text-[#c6d4df]">Keys</span> section</>,
                     <>Copy the value under <span className="text-[#c6d4df]">Web API Key</span></>,
                   ].map((step, i) => (
                     <li key={i} className="flex items-baseline gap-2 text-[10px] text-[#546270]">

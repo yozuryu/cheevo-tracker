@@ -481,6 +481,7 @@ export async function getUsersIFollow(username, apiKey, { c = 100, o = 0 } = {})
     results: (data.Results || []).map(u => ({
       user:           u.User,
       ulid:           u.ULID,
+      userPic:        u.UserPic        || null,
       points:         u.Points         || 0,
       pointsSoftcore: u.PointsSoftcore || 0,
       isFollowingMe:  u.IsFollowingMe  || false,
@@ -500,6 +501,7 @@ export async function getUsersFollowingMe(username, apiKey, { c = 100, o = 0 } =
     results: (data.Results || []).map(u => ({
       user:           u.User,
       ulid:           u.ULID,
+      userPic:        u.UserPic        || null,
       points:         u.Points         || 0,
       pointsSoftcore: u.PointsSoftcore || 0,
       amIFollowing:   u.AmIFollowing   || false,
@@ -755,6 +757,7 @@ export async function getGameRankAndScore(username, apiKey, { g, t = 0 } = {}) {
   return (Array.isArray(raw) ? raw : []).map(r => ({
     user:             r.User,
     ulid:             r.ULID,
+    userPic:          r.UserPic         || null,
     numAchievements:  r.NumAchievements || 0,
     totalScore:       r.TotalScore      || 0,
     lastAward:        r.LastAward,
@@ -844,6 +847,7 @@ export async function getAchievementUnlocks(username, apiKey, { a, c = 50, o = 0
     unlocks: (data.Unlocks || []).map(u => ({
       user:             u.User,
       ulid:             u.ULID,
+      userPic:          u.UserPic          || null,
       raPoints:         u.RAPoints         || 0,
       raSoftcorePoints: u.RASoftcorePoints || 0,
       dateAwarded:      u.DateAwarded,
@@ -910,6 +914,7 @@ export async function getLeaderboardEntries(username, apiKey, { i, c = 100, o = 
       rank:           r.Rank,
       user:           r.User,
       ulid:           r.ULID,
+      userPic:        r.UserPic        || null,
       score:          r.Score,
       formattedScore: r.FormattedScore,
       dateSubmitted:  r.DateSubmitted,
@@ -985,6 +990,7 @@ export async function getComments(username, apiKey,
     results: (data.Results || []).map(r => ({
       user:        r.User,
       ulid:        r.ULID,
+      userPic:     r.UserPic     || null,
       submitted:   r.Submitted,
       commentText: r.CommentText,
     })),
