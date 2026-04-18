@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { createRoot } from 'react-dom/client';
 import { Gamepad2, ChevronRight, Search, X, ArrowLeft } from 'lucide-react';
 import { parseTitle, getMediaUrl } from '../profile/utils/helpers.js';
+import { TILDE_TAG_COLORS } from '../profile/utils/constants.js';
 import { getCredentials, clearCredentials, fetchConsoles, fetchConsoleGames } from '../profile/utils/ra-api.js';
 import { Topbar, Footer } from '../assets/ui.js';
 
@@ -131,8 +132,18 @@ function ConsoleCard({ console: c, onClick }) {
 function ConsoleListView({ onSelect }) {
   const creds = getCredentials();
   const [consoles, setConsoles] = useState(null);
-  const [grouping, setGrouping] = useState('none');
-  const [error, setError]       = useState(null);
+  const [grouping, setGrouping] = useState(() => {
+    const g = new URLSearchParams(window.location.search).get('group');
+    return g === 'era' ? 'era' : 'publisher';
+  });
+  const [error, setError] = useState(null);
+
+  function switchGrouping(val) {
+    setGrouping(val);
+    const sp = new URLSearchParams(window.location.search);
+    sp.set('group', val);
+    history.replaceState(null, '', '?' + sp.toString());
+  }
 
   useEffect(() => {
     if (!creds) { handleAuthError(); return; }
@@ -164,16 +175,15 @@ function ConsoleListView({ onSelect }) {
           <div className="flex items-center gap-2">
             <span className="w-[3px] h-[14px] bg-[#e5b143] rounded-[1px] shrink-0" />
             <span className="text-[13px] text-white tracking-wide uppercase font-medium">Consoles</span>
-            {consoles && <span className="text-[10px] text-[#546270]">{consoles.length} systems</span>}
+            {consoles && <span className="text-[10px] text-[#546270]"><span className="text-[#66c0f4]">{consoles.length}</span> systems</span>}
           </div>
           <div className="flex items-center gap-1.5 ml-auto">
             <span className="text-[9px] text-[#546270] uppercase tracking-wider">Group</span>
             {[
-              { value: 'none',      label: 'Default'   },
-              { value: 'publisher', label: 'Publisher'  },
-              { value: 'era',       label: 'Era'        },
+              { value: 'publisher', label: 'Publisher' },
+              { value: 'era',       label: 'Gen'       },
             ].map(opt => (
-              <button key={opt.value} type="button" onClick={() => setGrouping(opt.value)}
+              <button key={opt.value} type="button" onClick={() => switchGrouping(opt.value)}
                 className={`text-[9px] font-semibold uppercase tracking-wider px-2 py-[3px] rounded-[2px] border transition-colors ${
                   grouping === opt.value
                     ? 'bg-[#1b2838] text-[#c6d4df] border-[#2a475e]'
@@ -202,8 +212,8 @@ function ConsoleListView({ onSelect }) {
               <div key={group.name}>
                 <div className="flex items-center gap-2 mb-2">
                   <span className="w-[3px] h-[12px] bg-[#2a475e] rounded-[1px] shrink-0" />
-                  <span className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[#8f98a0]">{group.name}</span>
-                  <span className="text-[9px] text-[#546270]">{group.consoles.length}</span>
+                  <span className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[#c6d4df]">{group.name}</span>
+                  <span className="text-[9px] text-[#66c0f4]">{group.consoles.length}</span>
                 </div>
                 {grid(group.consoles)}
               </div>
@@ -266,7 +276,7 @@ function GameListView({ consoleId, consoleName, onBack }) {
           <div className="flex items-center gap-2 min-w-0">
             <span className="w-[3px] h-[14px] bg-[#e5b143] rounded-[1px] shrink-0" />
             <span className="text-[13px] text-white tracking-wide uppercase font-medium truncate">{consoleName}</span>
-            {games && <span className="text-[10px] text-[#546270] shrink-0">{games.length} games</span>}
+            {games && <span className="text-[10px] text-[#546270] shrink-0"><span className="text-[#66c0f4]">{games.length}</span> games</span>}
           </div>
         </div>
 
@@ -310,7 +320,7 @@ function GameListView({ consoleId, consoleName, onBack }) {
         ) : (
           <div className="flex flex-col gap-[2px]">
             {filtered.map(g => {
-              const { baseTitle, tagLabel } = parseTitle(g.title);
+              const { baseTitle, tags, subsetName, isSubset } = parseTitle(g.title);
               return (
                 <a key={g.id} href={`../game/?id=${g.id}`}
                   className="flex items-center gap-3 px-3 py-2.5 bg-[#1b2838] hover:bg-[#202d39] active:bg-[#202d39] rounded-[2px] transition-colors group">
@@ -324,15 +334,31 @@ function GameListView({ consoleId, consoleName, onBack }) {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-1.5 flex-wrap">
                       <span className="text-[12px] font-medium text-[#c6d4df] group-hover:text-white transition-colors leading-snug">{baseTitle}</span>
-                      {tagLabel && (
-                        <span className="text-[8px] font-bold uppercase tracking-wider px-1 py-[1px] rounded-[2px] border shrink-0"
-                          style={{ color: '#8f98a0', borderColor: '#323f4c', background: '#101214' }}>
-                          {tagLabel}
-                        </span>
+                      {isSubset && (
+                        <span className="text-[7px] font-bold uppercase tracking-[0.07em] px-1 py-[1px] rounded-[2px] border border-[rgba(229,177,67,0.3)] bg-[rgba(229,177,67,0.1)] text-[#c8a84b] shrink-0">Subset</span>
                       )}
+                      {tags.map(tag => {
+                        const tc = TILDE_TAG_COLORS[tag] || TILDE_TAG_COLORS['Prototype'];
+                        return (
+                          <span key={tag} style={{
+                            fontSize: '7px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.07em',
+                            padding: '1px 4px', borderRadius: '2px',
+                            border: `1px solid ${tc.border}`, background: tc.bg, color: tc.color,
+                          }}>
+                            {tag}
+                          </span>
+                        );
+                      })}
                     </div>
+                    {isSubset && subsetName && (
+                      <span className="text-[9px] text-[#c8a84b] truncate block">{subsetName}</span>
+                    )}
                     {g.numAchievements > 0 && (
-                      <span className="text-[9px] text-[#546270]">{g.numAchievements} achievements · {g.points.toLocaleString()} pts</span>
+                      <span className="text-[9px] text-[#546270] flex items-center gap-1">
+                        <span className="text-[#66c0f4]">{g.numAchievements}</span> achievements
+                        <span className="text-[#2a475e]">·</span>
+                        <span className="text-[#e5b143]">{g.points.toLocaleString()}</span> pts
+                      </span>
                     )}
                   </div>
                   <ChevronRight size={12} color="#2a475e" className="shrink-0" />
@@ -344,7 +370,7 @@ function GameListView({ consoleId, consoleName, onBack }) {
 
         {games && search && filtered.length > 0 && (
           <p className="text-[10px] text-[#546270] mt-2 px-1">
-            {filtered.length} of {games.length} games
+            <span className="text-[#66c0f4]">{filtered.length}</span> of <span className="text-[#66c0f4]">{games.length}</span> games
           </p>
         )}
       </main>
@@ -365,6 +391,7 @@ function ConsoleApp() {
     function onPop() {
       const p = new URLSearchParams(window.location.search);
       const id = p.get('id');
+      window.scrollTo(0, 0);
       setConsoleId(id ? Number(id) : null);
       setConsoleName(p.get('name') || null);
     }
@@ -377,12 +404,14 @@ function ConsoleApp() {
     sp.set('id', id);
     sp.set('name', name);
     history.pushState(null, '', '?' + sp.toString());
+    window.scrollTo(0, 0);
     setConsoleId(id);
     setConsoleName(name);
   }
 
   function goBack() {
     history.pushState(null, '', window.location.pathname);
+    window.scrollTo(0, 0);
     setConsoleId(null);
     setConsoleName(null);
   }

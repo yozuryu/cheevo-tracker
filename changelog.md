@@ -5,17 +5,22 @@
 ### RetroAchievements
 
 - New **/console/** page — browse all game systems, select a console to see its full game list
-- Console list: grid of active game systems with icons, fetched from `API_GetConsoleIDs`, filtered to `isGameSystem && active`, sorted alphabetically; grouping toggle — **Default** (flat), **Publisher** (Nintendo / Sony / Sega / Atari / SNK / NEC / etc., ID-based map), **Era** (Pre-8-Bit through 8th Gen+, ID-based map); unknown IDs fall back to "Other" in both modes
-- Game list: searchable, sorted alphabetically; each row shows icon, title, tag badge (Hack/Homebrew/etc.), achievement count and points; links to internal `/game/` page
+- Console list: grid of active game systems (`isGameSystem && active`), fetched from `API_GetConsoleIDs`; grouping defaults to **Publisher** (ID-based map: Nintendo / Sony / Sega / Atari / SNK / NEC / etc.); **Gen** grouping (Pre-8-Bit through 8th Gen+, ID-based map); unknown IDs fall back to "Other"; grouping persists in URL param (`?group=`)
+- Console list: count and group counts coloured blue; group header text lightened to `#c6d4df`
+- Game list: shows all games (`f=0`), paginated in 500-game pages; obsolete sets (`~z~`) filtered out; normal games sorted before tilde-tagged games, both alphabetically within their group
+- Game list: tilde tags (Hack/Homebrew/Demo/Prototype) and Subset badge styled consistently with profile and game pages; subset name shown below title in gold
+- Game list: achievement count (blue) and points (gold) coloured per design system
+- Console list and game list cached for **24 hours** in `localStorage` (persists across sessions); other caches remain 5-minute `sessionStorage`
+- Refresh Data and Purge Cache both clear `localStorage` console/game caches (`ra_consoles`, `ra_consolegames_*`) in addition to `sessionStorage` and PWA asset caches
 - Console → game list navigation via `history.pushState` — browser back button returns to console list without reload
 - Topbar menu: added **Consoles** entry (Gamepad2 icon) above Changelog
-- Profile: renamed **Watchlist** tab to **Backlog** across tab bar, mobile nav, stats line, and all internal identifiers
+- Mobile nav: replaced **Backlog** tab with **Consoles** tab; Backlog link moved to Settings page under General
+- Profile: renamed **Watchlist** tab to **Backlog** across tab bar, mobile nav, stats line, and all internal identifiers (`backlogData`, `fetchBacklog`, cache key `ra_backlog_`)
 - Profile: Backlog filter bar restructured for mobile — search takes full width, Status and Group filters each on their own horizontally-scrollable labeled row; desktop layout unchanged
-- Achievement page: replaced two-column layout with a **Recent Unlocks / Comments** tab bar below Your Status
-- Achievement page: Comments tab lazy-loads on first open — fetches `getComments` with `t=2` (achievement type), 25 at a time; shimmer skeleton while loading; "Load more" button shows remaining count
-- Achievement page: Comments tab filters out `Server`-authored entries — only real user comments shown; new **Changelog** tab displays those system entries (upload/update history) as a timeline list
+- Achievement page: replaced two-column layout with a **Recent Unlocks / Comments** tab bar below Your Status; tab persists in URL param (`?tab=`)
+- Achievement page: Comments tab lazy-loads on first open — fetches `getComments` with `t=2`, 25 at a time; filters out `Server`-authored entries
+- Achievement page: new **Changelog** tab shows `Server` system entries as a timeline — gold username, blue date, connecting vertical line with hollow circle markers
 - Achievement page: loading skeleton updated to include the tab bar shimmer
-- Mobile nav: replaced **Backlog** tab with **Consoles** tab (Gamepad2-style icon, links to `/console/`); Backlog moved to Settings page as a row under General
 
 ---
 

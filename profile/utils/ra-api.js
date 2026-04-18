@@ -46,6 +46,24 @@ function cacheSet(key, data) {
   try { sessionStorage.setItem(key, JSON.stringify({ ts: Date.now(), data })); } catch {}
 }
 
+// ── Local cache (custom TTL, persists across sessions) ────────────────────────
+
+const LOCAL_CACHE_TTL_24H = 24 * 60 * 60 * 1000;
+
+function lcacheGet(key, ttl = LOCAL_CACHE_TTL_24H) {
+  try {
+    const raw = localStorage.getItem(key);
+    if (!raw) return null;
+    const { ts, data } = JSON.parse(raw);
+    if (Date.now() - ts > ttl) { localStorage.removeItem(key); return null; }
+    return data;
+  } catch { return null; }
+}
+
+function lcacheSet(key, data) {
+  try { localStorage.setItem(key, JSON.stringify({ ts: Date.now(), data })); } catch {}
+}
+
 // ── Retry helper ─────────────────────────────────────────────────────────────
 
 async function withRetry(fn, retries = 2, delayMs = 1000) {
@@ -1207,14 +1225,14 @@ export async function fetchBacklog(username, apiKey) {
  */
 export async function fetchConsoles(username, apiKey) {
   const cacheKey = 'ra_consoles';
-  const cached = cacheGet(cacheKey);
+  const cached = lcacheGet(cacheKey);
   if (cached) return cached;
 
   const data = await getConsoleIds(username, apiKey);
   const result = data
     .filter(c => c.isGameSystem && c.active)
     .sort((a, b) => a.name.localeCompare(b.name));
-  cacheSet(cacheKey, result);
+  lcacheSet(cacheKey, result);
   return result;
 }
 
@@ -1224,12 +1242,31 @@ export async function fetchConsoles(username, apiKey) {
  */
 export async function fetchConsoleGames(username, apiKey, consoleId) {
   const cacheKey = `ra_consolegames_${consoleId}`;
-  const cached = cacheGet(cacheKey);
+  const cached = lcacheGet(cacheKey);
   if (cached) return cached;
 
-  const data = await getGameList(username, apiKey, { i: consoleId, f: 1 });
-  const result = [...data].sort((a, b) => a.title.localeCompare(b.title));
-  cacheSet(cacheKey, result);
+  // API_GetGameList returns a plain array (no Results/Total wrapper), so paginate manually.
+  const PAGE = 500;
+  const all = [];
+  let offset = 0;
+  while (true) {
+    const page = await getGameList(username, apiKey, { i: consoleId, f: 0, c: PAGE, o: offset });
+    all.push(...page);
+    if (page.length < PAGE) break;
+    offset += PAGE;
+    await sleep(1000);
+  }
+
+  const hasTilde = t => /~[^~]+~/.test(t);
+  const result = all
+    .filter(g => !g.title.includes('~z~') && !g.title.includes('~Z~'))
+    .sort((a, b) => {
+      const aTagged = hasTilde(a.title) ? 1 : 0;
+      const bTagged = hasTilde(b.title) ? 1 : 0;
+      if (aTagged !== bTagged) return aTagged - bTagged;
+      return a.title.localeCompare(b.title);
+    });
+  lcacheSet(cacheKey, result);
   return result;
 }
 
