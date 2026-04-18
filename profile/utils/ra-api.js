@@ -1212,7 +1212,7 @@ export async function fetchConsoles(username, apiKey) {
 
   const data = await getConsoleIds(username, apiKey);
   const result = data
-    .filter(c => c.isGameSystem)
+    .filter(c => c.isGameSystem && c.active)
     .sort((a, b) => a.name.localeCompare(b.name));
   cacheSet(cacheKey, result);
   return result;

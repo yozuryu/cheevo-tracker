@@ -11,54 +11,66 @@ function handleAuthError() {
 }
 
 // ── Grouping maps ─────────────────────────────────────────────────────────────
+// Both maps are ID-based using the known console list.
+// Any ID not present falls back to 'Other' automatically.
 
-// Publisher detection by console name — keyword-based so new consoles auto-categorise.
-function getPublisher(name) {
-  const n = name.toLowerCase();
-  if (/nintendo|famicom|\bnes\b|\bsnes\b|game boy|gameboy|gamecube|\bwii\b|nintendo 64|\bn64\b|virtual boy|pokemon mini|game & watch|nintendo ds|\b3ds\b/.test(n)) return 'Nintendo';
-  if (/playstation|\bpsp\b|ps vita|\bvita\b/.test(n)) return 'Sony';
-  if (/\bsega\b|mega drive|genesis|master system|game gear|\bsaturn\b|dreamcast|sg-1000|sega cd|sega 32x/.test(n)) return 'Sega';
-  if (/\batari\b|\bjaguar\b|\blynx\b/.test(n)) return 'Atari';
-  if (/neo.?geo|\bsnk\b/.test(n)) return 'SNK';
-  if (/pc engine|turbografx|\bpc-fx\b|\bpc-88\b|\bpc-98\b|pc-8000/.test(n)) return 'NEC';
-  if (/\bxbox\b/.test(n)) return 'Microsoft';
-  if (/wonderswan/.test(n)) return 'Bandai';
-  if (/intellivision/.test(n)) return 'Mattel';
-  if (/colecovision|coleco/.test(n)) return 'Coleco';
-  if (/\barcade\b/.test(n)) return 'Arcade';
-  return 'Other';
-}
+const PUBLISHER_MAP = {
+  // Nintendo
+  2: 'Nintendo', 3: 'Nintendo', 4: 'Nintendo', 5: 'Nintendo', 6: 'Nintendo',
+  7: 'Nintendo', 16: 'Nintendo', 18: 'Nintendo', 19: 'Nintendo', 20: 'Nintendo',
+  24: 'Nintendo', 28: 'Nintendo', 60: 'Nintendo', 62: 'Nintendo', 78: 'Nintendo', 81: 'Nintendo',
+  // Sony
+  12: 'Sony', 21: 'Sony', 41: 'Sony',
+  // Sega
+  1: 'Sega', 9: 'Sega', 10: 'Sega', 11: 'Sega', 15: 'Sega',
+  33: 'Sega', 39: 'Sega', 40: 'Sega', 68: 'Sega',
+  // Atari
+  13: 'Atari', 17: 'Atari', 25: 'Atari', 36: 'Atari', 50: 'Atari', 51: 'Atari', 77: 'Atari',
+  // SNK
+  14: 'SNK', 56: 'SNK',
+  // NEC
+  8: 'NEC', 47: 'NEC', 49: 'NEC', 67: 'NEC', 76: 'NEC',
+  // Microsoft
+  22: 'Microsoft',
+  // Bandai
+  53: 'Bandai',
+  // Mattel
+  45: 'Mattel',
+  // Coleco
+  44: 'Coleco',
+};
 
 const PUBLISHER_ORDER = [
   'Atari', 'Bandai', 'Coleco', 'Mattel', 'Microsoft',
-  'NEC', 'Nintendo', 'Sega', 'SNK', 'Sony', 'Arcade', 'Other',
+  'NEC', 'Nintendo', 'Sega', 'SNK', 'Sony', 'Other',
 ];
 
-// Era detection by console ID — hardcoded for known systems; unknown IDs fall to 'Other'.
 const ERA_MAP = {
   // Pre-8-Bit (before ~1983)
-  25: 'Pre-8-Bit', 23: 'Pre-8-Bit', 45: 'Pre-8-Bit',
-  44: 'Pre-8-Bit', 46: 'Pre-8-Bit', 72: 'Pre-8-Bit',
+  23: 'Pre-8-Bit', 25: 'Pre-8-Bit', 44: 'Pre-8-Bit', 45: 'Pre-8-Bit',
+  46: 'Pre-8-Bit', 50: 'Pre-8-Bit', 54: 'Pre-8-Bit', 57: 'Pre-8-Bit',
+  73: 'Pre-8-Bit', 74: 'Pre-8-Bit', 75: 'Pre-8-Bit',
   // 8-Bit (~1983–1990)
-  7: '8-Bit', 51: '8-Bit', 11: '8-Bit', 33: '8-Bit',
-  101: '8-Bit', 4: '8-Bit', 13: '8-Bit',
+  4: '8-Bit', 7: '8-Bit', 11: '8-Bit', 13: '8-Bit', 15: '8-Bit',
+  33: '8-Bit', 51: '8-Bit', 55: '8-Bit', 63: '8-Bit', 68: '8-Bit', 69: '8-Bit', 81: '8-Bit',
   // 16-Bit (~1990–1996)
-  3: '16-Bit', 1: '16-Bit', 8: '16-Bit', 103: '16-Bit',
-  9: '16-Bit', 10: '16-Bit', 16: '16-Bit',
-  // 32 / 64-Bit (~1994–2002)
-  12: '32 / 64-Bit', 39: '32 / 64-Bit', 2: '32 / 64-Bit',
-  15: '32 / 64-Bit', 18: '32 / 64-Bit', 43: '32 / 64-Bit',
-  14: '32 / 64-Bit', 49: '32 / 64-Bit', 28: '32 / 64-Bit',
-  6: '32 / 64-Bit', 63: '32 / 64-Bit',
+  1: '16-Bit', 3: '16-Bit', 8: '16-Bit', 9: '16-Bit', 10: '16-Bit', 76: '16-Bit',
+  // 32 / 64-Bit (~1993–2002)
+  2: '32 / 64-Bit', 6: '32 / 64-Bit', 12: '32 / 64-Bit', 14: '32 / 64-Bit',
+  17: '32 / 64-Bit', 28: '32 / 64-Bit', 39: '32 / 64-Bit', 43: '32 / 64-Bit',
+  49: '32 / 64-Bit', 53: '32 / 64-Bit', 56: '32 / 64-Bit', 77: '32 / 64-Bit',
   // 6th Gen (~1998–2006)
-  40: '6th Gen', 21: '6th Gen', 17: '6th Gen', 22: '6th Gen',
-  5: '6th Gen', 56: '6th Gen', 57: '6th Gen', 75: '6th Gen', 24: '6th Gen',
+  5: '6th Gen', 16: '6th Gen', 21: '6th Gen', 22: '6th Gen',
+  24: '6th Gen', 40: '6th Gen', 42: '6th Gen', 61: '6th Gen',
   // 7th Gen (~2004–2013)
-  99: '7th Gen', 80: '7th Gen', 69: '7th Gen', 41: '7th Gen', 73: '7th Gen',
+  18: '7th Gen', 19: '7th Gen', 41: '7th Gen', 70: '7th Gen', 78: '7th Gen',
   // 8th Gen+ (~2011–)
-  87: '8th Gen+', 104: '8th Gen+',
+  20: '8th Gen+', 62: '8th Gen+',
   // Computer
-  26: 'Computer', 38: 'Computer', 29: 'Computer', 37: 'Computer', 47: 'Computer',
+  26: 'Computer', 29: 'Computer', 30: 'Computer', 31: 'Computer', 32: 'Computer',
+  34: 'Computer', 35: 'Computer', 36: 'Computer', 37: 'Computer', 38: 'Computer',
+  47: 'Computer', 48: 'Computer', 52: 'Computer', 58: 'Computer', 59: 'Computer',
+  64: 'Computer', 65: 'Computer', 66: 'Computer', 67: 'Computer', 79: 'Computer',
   // Arcade
   27: 'Arcade',
 };
@@ -68,17 +80,16 @@ const ERA_ORDER = [
   '6th Gen', '7th Gen', '8th Gen+', 'Computer', 'Arcade', 'Other',
 ];
 
-function getEra(id) {
-  return ERA_MAP[id] || 'Other';
-}
+function getPublisher(id) { return PUBLISHER_MAP[id] || 'Other'; }
+function getEra(id)       { return ERA_MAP[id]       || 'Other'; }
 
-// Groups an array of consoles into { groupName: [consoles] } preserving defined order.
+// Groups an array of consoles into [{ name, consoles }] in defined order.
 function groupConsoles(consoles, grouping) {
   if (grouping === 'none') return null;
 
   const map = {};
   for (const c of consoles) {
-    const key = grouping === 'publisher' ? getPublisher(c.name) : getEra(c.id);
+    const key = grouping === 'publisher' ? getPublisher(c.id) : getEra(c.id);
     if (!map[key]) map[key] = [];
     map[key].push(c);
   }
@@ -88,7 +99,7 @@ function groupConsoles(consoles, grouping) {
   for (const key of order) {
     if (map[key]) sorted.push({ name: key, consoles: map[key] });
   }
-  // Anything not in the order list (shouldn't happen with 'Other' fallback, but just in case)
+  // Safety net: anything not in the order list
   for (const key of Object.keys(map)) {
     if (!order.includes(key)) sorted.push({ name: key, consoles: map[key] });
   }

@@ -1,11 +1,11 @@
 # Changelog
 
-## v26.04.18 — Console Browser, Backlog Polish, Achievement Comments
+## v26.04.18 — Console Browser, Backlog Polish, Achievement Comments, Nav Reorganisation
 
 ### RetroAchievements
 
 - New **/console/** page — browse all game systems, select a console to see its full game list
-- Console list: grid of all active and inactive systems with icons, fetched from `API_GetConsoleIDs`, filtered to game systems only, sorted alphabetically; grouping toggle — **Default** (flat), **Publisher** (Nintendo / Sony / Sega / Atari / etc., name-based detection), **Era** (Pre-8-Bit through 8th Gen+, ID-based map); unknown systems fall back to "Other" in both modes
+- Console list: grid of active game systems with icons, fetched from `API_GetConsoleIDs`, filtered to `isGameSystem && active`, sorted alphabetically; grouping toggle — **Default** (flat), **Publisher** (Nintendo / Sony / Sega / Atari / SNK / NEC / etc., ID-based map), **Era** (Pre-8-Bit through 8th Gen+, ID-based map); unknown IDs fall back to "Other" in both modes
 - Game list: searchable, sorted alphabetically; each row shows icon, title, tag badge (Hack/Homebrew/etc.), achievement count and points; links to internal `/game/` page
 - Console → game list navigation via `history.pushState` — browser back button returns to console list without reload
 - Topbar menu: added **Consoles** entry (Gamepad2 icon) above Changelog
@@ -15,6 +15,7 @@
 - Achievement page: Comments tab lazy-loads on first open — fetches `getComments` with `t=2` (achievement type), 25 at a time; shimmer skeleton while loading; "Load more" button shows remaining count
 - Achievement page: Comments tab filters out `Server`-authored entries — only real user comments shown; new **Changelog** tab displays those system entries (upload/update history) as a timeline list
 - Achievement page: loading skeleton updated to include the tab bar shimmer
+- Mobile nav: replaced **Backlog** tab with **Consoles** tab (Gamepad2-style icon, links to `/console/`); Backlog moved to Settings page as a row under General
 
 ---
 

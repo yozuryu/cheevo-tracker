@@ -1,6 +1,6 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import { FileText, RotateCcw, LogOut, ChevronRight, Trash2 } from 'lucide-react';
+import { FileText, RotateCcw, LogOut, ChevronRight, Trash2, Star } from 'lucide-react';
 import { Topbar, Footer } from '../assets/ui.js';
 
 function getCredentials() {
@@ -74,6 +74,13 @@ function SettingsApp() {
 
       <div className="max-w-lg mx-auto w-full px-4 pt-8 pb-5 md:pt-5 flex-1">
         <SettingsSection title="General">
+          <SettingsRow
+            icon={<Star />}
+            iconColor="#e5b143"
+            label="Backlog"
+            description="Games you want to play"
+            href="../profile/?tab=backlog"
+          />
           <SettingsRow
             icon={<FileText />}
             iconColor="#57cbde"
