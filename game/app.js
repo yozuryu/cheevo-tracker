@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { createRoot } from 'react-dom/client';
 import { Trophy, Crown, Medal, Lock, ExternalLink, AlertCircle, AlertTriangle, Flame, Feather, Gamepad2, Tag, Code, Calendar, BookOpen, MessageSquare, Loader } from 'lucide-react';
-import { MEDIA_URL, SITE_URL } from '../profile/utils/constants.js';
+import { MEDIA_URL, SITE_URL, TILDE_TAG_COLORS } from '../profile/utils/constants.js';
 import { getMediaUrl, parseTitle, formatDate, formatTimeAgo } from '../profile/utils/helpers.js';
 import { getCredentials, clearCredentials, getGameInfoAndUserProgress, getGameHashes, getGameProgression, getGameExtended, getActiveClaims, getGameRankAndScore, getComments, getGameLeaderboards, getUserGameLeaderboards, getLeaderboardEntries, getGame } from '../profile/utils/ra-api.js';
 import { Topbar, Footer } from '../assets/ui.js';
@@ -372,6 +372,18 @@ function GameApp() {
                         Subset
                       </span>
                     )}
+                    {parsed?.tags?.map(tag => {
+                      const tc = TILDE_TAG_COLORS[tag] || TILDE_TAG_COLORS['Prototype'];
+                      return (
+                        <span key={tag} className="shrink-0 mt-1" style={{
+                          fontSize: '8px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.07em',
+                          padding: '2px 6px', borderRadius: '2px',
+                          border: `1px solid ${tc.border}`, background: tc.bg, color: tc.color,
+                        }}>
+                          {tag}
+                        </span>
+                      );
+                    })}
                     {activeClaims.length > 0 && (
                       <span className="text-[8px] font-bold uppercase tracking-[0.07em] px-1.5 py-[2px] rounded-[2px] border shrink-0 mt-1"
                         style={{ color: '#e5b143', borderColor: 'rgba(229,177,67,0.3)', background: 'rgba(229,177,67,0.1)' }}>
