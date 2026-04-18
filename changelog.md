@@ -1,5 +1,23 @@
 # Changelog
 
+## v26.04.18 — Console Browser, Backlog Polish, Achievement Comments
+
+### RetroAchievements
+
+- New **/console/** page — browse all game systems, select a console to see its full game list
+- Console list: grid of all active and inactive systems with icons, fetched from `API_GetConsoleIDs`, filtered to game systems only, sorted alphabetically; grouping toggle — **Default** (flat), **Publisher** (Nintendo / Sony / Sega / Atari / etc., name-based detection), **Era** (Pre-8-Bit through 8th Gen+, ID-based map); unknown systems fall back to "Other" in both modes
+- Game list: searchable, sorted alphabetically; each row shows icon, title, tag badge (Hack/Homebrew/etc.), achievement count and points; links to internal `/game/` page
+- Console → game list navigation via `history.pushState` — browser back button returns to console list without reload
+- Topbar menu: added **Consoles** entry (Gamepad2 icon) above Changelog
+- Profile: renamed **Watchlist** tab to **Backlog** across tab bar, mobile nav, stats line, and all internal identifiers
+- Profile: Backlog filter bar restructured for mobile — search takes full width, Status and Group filters each on their own horizontally-scrollable labeled row; desktop layout unchanged
+- Achievement page: replaced two-column layout with a **Recent Unlocks / Comments** tab bar below Your Status
+- Achievement page: Comments tab lazy-loads on first open — fetches `getComments` with `t=2` (achievement type), 25 at a time; shimmer skeleton while loading; "Load more" button shows remaining count
+- Achievement page: Comments tab filters out `Server`-authored entries — only real user comments shown; new **Changelog** tab displays those system entries (upload/update history) as a timeline list
+- Achievement page: loading skeleton updated to include the tab bar shimmer
+
+---
+
 ## v26.04.17 — Social Tab Polish, Reliability Fixes
 
 ### RetroAchievements

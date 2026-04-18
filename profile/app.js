@@ -6,7 +6,7 @@ import { getMediaUrl, parseTitle, formatTimeAgo } from './utils/helpers.js';
 import { transformData } from './utils/transform.js';
 import {
   getCredentials, clearCredentials,
-  fetchProfile, fetchAchievementsChunk, fetchWatchlist, fetchGameDetails,
+  fetchProfile, fetchAchievementsChunk, fetchBacklog, fetchGameDetails,
   getUsersIFollow, getUsersFollowingMe,
 } from './utils/ra-api.js';
 import { Topbar, Footer } from '../assets/ui.js';
@@ -866,13 +866,13 @@ const ActivitySkeleton = () => (
 // SeriesProgressTab
 // ─────────────────────────────────────────────────────────────────────────────
 
-function SeriesProgressTab({ seriesData, gamesData, watchlistData }) {
+function SeriesProgressTab({ seriesData, gamesData, backlogData }) {
   const cards = useMemo(() => {
     const visible = seriesData.filter(s => s.showProgress);
 
-    // Build a flat icon lookup from any source we have: detailedGameProgress + watchlist
+    // Build a flat icon lookup from any source we have: detailedGameProgress + backlog
     const gameProgress = gamesData?.detailedGameProgress ?? {};
-    const wlMap = Object.fromEntries((watchlistData?.results ?? []).map(g => [g.id, g]));
+    const wlMap = Object.fromEntries((backlogData?.results ?? []).map(g => [g.id, g]));
     const getGameInfo = (id) => gameProgress[id] ?? wlMap[id] ?? null;
 
     return visible.map(series => {
@@ -894,7 +894,7 @@ function SeriesProgressTab({ seriesData, gamesData, watchlistData }) {
 
         if (hasAch) {
           tracked++;
-          // Points total: sum from achievement data if available, else watchlist pointsTotal
+          // Points total: sum from achievement data if available, else backlog pointsTotal
           if (g?.achievements) {
             Object.values(g.achievements).forEach(a => {
               pointsTotal += a.points ?? 0;
@@ -941,7 +941,7 @@ function SeriesProgressTab({ seriesData, gamesData, watchlistData }) {
       });
 
       // Cover game: explicitly set, or fall back to first game in series
-      // Check both detailedGameProgress and watchlist so unplayed games still resolve
+      // Check both detailedGameProgress and backlog so unplayed games still resolve
       const coverId   = series.coverGameId ?? series.gameIds[0];
       const coverGame = getGameInfo(coverId);
       const coverBg   = coverGame
@@ -954,7 +954,7 @@ function SeriesProgressTab({ seriesData, gamesData, watchlistData }) {
       const key = n => /^[a-zA-Z]/.test(n) ? '2' + n.toLowerCase() : /^\d/.test(n) ? '1' + n.toLowerCase() : '0' + n.toLowerCase();
       return key(a.series.name).localeCompare(key(b.series.name));
     });
-  }, [seriesData, gamesData, watchlistData]);
+  }, [seriesData, gamesData, backlogData]);
 
   if (cards.length === 0) {
     return (
@@ -1155,7 +1155,7 @@ const SocialTab = ({ socialData, socialError, onRetry }) => {
 export default function App() {
   // ── Split data state ─────────────────────────────────────
   const [profileData,   setProfileData]   = useState(null);
-  const [watchlistData, setWatchlistData] = useState(null);
+  const [backlogData, setBacklogData] = useState(null);
   const [socialData,    setSocialData]    = useState(null);
   const [socialError,   setSocialError]   = useState(false);
   // gamesData stores only detailedGameProgress, lazy-loaded per game
@@ -1185,9 +1185,9 @@ export default function App() {
   const pillLeaveTimer = useRef(null);
   const [statsExpanded, setStatsExpanded] = useState(false);
   const tabBarRef = useRef(null);
-  const [watchlistSearch, setWatchlistSearch] = useState('');
-  const [watchlistStatusFilter, setWatchlistStatusFilter] = useState('all');
-  const [watchlistGrouping, setWatchlistGrouping] = useState('none');
+  const [backlogSearch, setBacklogSearch] = useState('');
+  const [backlogStatusFilter, setBacklogStatusFilter] = useState('all');
+  const [backlogGrouping, setBacklogGrouping] = useState('none');
   const [collapsedGroups, setCollapsedGroups] = useState(new Set());
   const [selectedGame, setSelectedGame] = useState(null);
   const [seriesData, setSeriesData] = useState([]);
@@ -1264,16 +1264,16 @@ export default function App() {
       });
   }, []);
 
-  // ── Load watchlist when Watchlist tab opens ──
+  // ── Load backlog when Backlog tab opens ──
   useEffect(() => {
-    if (activeTab !== 'backlog' || watchlistData !== null) return;
+    if (activeTab !== 'backlog' || backlogData !== null) return;
     const creds = getCredentials();
     if (!creds) { handleAuthError(); return; }
-    fetchWatchlist(creds.username, creds.apiKey)
-      .then(data => setWatchlistData(data))
+    fetchBacklog(creds.username, creds.apiKey)
+      .then(data => setBacklogData(data))
       .catch(err => {
         if (err.message === 'AUTH_ERROR') handleAuthError();
-        else setWatchlistData({ total: 0, results: [] });
+        else setBacklogData({ total: 0, results: [] });
       });
   }, [activeTab]);
 
@@ -1329,16 +1329,16 @@ export default function App() {
     return map;
   }, [achievementChunks]);
 
-  // ── Merge profile + watchlist + games into the shape transformData expects ──
+  // ── Merge profile + backlog + games into the shape transformData expects ──
   const rawData = useMemo(() => {
     if (!profileData) return null;
     return {
       ...profileData,
-      wantToPlayList:       watchlistData,
+      wantToPlayList:       backlogData,
       recentAchievements:   [],
       detailedGameProgress: gamesData?.detailedGameProgress ?? {},
     };
-  }, [profileData, watchlistData, gamesData]);
+  }, [profileData, backlogData, gamesData]);
 
   const { profile: PROFILE_DATA, games: ALL_GAMES, backlog: BACKLOG } = useMemo(() => transformData(rawData), [rawData]);
 
@@ -1718,8 +1718,8 @@ export default function App() {
             </button>
             <button onClick={() => setTab('backlog')} className={`flex-1 md:flex-none flex flex-col md:flex-row items-center justify-center gap-1 md:gap-0 py-2.5 md:py-0 md:pb-2 px-1 md:px-0 transition-colors relative ${activeTab === 'backlog' ? 'text-white' : 'text-[#546270] hover:text-[#c6d4df]'}`}>
               <Star size={18} className="block md:hidden shrink-0" />
-              <span className="block md:hidden text-[9px] font-semibold uppercase tracking-[0.06em] leading-none">Watchlist</span>
-              <span className="hidden md:inline text-[11px] md:text-[14px] uppercase tracking-wide font-medium whitespace-nowrap">Watchlist</span>
+              <span className="block md:hidden text-[9px] font-semibold uppercase tracking-[0.06em] leading-none">Backlog</span>
+              <span className="hidden md:inline text-[11px] md:text-[14px] uppercase tracking-wide font-medium whitespace-nowrap">Backlog</span>
               {activeTab === 'backlog' && <div className="absolute bottom-[-1px] left-0 w-full h-[3px] bg-[#66c0f4]" />}
             </button>
             <button onClick={() => setTab('social')} className={`flex-1 md:flex-none flex flex-col md:flex-row items-center justify-center gap-1 md:gap-0 py-2.5 md:py-0 md:pb-2 px-1 md:px-0 transition-colors relative ${activeTab === 'social' ? 'text-white' : 'text-[#546270] hover:text-[#c6d4df]'}`}>
@@ -1736,7 +1736,7 @@ export default function App() {
           {activeTab === 'social' ? (
             <SocialTab socialData={socialData} socialError={socialError} onRetry={() => setSocialError(false)} />
           ) : activeTab === 'series' ? (
-            <SeriesProgressTab seriesData={seriesData} gamesData={gamesData} watchlistData={watchlistData} />
+            <SeriesProgressTab seriesData={seriesData} gamesData={gamesData} backlogData={backlogData} />
           ) : activeTab === 'activity' ? (
             loadedChunkCount === 0 && loadingChunkIndices.size > 0
               ? <ActivitySkeleton />
@@ -1748,7 +1748,7 @@ export default function App() {
                   allLoaded={loadedChunkCount === TOTAL_ACH_CHUNKS}
                 />
           ) : activeTab === 'backlog' ? (
-            (watchlistData === null || (watchlistData.total > 0 && BACKLOG.games.length === 0)) ? (
+            (backlogData === null || (backlogData.total > 0 && BACKLOG.games.length === 0)) ? (
               <div className="flex flex-col gap-2">
                 {[...Array(8)].map((_, i) => (
                   <div key={i} className="flex items-center gap-3 p-3 bg-[#1b2838] border border-[#323f4c] rounded-[3px]">
@@ -1772,8 +1772,8 @@ export default function App() {
 
               const filtered = BACKLOG.games.filter(g => {
                 const status = getStatus(g);
-                if (watchlistSearch) {
-                  const q = watchlistSearch.toLowerCase();
+                if (backlogSearch) {
+                  const q = backlogSearch.toLowerCase();
                   const searchable = [
                     g.baseTitle || g.title,
                     g.isSubset ? 'subset' : null,
@@ -1782,7 +1782,7 @@ export default function App() {
                   ].filter(Boolean).join(' ').toLowerCase();
                   if (!searchable.includes(q)) return false;
                 }
-                if (watchlistStatusFilter !== 'all' && status !== watchlistStatusFilter) return false;
+                if (backlogStatusFilter !== 'all' && status !== backlogStatusFilter) return false;
                 return true;
               });
 
@@ -1795,12 +1795,12 @@ export default function App() {
 
               // Build groups
               let groups = [];
-              if (watchlistGrouping === 'console') {
+              if (backlogGrouping === 'console') {
                 const map = {};
                 filtered.forEach(g => { if (!map[g.console]) map[g.console] = []; map[g.console].push(g); });
                 groups = Object.entries(map).sort(([a],[b]) => a.localeCompare(b))
                   .map(([key, games]) => ({ key, label: key, dot: '#66c0f4', games, defaultOpen: games.length <= 5 }));
-              } else if (watchlistGrouping === 'status') {
+              } else if (backlogGrouping === 'status') {
                 ['mastered','inprogress','notstarted','noach'].forEach(s => {
                   const games = filtered.filter(g => getStatus(g) === s);
                   if (games.length > 0) groups.push({ key: s, label: statusMeta[s].label, dot: statusMeta[s].dot, games, defaultOpen: statusMeta[s].defaultOpen });
@@ -1808,7 +1808,7 @@ export default function App() {
               }
 
               // Table columns — responsive via CSS classes, not inline styles
-              const showConsole  = watchlistGrouping === 'none';
+              const showConsole  = backlogGrouping === 'none';
               const colClass = showConsole ? 'wl-row-full' : 'wl-row-noconsole';
               const headers = [
                 { label: '', cls: '' },
@@ -1836,7 +1836,7 @@ export default function App() {
                         {renderTildeTags(game.tags)}
                       </div>
                       {game.isSubset && game.subsetName && <span className="text-[9px] text-[#c8a84b] truncate block">{game.subsetName}</span>}
-                      {watchlistGrouping === 'status'
+                      {backlogGrouping === 'status'
                         ? <span className="text-[9px] text-[#66c0f4] truncate block">{game.console}</span>
                         : <>
                           {isMastered   && <span className="text-[8px] text-[#e5b143] flex items-center gap-1"><Trophy size={8}/> Mastered</span>}
@@ -1861,45 +1861,56 @@ export default function App() {
               return (
                 <>
                   {/* ── Filter + Group bar ── */}
-                  <div className="flex flex-wrap items-center gap-2 mb-2">
+                  <div className="flex flex-col gap-2 mb-2 md:flex-row md:flex-wrap md:items-center md:gap-2">
+                    {/* Search */}
                     <div className="relative">
-                      <input type="text" placeholder="Search games…" value={watchlistSearch} onChange={e => setWatchlistSearch(e.target.value)}
-                        className="bg-[#101214] border border-[#323f4c] hover:border-[#546270] focus:border-[#66c0f4] outline-none text-[10px] text-[#c6d4df] placeholder-[#546270] px-2 py-[4px] rounded-[2px] w-44 transition-colors" />
-                      {watchlistSearch && <button onClick={() => setWatchlistSearch('')} className="absolute right-1.5 top-1/2 -translate-y-1/2 text-[#546270] hover:text-[#c6d4df] text-[10px]">×</button>}
+                      <input type="text" placeholder="Search games…" value={backlogSearch} onChange={e => setBacklogSearch(e.target.value)}
+                        className="bg-[#101214] border border-[#323f4c] hover:border-[#546270] focus:border-[#66c0f4] outline-none text-[10px] text-[#c6d4df] placeholder-[#546270] px-2 py-[4px] rounded-[2px] w-full md:w-44 transition-colors" />
+                      {backlogSearch && <button onClick={() => setBacklogSearch('')} className="absolute right-1.5 top-1/2 -translate-y-1/2 text-[#546270] hover:text-[#c6d4df] text-[10px]">×</button>}
                     </div>
-                    <span className="text-[#2a475e] text-[10px] select-none">|</span>
-                    {[
-                      { value: 'all',        label: 'All',             cls: 'bg-[#546270] text-[#101214] border-[#546270]' },
-                      { value: 'noach',      label: 'No Achievements', cls: 'bg-[#323f4c] text-[#8f98a0] border-[#323f4c]' },
-                      { value: 'notstarted', label: 'Not Started',     cls: 'bg-[#546270] text-[#101214] border-[#546270]' },
-                      { value: 'inprogress', label: 'In Progress',     cls: 'bg-[#66c0f4] text-[#101214] border-[#66c0f4]' },
-                      { value: 'mastered',   label: 'Mastered',        cls: 'bg-[#e5b143] text-[#101214] border-[#e5b143]' },
-                    ].map(opt => (
-                      <button key={opt.value} onClick={() => setWatchlistStatusFilter(opt.value)}
-                        className={`text-[9px] font-semibold uppercase tracking-wider px-2 py-[3px] rounded-[2px] border transition-colors ${watchlistStatusFilter === opt.value ? opt.cls : 'bg-[#101214] text-[#8f98a0] border-[#323f4c] hover:text-[#c6d4df] hover:border-[#546270]'}`}>
-                        {opt.label}
-                      </button>
-                    ))}
-                    <span className="text-[#2a475e] text-[10px] select-none">|</span>
-                    <span className="text-[9px] text-[#546270] uppercase tracking-wider">Group</span>
-                    {[
-                      { value: 'none',    label: 'None'    },
-                      { value: 'console', label: 'Console' },
-                      { value: 'status',  label: 'Status'  },
-                    ].map(opt => (
-                      <button key={opt.value} onClick={() => { setWatchlistGrouping(opt.value); setCollapsedGroups(new Set()); }}
-                        className={`text-[9px] font-semibold uppercase tracking-wider px-2 py-[3px] rounded-[2px] border transition-colors ${watchlistGrouping === opt.value ? 'bg-[#1b2838] text-[#c6d4df] border-[#2a475e]' : 'bg-[#101214] text-[#546270] border-[#323f4c] hover:text-[#c6d4df] hover:border-[#546270]'}`}>
-                        {opt.label}
-                      </button>
-                    ))}
-                    {(watchlistSearch || watchlistStatusFilter !== 'all') && (
-                      <button onClick={() => { setWatchlistSearch(''); setWatchlistStatusFilter('all'); }} className="ml-auto text-[9px] text-[#546270] hover:text-[#66c0f4] uppercase tracking-wider transition-colors">Clear ×</button>
+
+                    {/* Status filters */}
+                    <div className="flex items-center gap-1.5 overflow-x-auto">
+                      <span className="text-[9px] text-[#546270] uppercase tracking-wider shrink-0">Status</span>
+                      <span className="text-[#2a475e] text-[10px] select-none shrink-0 hidden md:inline">|</span>
+                      {[
+                        { value: 'all',        label: 'All',             cls: 'bg-[#546270] text-[#101214] border-[#546270]' },
+                        { value: 'noach',      label: 'No Ach',          cls: 'bg-[#323f4c] text-[#8f98a0] border-[#323f4c]' },
+                        { value: 'notstarted', label: 'Not Started',     cls: 'bg-[#546270] text-[#101214] border-[#546270]' },
+                        { value: 'inprogress', label: 'In Progress',     cls: 'bg-[#66c0f4] text-[#101214] border-[#66c0f4]' },
+                        { value: 'mastered',   label: 'Mastered',        cls: 'bg-[#e5b143] text-[#101214] border-[#e5b143]' },
+                      ].map(opt => (
+                        <button key={opt.value} onClick={() => setBacklogStatusFilter(opt.value)}
+                          className={`shrink-0 text-[9px] font-semibold uppercase tracking-wider px-2 py-[3px] rounded-[2px] border transition-colors ${backlogStatusFilter === opt.value ? opt.cls : 'bg-[#101214] text-[#8f98a0] border-[#323f4c] hover:text-[#c6d4df] hover:border-[#546270]'}`}>
+                          {opt.label}
+                        </button>
+                      ))}
+                    </div>
+
+                    {/* Group filters */}
+                    <div className="flex items-center gap-1.5 overflow-x-auto">
+                      <span className="text-[9px] text-[#546270] uppercase tracking-wider shrink-0">Group</span>
+                      <span className="text-[#2a475e] text-[10px] select-none shrink-0 hidden md:inline">|</span>
+                      {[
+                        { value: 'none',    label: 'None'    },
+                        { value: 'console', label: 'Console' },
+                        { value: 'status',  label: 'Status'  },
+                      ].map(opt => (
+                        <button key={opt.value} onClick={() => { setBacklogGrouping(opt.value); setCollapsedGroups(new Set()); }}
+                          className={`shrink-0 text-[9px] font-semibold uppercase tracking-wider px-2 py-[3px] rounded-[2px] border transition-colors ${backlogGrouping === opt.value ? 'bg-[#1b2838] text-[#c6d4df] border-[#2a475e]' : 'bg-[#101214] text-[#546270] border-[#323f4c] hover:text-[#c6d4df] hover:border-[#546270]'}`}>
+                          {opt.label}
+                        </button>
+                      ))}
+                    </div>
+
+                    {(backlogSearch || backlogStatusFilter !== 'all') && (
+                      <button onClick={() => { setBacklogSearch(''); setBacklogStatusFilter('all'); }} className="md:ml-auto text-[9px] text-[#546270] hover:text-[#66c0f4] uppercase tracking-wider transition-colors self-start md:self-auto">Clear ×</button>
                     )}
                   </div>
 
                   {/* Stats line */}
                   <p className="text-[10px] text-[#546270] px-1 mb-1">
-                    <span className="text-[#8f98a0]">{BACKLOG.total.toLocaleString()}</span> games in watchlist
+                    <span className="text-[#8f98a0]">{BACKLOG.total.toLocaleString()}</span> games in backlog
                     {BACKLOG.games.length < BACKLOG.total && <> · showing first {BACKLOG.games.length}</>}
                     <span className="mx-2 text-[#2a475e]">|</span>
                     <span className="text-[#c6d4df]">{BACKLOG.games.filter(g => g.achievementsTotal > 0).length}</span> with achievements
@@ -1923,7 +1934,7 @@ export default function App() {
 
                     {filtered.length === 0 ? (
                       <div className="text-center py-6 text-[#546270] text-[11px]">No games match the current filters.</div>
-                    ) : watchlistGrouping === 'none' ? (
+                    ) : backlogGrouping === 'none' ? (
                       filtered.map(game => <GameRow key={game.id} game={game} />)
                     ) : (
                       groups.map(group => {

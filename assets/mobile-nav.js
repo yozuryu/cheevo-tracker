@@ -49,7 +49,7 @@
     },
     {
       id: 'backlog',
-      label: 'Watchlist',
+      label: 'Backlog',
       href: BASE + '/profile/?tab=backlog',
       active: isProfile && currentTab === 'backlog',
       color: '#e5b143',

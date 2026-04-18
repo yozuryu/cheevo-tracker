@@ -1,5 +1,5 @@
 import React from 'react';
-import { Menu, X, FileText, RotateCcw, LogOut, Trash2 } from 'lucide-react';
+import { Menu, X, FileText, RotateCcw, LogOut, Trash2, Gamepad2 } from 'lucide-react';
 
 /**
  * Shared UI components — Topbar and Footer.
@@ -56,9 +56,11 @@ function MenuDropdown({ onClose }) {
   }
 
   const rows = [
-    { Icon: FileText, label: 'Changelog',    href: '../changelog/', color: '#57cbde' },
-    { Icon: RotateCcw, label: 'Refresh Data', onClick: handleRefresh, color: '#66c0f4' },
-    { Icon: Trash2,   label: 'Purge Cache',  onClick: handlePurgeCache, color: '#8f98a0' },
+    { Icon: Gamepad2,  label: 'Consoles',    href: '../console/',   color: '#e5b143' },
+    { Icon: FileText,  label: 'Changelog',   href: '../changelog/', color: '#57cbde' },
+    null, // divider
+    { Icon: RotateCcw, label: 'Refresh Data', onClick: handleRefresh,    color: '#66c0f4' },
+    { Icon: Trash2,    label: 'Purge Cache',  onClick: handlePurgeCache, color: '#8f98a0' },
     null, // divider
     { Icon: LogOut, label: 'Log Out', onClick: handleLogout, color: '#ff6b6b', labelColor: '#ff6b6b' },
   ];

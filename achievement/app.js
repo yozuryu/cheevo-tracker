@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
-import { Trophy, Crown, AlertTriangle, Lock, Flame, Feather, Gamepad2, Star, TrendingUp, User, Calendar, ExternalLink } from 'lucide-react';
+import { Trophy, Crown, AlertTriangle, Lock, Flame, Feather, Gamepad2, Star, TrendingUp, User, Calendar, ExternalLink, Loader } from 'lucide-react';
 import { MEDIA_URL, SITE_URL } from '../profile/utils/constants.js';
 import { parseTitle, formatDate, formatTimeAgo, getMediaUrl } from '../profile/utils/helpers.js';
-import { getCredentials, clearCredentials, getAchievementUnlocks, getGameInfoAndUserProgress } from '../profile/utils/ra-api.js';
+import { getCredentials, clearCredentials, getAchievementUnlocks, getGameInfoAndUserProgress, getComments } from '../profile/utils/ra-api.js';
 import { Topbar, Footer } from '../assets/ui.js';
 
 // ── Constants ─────────────────────────────────────────────────────────────────
@@ -27,12 +27,28 @@ function AchievementApp() {
   const params = new URLSearchParams(window.location.search);
   const achId  = params.get('id');
 
+  const VALID_TABS = ['unlocks', 'comments', 'changelog'];
+  const initialTab = VALID_TABS.includes(params.get('tab')) ? params.get('tab') : 'unlocks';
+
   const [achData, setAchData]         = useState(null);
-  const [userGame, setUserGame]       = useState(null);   // null = loading, false = unavailable
+  const [userGame, setUserGame]       = useState(null);
   const [unlocks, setUnlocks]         = useState([]);
   const [loading, setLoading]         = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError]             = useState(null);
+
+  const [activeTab, setActiveTab]           = useState(initialTab);
+
+  function switchTab(id) {
+    setActiveTab(id);
+    const sp = new URLSearchParams(window.location.search);
+    sp.set('tab', id);
+    history.replaceState(null, '', '?' + sp.toString());
+  }
+  const [comments, setComments]             = useState(null);
+  const [commentsTotal, setCommentsTotal]   = useState(0);
+  const [commentsOffset, setCommentsOffset] = useState(0);
+  const [loadingMoreComments, setLoadingMoreComments] = useState(false);
 
   const creds = getCredentials();
 
@@ -65,6 +81,22 @@ function AchievementApp() {
     })();
   }, [achId]);
 
+  // ── Lazy-load comments when tab opens ────────────────────────────────────────
+  useEffect(() => {
+    if ((activeTab !== 'comments' && activeTab !== 'changelog') || comments !== null || !achId) return;
+    if (!creds) { handleAuthError(); return; }
+    getComments(creds.username, creds.apiKey, { i: achId, t: 2, c: 25 })
+      .then(data => {
+        setComments(data.results);
+        setCommentsTotal(data.total);
+        setCommentsOffset(25);
+      })
+      .catch(err => {
+        if (err.message === 'AUTH_ERROR') handleAuthError();
+        else setComments([]);
+      });
+  }, [activeTab, achId]);
+
   async function loadMoreUnlocks() {
     if (!creds || !achId || loadingMore) return;
     setLoadingMore(true);
@@ -76,7 +108,19 @@ function AchievementApp() {
     setLoadingMore(false);
   }
 
-  // Derive this achievement's user data from the game progress response
+  async function loadMoreComments() {
+    if (!creds || loadingMoreComments) return;
+    setLoadingMoreComments(true);
+    try {
+      const data = await getComments(creds.username, creds.apiKey,
+        { i: achId, t: 2, c: 25, o: commentsOffset });
+      setComments(prev => [...prev, ...data.results]);
+      setCommentsOffset(o => o + 25);
+    } catch {}
+    setLoadingMoreComments(false);
+  }
+
+  // Derived values
   const userAch = userGame
     ? (userGame.achievements[String(achId)] ||
        Object.values(userGame.achievements).find(a => String(a.id) === String(achId)) ||
@@ -92,19 +136,19 @@ function AchievementApp() {
   const anyPct   = achData?.totalPlayers > 0
     ? Math.min(100, (achData.unlocksCount / achData.totalPlayers) * 100).toFixed(1)
     : null;
-  const hasMore  = achData && unlocks.length < achData.unlocksCount;
-  const gameId   = achData?.game?.id;
-  const gameName = achData?.game?.title ? parseTitle(achData.game.title).baseTitle : null;
+  const hasMoreUnlocks  = achData && unlocks.length < achData.unlocksCount;
+  const userComments    = comments ? comments.filter(c => c.user !== 'Server') : [];
+  const changelogEntries = comments ? comments.filter(c => c.user === 'Server') : [];
+  const gameId      = achData?.game?.id;
+  const gameName    = achData?.game?.title ? parseTitle(achData.game.title).baseTitle : null;
   const consoleName = achData?.console?.name || userGame?.consoleName || null;
 
-  // Badge image — prefer userGame source (more reliable BadgeName)
   const badgeSrc = userAch?.badgeName
     ? `${MEDIA_URL}/Badge/${userAch.badgeName}.png`
     : ach?.badgeName
       ? `${MEDIA_URL}/Badge/${ach.badgeName}.png`
       : `${MEDIA_URL}/Badge/00001.png`;
 
-  // Hero background from game data
   const heroBg = (() => {
     if (!userGame) return null;
     const isFallback = img => !img || img.includes('000002');
@@ -144,8 +188,11 @@ function AchievementApp() {
           </div>
         </div>
         <div className="flex-1 max-w-3xl mx-auto w-full px-4 md:px-8 py-6">
-          <div className="shimmer h-[52px] rounded mb-4" />
-          <div className="shimmer h-4 w-40 rounded mb-3" />
+          <div className="shimmer h-[52px] rounded mb-5" />
+          <div className="flex items-center gap-2 mb-4">
+            <div className="shimmer h-7 w-32 rounded-sm" />
+            <div className="shimmer h-7 w-24 rounded-sm" />
+          </div>
           {[0, 1, 2, 3, 4].map(i => (
             <div key={i} className="shimmer h-9 rounded mb-1" />
           ))}
@@ -211,8 +258,6 @@ function AchievementApp() {
 
           {/* Badge + info */}
           <div className="flex gap-4 items-start">
-
-            {/* Badge */}
             <div className="relative shrink-0 w-16 h-16 md:w-28 md:h-28 rounded-[3px] border border-[#101214] overflow-hidden bg-black">
               <img
                 src={badgeSrc}
@@ -224,7 +269,6 @@ function AchievementApp() {
               )}
             </div>
 
-            {/* Info */}
             <div className="flex-1 min-w-0 flex flex-col justify-center">
               <div className="flex items-start gap-2 flex-wrap mb-1">
                 <h1 className={`text-[17px] font-semibold leading-tight ${userAch?.dateEarned ? 'text-[#e5b143]' : 'text-[#c6d4df]'}`}>
@@ -239,7 +283,6 @@ function AchievementApp() {
               </div>
               <p className="text-[11px] text-[#8f98a0] leading-snug mb-2">{ach?.description}</p>
 
-              {/* Metadata row */}
               <div className="flex items-center gap-2 flex-wrap text-[10px]">
                 <span className="flex items-center gap-1 text-[#66c0f4]">
                   <Star size={10} className="shrink-0" />{ach?.points} pts
@@ -306,62 +349,74 @@ function AchievementApp() {
 
       {/* ── Content ── */}
       <div className="flex-1 max-w-3xl mx-auto w-full px-4 md:px-8 py-6">
-        <div className="md:grid md:grid-cols-[2fr_3fr] md:gap-6">
 
-          {/* Left column — Your Status */}
-          <div className="mb-5 md:mb-0">
-            <div className="flex items-center gap-2 mb-2">
-              <span className="w-[3px] h-[14px] bg-[#e5b143] rounded-[1px] shrink-0" />
-              <span className="text-[13px] text-white tracking-wide uppercase font-medium">Your Status</span>
-            </div>
-
-            {userGame === null ? (
-              <div className="shimmer h-[52px] rounded-[3px]" />
-            ) : !userAch || !userAch.dateEarned ? (
-              <div className="flex items-center gap-3 p-3 bg-[#1b2838] border border-[#2a475e] rounded-[3px]">
-                <Lock size={16} className="text-[#546270] shrink-0" />
-                <span className="text-[12px] text-[#546270]">Not yet unlocked</span>
-              </div>
-            ) : (
-              <div className={`flex items-center gap-3 p-3 bg-[#1b2838] border rounded-[3px] border-l-[3px] ${
-                userAch.dateEarnedHardcore
-                  ? 'border-[#2a475e] border-l-[#e5b143]'
-                  : 'border-[#2a475e] border-l-[#8f98a0]'
-              }`}>
-                <img
-                  src={badgeSrc}
-                  alt={ach?.title}
-                  className="w-8 h-8 rounded-[2px] border border-[#101214] object-cover shrink-0"
-                />
-                <div className="flex-1 min-w-0">
-                  <div className="text-[9px] text-[#546270] uppercase tracking-[0.07em] mb-0.5">Unlocked at</div>
-                  <div className="text-[11px] text-[#66c0f4] font-medium">{formatDate(userAch.dateEarned)}</div>
-                </div>
-                {userAch.dateEarnedHardcore && (
-                  <span className="flex items-center gap-1 text-[9px] font-bold px-1.5 py-[2px] rounded-sm shrink-0"
-                    style={{ color: '#ff6b6b', background: 'rgba(255,107,107,0.12)', border: '1px solid rgba(255,107,107,0.3)' }}>
-                    <Flame size={8} /> Hardcore
-                  </span>
-                )}
-              </div>
-            )}
+        {/* Your Status — always visible */}
+        <div className="mb-5">
+          <div className="flex items-center gap-2 mb-2">
+            <span className="w-[3px] h-[14px] bg-[#e5b143] rounded-[1px] shrink-0" />
+            <span className="text-[13px] text-white tracking-wide uppercase font-medium">Your Status</span>
           </div>
 
-          {/* Right column — Recent Unlocks */}
-          <div>
-            <div className="flex items-center gap-2 mb-2">
-              <span className="w-[3px] h-[14px] bg-[#66c0f4] rounded-[1px] shrink-0" />
-              <span className="text-[13px] text-white tracking-wide uppercase font-medium">Recent Unlocks</span>
-              {achData && (
-                <span className="ml-auto text-[10px] text-[#546270]">
-                  {achData.unlocksCount.toLocaleString()} total
+          {userGame === null ? (
+            <div className="shimmer h-[52px] rounded-[3px]" />
+          ) : !userAch || !userAch.dateEarned ? (
+            <div className="flex items-center gap-3 p-3 bg-[#1b2838] border border-[#2a475e] rounded-[3px]">
+              <Lock size={16} className="text-[#546270] shrink-0" />
+              <span className="text-[12px] text-[#546270]">Not yet unlocked</span>
+            </div>
+          ) : (
+            <div className={`flex items-center gap-3 p-3 bg-[#1b2838] border rounded-[3px] border-l-[3px] ${
+              userAch.dateEarnedHardcore
+                ? 'border-[#2a475e] border-l-[#e5b143]'
+                : 'border-[#2a475e] border-l-[#8f98a0]'
+            }`}>
+              <img src={badgeSrc} alt={ach?.title}
+                className="w-8 h-8 rounded-[2px] border border-[#101214] object-cover shrink-0" />
+              <div className="flex-1 min-w-0">
+                <div className="text-[9px] text-[#546270] uppercase tracking-[0.07em] mb-0.5">Unlocked at</div>
+                <div className="text-[11px] text-[#66c0f4] font-medium">{formatDate(userAch.dateEarned)}</div>
+              </div>
+              {userAch.dateEarnedHardcore && (
+                <span className="flex items-center gap-1 text-[9px] font-bold px-1.5 py-[2px] rounded-sm shrink-0"
+                  style={{ color: '#ff6b6b', background: 'rgba(255,107,107,0.12)', border: '1px solid rgba(255,107,107,0.3)' }}>
+                  <Flame size={8} /> Hardcore
                 </span>
               )}
             </div>
+          )}
+        </div>
 
+        {/* ── Tab bar ── */}
+        <div className="sticky top-0 md:top-[26px] z-30 bg-[#171a21] -mx-4 md:-mx-8 px-4 md:px-8 py-3 mb-1 border-b border-[#2a475e]">
+          <div className="flex items-center gap-2 overflow-x-auto">
+          {[
+            { id: 'unlocks',   label: 'Recent Unlocks', count: achData?.unlocksCount },
+            { id: 'comments',  label: 'Comments',        count: null },
+            { id: 'changelog', label: 'Changelog',       count: null },
+          ].map(t => (
+            <button key={t.id} type="button" onClick={() => switchTab(t.id)}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-sm text-[11px] font-semibold uppercase tracking-wider border transition-colors shrink-0 ${
+                activeTab === t.id
+                  ? 'bg-[#1b2838] text-[#c6d4df] border-[#66c0f4]'
+                  : 'text-[#546270] border-[#323f4c] hover:text-[#8f98a0] hover:border-[#546270]'
+              }`}>
+              {t.label}
+              {t.count != null && (
+                <span className={`text-[9px] font-normal ${activeTab === t.id ? 'text-[#546270]' : 'text-[#323f4c]'}`}>
+                  {t.count.toLocaleString()}
+                </span>
+              )}
+            </button>
+          ))}
+          </div>
+        </div>
+
+        {/* ── Recent Unlocks tab ── */}
+        {activeTab === 'unlocks' && (
+          <div>
             <div className="flex flex-col gap-[2px]">
               {unlocks.length === 0 ? (
-                <div className="text-[11px] text-[#546270] py-4 text-center">No unlocks recorded.</div>
+                <div className="text-[11px] text-[#546270] py-8 text-center">No unlocks recorded.</div>
               ) : unlocks.map((u, i) => (
                 <div key={`${u.user}-${i}`}
                   className={`flex items-center gap-2.5 px-2.5 py-2 bg-[#1b2838] hover:bg-[#202d39] border-l-[3px] transition-colors ${
@@ -388,19 +443,123 @@ function AchievementApp() {
               ))}
             </div>
 
-            {hasMore && (
-              <button
-                onClick={loadMoreUnlocks}
-                disabled={loadingMore}
-                className="mt-2 w-full py-2 text-[11px] text-[#66c0f4] bg-[#1b2838] hover:bg-[#202d39] border border-[#2a475e] rounded-[3px] transition-colors disabled:opacity-50">
-                {loadingMore
-                  ? 'Loading…'
-                  : `Load more (${(achData.unlocksCount - unlocks.length).toLocaleString()} remaining)`}
+            {hasMoreUnlocks && (
+              <button onClick={loadMoreUnlocks} disabled={loadingMore}
+                className="mt-3 w-full py-2 text-[11px] text-[#66c0f4] bg-[#1b2838] hover:bg-[#202d39] border border-[#2a475e] rounded-[3px] transition-colors disabled:opacity-50">
+                {loadingMore ? 'Loading…' : `Load more (${(achData.unlocksCount - unlocks.length).toLocaleString()} remaining)`}
               </button>
             )}
           </div>
+        )}
 
-        </div>
+        {/* ── Comments tab ── */}
+        {activeTab === 'comments' && (
+          <div>
+            {comments === null ? (
+              <div className="flex flex-col gap-[2px]">
+                {[...Array(5)].map((_, i) => (
+                  <div key={i} className="flex gap-3 py-2.5 border-b border-[#1b2838]">
+                    <div className="shimmer w-7 h-7 rounded-full shrink-0 mt-0.5" />
+                    <div className="flex-1 flex flex-col gap-1.5 pt-0.5">
+                      <div className="flex gap-2">
+                        <div className="shimmer h-2.5 w-20 rounded" />
+                        <div className="shimmer h-2.5 w-14 rounded" />
+                      </div>
+                      <div className="shimmer h-2 w-full rounded" />
+                      <div className="shimmer h-2 w-3/4 rounded" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : userComments.length === 0 ? (
+              <div className="text-[11px] text-[#546270] py-8 text-center">No comments yet.</div>
+            ) : (
+              <div className="flex flex-col">
+                {userComments.map((c, i) => (
+                  <div key={`${c.ulid || c.user}-${i}`} className="flex gap-3 py-2.5 border-b border-[#1b2838]">
+                    <a href={`${SITE_URL}/user/${c.user}`} target="_blank" rel="noreferrer" className="shrink-0 mt-0.5">
+                      <img
+                        src={`${MEDIA_URL}/UserPic/${c.user}.png`}
+                        alt={c.user}
+                        className="w-7 h-7 rounded-full border border-[#2a475e] bg-[#131a22] object-cover"
+                      />
+                    </a>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-baseline gap-2 mb-1">
+                        <a href={`${SITE_URL}/user/${c.user}`} target="_blank" rel="noreferrer"
+                          className="text-[11px] font-medium text-[#e5b143] hover:underline shrink-0">{c.user}</a>
+                        <span className="text-[9px] text-[#546270]">{formatTimeAgo(c.submitted)}</span>
+                      </div>
+                      <p className="text-[11px] text-[#c6d4df] leading-snug break-words">{c.commentText}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {comments !== null && comments.length < commentsTotal && (
+              <div className="mt-4 flex justify-center">
+                <button type="button" onClick={loadMoreComments} disabled={loadingMoreComments}
+                  className="flex items-center gap-2 text-[11px] text-[#66c0f4] border border-[#66c0f4]/40 bg-[#66c0f4]/10 hover:bg-[#66c0f4]/20 px-4 py-1.5 rounded-full transition-colors disabled:opacity-50">
+                  {loadingMoreComments
+                    ? <><Loader size={12} className="animate-spin" /> Loading…</>
+                    : <>Load more ({commentsTotal - comments.length} remaining)</>}
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ── Changelog tab ── */}
+        {activeTab === 'changelog' && (
+          <div>
+            {comments === null ? (
+              <div className="relative pl-6">
+                <div className="absolute left-[7px] top-2 bottom-2 w-[2px] bg-[#2a475e] rounded-full opacity-40" />
+                {[...Array(5)].map((_, i) => (
+                  <div key={i} className="relative flex flex-col gap-1.5 py-2.5">
+                    <div className="absolute left-[-21px] top-[13px] w-2.5 h-2.5 rounded-full border-2 border-[#2a475e] bg-[#171a21] opacity-40" />
+                    <div className="shimmer h-2.5 w-3/4 rounded" />
+                    <div className="shimmer h-2 w-20 rounded" />
+                  </div>
+                ))}
+              </div>
+            ) : changelogEntries.length === 0 ? (
+              <div className="text-[11px] text-[#546270] py-8 text-center">No changelog entries.</div>
+            ) : (
+              <div className="relative pl-6">
+                {/* vertical line */}
+                <div className="absolute left-[7px] top-2 bottom-2 w-[2px] bg-[#2a475e] rounded-full" />
+                {changelogEntries.map((c, i) => (
+                  <div key={`cl-${i}`} className="relative flex flex-col gap-0.5 py-2.5">
+                    {/* dot marker */}
+                    <div className="absolute left-[-21px] top-[13px] w-2.5 h-2.5 rounded-full border-2 border-[#66c0f4] bg-[#171a21] shrink-0" />
+                    <p className="text-[11px] text-[#c6d4df] leading-snug break-words">
+                      {(() => {
+                        const spaceIdx = c.commentText.indexOf(' ');
+                        if (spaceIdx === -1) return <span className="text-[#e5b143]">{c.commentText}</span>;
+                        return <><span className="text-[#e5b143]">{c.commentText.slice(0, spaceIdx)}</span>{c.commentText.slice(spaceIdx)}</>;
+                      })()}
+                    </p>
+                    <span className="text-[9px] text-[#66c0f4]">{formatTimeAgo(c.submitted)}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {comments !== null && comments.length < commentsTotal && (
+              <div className="mt-4 flex justify-center">
+                <button type="button" onClick={loadMoreComments} disabled={loadingMoreComments}
+                  className="flex items-center gap-2 text-[11px] text-[#66c0f4] border border-[#66c0f4]/40 bg-[#66c0f4]/10 hover:bg-[#66c0f4]/20 px-4 py-1.5 rounded-full transition-colors disabled:opacity-50">
+                  {loadingMoreComments
+                    ? <><Loader size={12} className="animate-spin" /> Loading…</>
+                    : <>Load more ({commentsTotal - comments.length} remaining)</>}
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+
       </div>
 
       <Footer label="cheevo-tracker · retroachievements.org" />

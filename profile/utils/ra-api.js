@@ -3,7 +3,7 @@
  *
  * Two layers:
  *   1. Raw endpoint wrappers (one per RA API endpoint) — pure fetch + camelCase map, no cache.
- *   2. App-level composites (fetchProfile, fetchAchievementsChunk, fetchWatchlist,
+ *   2. App-level composites (fetchProfile, fetchAchievementsChunk, fetchBacklog,
  *      fetchGameDetails, validateCredentials) — compose raw calls, add sessionStorage cache.
  *
  * Auth:  credentials are stored in localStorage as { username, apiKey }.
@@ -1178,10 +1178,10 @@ export async function fetchAchievementsChunk(username, apiKey, chunkIndex) {
 
 /**
  * Fetches the user's want-to-play list (all pages, 100/page).
- * Cached for 5 minutes under key ra_watchlist_{username}.
+ * Cached for 5 minutes under key ra_backlog_{username}.
  */
-export async function fetchWatchlist(username, apiKey) {
-  const cacheKey = `ra_watchlist_${username}`;
+export async function fetchBacklog(username, apiKey) {
+  const cacheKey = `ra_backlog_${username}`;
   const cached = cacheGet(cacheKey);
   if (cached) return cached;
 
@@ -1197,6 +1197,38 @@ export async function fetchWatchlist(username, apiKey) {
       achievementsPublished: g.AchievementsPublished  || 0,
     })),
   };
+  cacheSet(cacheKey, result);
+  return result;
+}
+
+/**
+ * Fetches all game systems, filtered and sorted alphabetically.
+ * Cached under key ra_consoles.
+ */
+export async function fetchConsoles(username, apiKey) {
+  const cacheKey = 'ra_consoles';
+  const cached = cacheGet(cacheKey);
+  if (cached) return cached;
+
+  const data = await getConsoleIds(username, apiKey);
+  const result = data
+    .filter(c => c.isGameSystem)
+    .sort((a, b) => a.name.localeCompare(b.name));
+  cacheSet(cacheKey, result);
+  return result;
+}
+
+/**
+ * Fetches the full game list for a console, sorted alphabetically.
+ * Cached under key ra_consolegames_{consoleId}.
+ */
+export async function fetchConsoleGames(username, apiKey, consoleId) {
+  const cacheKey = `ra_consolegames_${consoleId}`;
+  const cached = cacheGet(cacheKey);
+  if (cached) return cached;
+
+  const data = await getGameList(username, apiKey, { i: consoleId, f: 1 });
+  const result = [...data].sort((a, b) => a.title.localeCompare(b.title));
   cacheSet(cacheKey, result);
   return result;
 }
