@@ -438,7 +438,7 @@ function AchievementApp() {
                     className="w-7 h-7 rounded-full border border-[#101214] shrink-0 object-cover bg-[#131a22]"
                     onError={e => { e.currentTarget.style.visibility = 'hidden'; }}
                   />
-                  <a href={`../user/?u=${u.user}`}
+                  <a href={`../profile/?u=${u.user}`}
                     className="text-[11px] font-medium text-[#e5b143] hover:text-[#f0c96a] transition-colors truncate flex-1 min-w-0">
                     {u.user}
                   </a>
@@ -487,7 +487,7 @@ function AchievementApp() {
               <div className="flex flex-col">
                 {userComments.map((c, i) => (
                   <div key={`${c.ulid || c.user}-${i}`} className="flex gap-3 py-2.5 border-b border-[#1b2838]">
-                    <a href={`../user/?u=${c.user}`} className="shrink-0 mt-0.5">
+                    <a href={`../profile/?u=${c.user}`} className="shrink-0 mt-0.5">
                       <img
                         src={c.userPic ? getMediaUrl(c.userPic) : `${MEDIA_URL}/UserPic/${c.user}.png`}
                         alt={c.user}
@@ -496,7 +496,7 @@ function AchievementApp() {
                     </a>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-baseline gap-2 mb-1">
-                        <a href={`../user/?u=${c.user}`}
+                        <a href={`../profile/?u=${c.user}`}
                           className="text-[11px] font-medium text-[#e5b143] hover:text-[#f0c96a] transition-colors shrink-0">{c.user}</a>
                         <span className="text-[9px] text-[#546270]">{formatTimeAgo(c.submitted)}</span>
                       </div>

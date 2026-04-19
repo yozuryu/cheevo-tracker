@@ -81,6 +81,14 @@ async function withRetry(fn, retries = 2, delayMs = 1000) {
   throw lastErr;
 }
 
+// ── Debug logging ─────────────────────────────────────────────────────────────
+
+function debugLog(entry) {
+  if (localStorage.getItem('raDebugMode') !== 'true') return;
+  if (!window.__raDebugLog) window.__raDebugLog = [];
+  window.__raDebugLog.push(entry);
+}
+
 // ── Core ──────────────────────────────────────────────────────────────────────
 
 const sleep = ms => new Promise(r => setTimeout(r, ms));
@@ -92,13 +100,33 @@ async function raFetch(endpoint, username, apiKey, params = {}) {
   for (const [k, v] of Object.entries(params))
     url.searchParams.set(k, String(v));
 
-  const res = await fetch(url);
-  if (res.status === 401) throw new Error('AUTH_ERROR');
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  const t0 = Date.now();
+  const safeParams = { ...params, y: '***' };
+
+  let res;
+  try {
+    res = await fetch(url);
+  } catch (e) {
+    debugLog({ endpoint, params: safeParams, status: 'network_error', error: e.message, ms: Date.now() - t0, ts: Date.now() });
+    throw e;
+  }
+
+  if (res.status === 401) {
+    debugLog({ endpoint, params: safeParams, status: 401, error: 'AUTH_ERROR', ms: Date.now() - t0, ts: Date.now() });
+    throw new Error('AUTH_ERROR');
+  }
+  if (!res.ok) {
+    debugLog({ endpoint, params: safeParams, status: res.status, error: `HTTP ${res.status}`, ms: Date.now() - t0, ts: Date.now() });
+    throw new Error(`HTTP ${res.status}`);
+  }
 
   const data = await res.json();
-  if (data?.message === 'Credentials are required.' || data?.status === 401)
+  if (data?.message === 'Credentials are required.' || data?.status === 401) {
+    debugLog({ endpoint, params: safeParams, status: 401, error: 'AUTH_ERROR', ms: Date.now() - t0, ts: Date.now() });
     throw new Error('AUTH_ERROR');
+  }
+
+  debugLog({ endpoint, params: safeParams, status: res.status, data, ms: Date.now() - t0, ts: Date.now() });
   return data;
 }
 
@@ -1035,8 +1063,9 @@ export async function getTicketData(username, apiKey,
  * Returns { profileData, firstChunkAchievements }
  * where profileData is the raw merged object consumed by transformData().
  */
-export async function fetchProfile(username, apiKey) {
-  const cacheKey = `ra_profile_${username}`;
+export async function fetchProfile(username, apiKey, targetUser) {
+  const u = targetUser || username;
+  const cacheKey = `ra_profile_${u}`;
   const cached = cacheGet(cacheKey);
   if (cached) return cached;
 
@@ -1045,12 +1074,12 @@ export async function fetchProfile(username, apiKey) {
   const chunk0From = nowTs - 182 * 24 * 60 * 60;
 
   const [profileRaw, summaryRaw, completionResults, awardsRaw, achRaw] = await Promise.all([
-    raFetch('API_GetUserProfile.php',              username, apiKey, { u: username }),
-    raFetch('API_GetUserSummary.php',              username, apiKey, { u: username, g: 20, a: 5 }),
-    paginate('API_GetUserCompletionProgress.php',  username, apiKey, {}),
-    raFetch('API_GetUserAwards.php',               username, apiKey, { u: username }),
+    raFetch('API_GetUserProfile.php',              username, apiKey, { u }),
+    raFetch('API_GetUserSummary.php',              username, apiKey, { u, g: 20, a: 5 }),
+    paginate('API_GetUserCompletionProgress.php',  username, apiKey, { u }),
+    raFetch('API_GetUserAwards.php',               username, apiKey, { u }),
     withRetry(() => raFetch('API_GetAchievementsEarnedBetween.php', username, apiKey,
-      { u: username, f: chunk0From, t: nowTs })),
+      { u, f: chunk0From, t: nowTs })),
   ]);
 
   const firstChunkAchievements = (Array.isArray(achRaw) ? achRaw : []).map(mapAchievementUnlock);

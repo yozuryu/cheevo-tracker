@@ -1,6 +1,39 @@
 # Changelog
 
-## v26.04.18 — Console Browser, User Pages, Achievement Comments, Nav Reorganisation, Avatar Fix
+## v26.04.19 — User Page Unified with Profile, Debug Mode
+
+### Profile
+
+- Removed "Last active" line from profile header — redundant with the Most Recently Played card already shown on the page
+
+### Settings
+
+- New **Developer** section with a **Debug Mode** toggle (default off); persisted in `localStorage.raDebugMode`
+
+### Structure
+
+- When debug mode is on, all `raFetch` calls append an entry to `window.__raDebugLog` with endpoint, sanitised params (API key redacted), HTTP status, response payload, timing (ms), and timestamp
+- A **bug icon button** appears in every page's topbar when debug mode is enabled; clicking it opens a panel listing all API calls made on the current page; each row is expandable to show request params and full JSON response; supports Refresh and Clear actions
+
+### User Page
+
+- **User page unified with profile page** — `/user/?u=username` now redirects to `/profile/?u=username`; the profile page renders in visitor mode when `?u=` is set
+- Fixed mobile visitor mode: horizontal scroll, stretched bottom nav, and bottom nav not sticking — caused by overflow escaping the page container; fixed with `overflow-x: clip` on the root div (clips without creating a scroll container, so sticky and fixed positioning remain unaffected)
+- Visitor mode: Activity, Backlog, and Social tabs hidden; only Recent Games, Completion Progress, and Series Progress (if applicable) are shown
+- Visitor mode: tab bar is always visible on mobile (no `hidden md:block`) so all tabs are reachable without scrolling; floating pill logic skipped
+- Visitor mode: breadcrumb shows `Cheevo Tracker › <username>` with link back to own profile
+- `fetchProfile` in `ra-api.js` now accepts optional `targetUser` parameter — passes `u: targetUser` to all 5 parallel API calls; cache key scoped to target user
+- All `../user/?u=` links in `profile/app.js`, `achievement/app.js`, and `game/app.js` updated to `../profile/?u=`
+- `user/app.js` retired; `user/index.html` converted to a lightweight JS redirect
+
+### Structure
+
+- User avatars now use the API-provided `UserPic` path instead of constructing from the current username — fixes broken images for users who changed their RA username; applied to all rendering sites (social tab, achievement unlocks/comments, game leaderboard entries/top scorers/recent masters/comments)
+- `ra-api.js`: added `userPic` field to `getAchievementUnlocks` unlocks, `getComments` results, `getLeaderboardEntries` results, and `getGameRankAndScore` results mappers
+
+---
+
+## v26.04.18 — Console Browser, User Pages, Achievement Comments, Nav Reorganisation
 
 ### Console Page
 
@@ -49,11 +82,6 @@
 ### Polish
 
 - All `hover:underline` link styles replaced with color-shift hover transitions throughout profile, game, achievement, and login pages
-
-### Structure
-
-- User avatars now use the API-provided `UserPic` path instead of constructing from the current username — fixes broken images for users who changed their RA username; applied to all rendering sites (social tab, achievement unlocks/comments, game leaderboard entries/top scorers/recent masters/comments)
-- `ra-api.js`: added `userPic` field to `getAchievementUnlocks` unlocks, `getComments` results, `getLeaderboardEntries` results, and `getGameRankAndScore` results mappers
 
 ---
 

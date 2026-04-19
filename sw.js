@@ -1,4 +1,4 @@
-const CACHE_NAME = 'cheevo-tracker-1775985000';
+const CACHE_NAME = 'cheevo-tracker-1775990007';
 
 // Static assets — cache-first
 const PRECACHE = [
@@ -22,7 +22,6 @@ const PRECACHE = [
   './console/index.html',
   './console/app.js',
   './user/index.html',
-  './user/app.js',
   './assets/mobile-nav.js',
   './assets/ui.js',
   './assets/favicon.ico',

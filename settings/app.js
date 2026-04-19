@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { FileText, RotateCcw, LogOut, ChevronRight, Trash2, Star } from 'lucide-react';
+import { FileText, RotateCcw, LogOut, ChevronRight, Trash2, Star, Bug } from 'lucide-react';
 import { Topbar, Footer } from '../assets/ui.js';
 
 function getCredentials() {
@@ -48,6 +48,14 @@ function SettingsSection({ title, children }) {
 
 function SettingsApp() {
   const creds = getCredentials();
+  const [debugMode, setDebugMode] = useState(() => localStorage.getItem('raDebugMode') === 'true');
+
+  function toggleDebug() {
+    const next = !debugMode;
+    setDebugMode(next);
+    localStorage.setItem('raDebugMode', String(next));
+    window.dispatchEvent(new CustomEvent('raDebugModeChange', { detail: next }));
+  }
 
   function handleRefresh() {
     sessionStorage.clear();
@@ -106,6 +114,18 @@ function SettingsApp() {
             label="Purge Cache"
             description="Delete all PWA asset caches and reload"
             onClick={handlePurgeCache}
+          />
+        </SettingsSection>
+
+        <SettingsSection title="Developer">
+          <SettingsRow
+            icon={<Bug />}
+            iconColor={debugMode ? '#e5b143' : '#546270'}
+            iconBg={debugMode ? 'rgba(229,177,67,0.1)' : '#202d39'}
+            label="Debug Mode"
+            description={debugMode ? 'Enabled — API log button visible in topbar' : 'Disabled'}
+            onClick={toggleDebug}
+            chevron={false}
           />
         </SettingsSection>
 

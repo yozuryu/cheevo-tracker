@@ -1073,7 +1073,7 @@ const SocialUserRow = ({ user, isMutual }) => (
       onError={e => { e.currentTarget.style.visibility = 'hidden'; }}
     />
     <div className="flex flex-col min-w-0 flex-1">
-      <a href={`../user/?u=${user.user}`}
+      <a href={`../profile/?u=${user.user}`}
         className="text-[11px] font-medium text-[#e5b143] hover:text-[#f0c96a] transition-colors truncate">
         {user.user}
       </a>
@@ -1141,7 +1141,7 @@ const SocialTab = ({ socialData, socialError, onRetry }) => {
             <div className="text-[11px] text-[#546270] py-3">None yet.</div>
           ) : (
             <div className="flex flex-col gap-[2px]">
-              {users.map(u => <SocialUserRow key={u.username} user={u} isMutual={isMutual(u)} />)}
+              {users.map(u => <SocialUserRow key={u.user} user={u} isMutual={isMutual(u)} />)}
             </div>
           )}
         </div>
@@ -1169,7 +1169,12 @@ export default function App() {
   const [loadingProfile, setLoadingProfile] = useState(true);
   const [error, setError] = useState(null);
 
-  const VALID_TABS = ['recent', 'progress', 'series', 'activity', 'backlog', 'social'];
+  const targetUser = new URLSearchParams(window.location.search).get('u') || null;
+  const isVisitorMode = !!targetUser;
+
+  const VALID_TABS = isVisitorMode
+    ? ['recent', 'progress', 'series']
+    : ['recent', 'progress', 'series', 'activity', 'backlog', 'social'];
   const initialTab = (() => {
     const p = new URLSearchParams(window.location.search).get('tab');
     return VALID_TABS.includes(p) ? p : 'recent';
@@ -1184,6 +1189,7 @@ export default function App() {
   const [pillLeaving, setPillLeaving] = useState(false);
   const pillLeaveTimer = useRef(null);
   const [statsExpanded, setStatsExpanded] = useState(false);
+  const [awardsExpanded, setAwardsExpanded] = useState(false);
   const tabBarRef = useRef(null);
   const [backlogSearch, setBacklogSearch] = useState('');
   const [backlogStatusFilter, setBacklogStatusFilter] = useState('all');
@@ -1251,7 +1257,7 @@ export default function App() {
   useEffect(() => {
     const creds = getCredentials();
     if (!creds) { handleAuthError(); return; }
-    fetchProfile(creds.username, creds.apiKey)
+    fetchProfile(creds.username, creds.apiKey, targetUser || undefined)
       .then(({ profileData: pd, firstChunkAchievements }) => {
         setProfileData(pd);
         setAchievementChunks(prev => { const n = [...prev]; n[0] = firstChunkAchievements; return n; });
@@ -1266,7 +1272,7 @@ export default function App() {
 
   // ── Load backlog when Backlog tab opens ──
   useEffect(() => {
-    if (activeTab !== 'backlog' || backlogData !== null) return;
+    if (isVisitorMode || activeTab !== 'backlog' || backlogData !== null) return;
     const creds = getCredentials();
     if (!creds) { handleAuthError(); return; }
     fetchBacklog(creds.username, creds.apiKey)
@@ -1279,7 +1285,7 @@ export default function App() {
 
   // ── Load social data when Social tab opens ──
   useEffect(() => {
-    if (activeTab !== 'social' || socialData !== null || socialError) return;
+    if (isVisitorMode || activeTab !== 'social' || socialData !== null || socialError) return;
     const creds = getCredentials();
     if (!creds) { handleAuthError(); return; }
     (async () => {
@@ -1298,7 +1304,7 @@ export default function App() {
 
   // ── Load all chunks when Activity tab opens ──
   useEffect(() => {
-    if (activeTab !== 'activity') return;
+    if (isVisitorMode || activeTab !== 'activity') return;
     achievementChunks.forEach((chunk, idx) => {
       if (chunk === null && !loadingChunkIndices.has(idx)) {
         setTimeout(() => loadChunk(idx), idx * 1000);
@@ -1346,7 +1352,7 @@ export default function App() {
     const onScroll = () => {
       const y = window.scrollY;
       setShowScrollTop(y > 400);
-      if (window.innerWidth < 768 && tabBarRef.current) {
+      if (!isVisitorMode && window.innerWidth < 768 && tabBarRef.current) {
         const bottom = tabBarRef.current.getBoundingClientRect().bottom;
         if (bottom < 0) {
           if (pillLeaveTimer.current) { clearTimeout(pillLeaveTimer.current); pillLeaveTimer.current = null; }
@@ -1393,9 +1399,12 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-[#171a21] text-[#c6d4df] font-sans selection:bg-[#66c0f4] selection:text-[#171a21] flex flex-col">
+    <div className="min-h-screen bg-[#171a21] text-[#c6d4df] font-sans selection:bg-[#66c0f4] selection:text-[#171a21] flex flex-col" style={{ overflowX: 'clip' }}>
       
-      <Topbar crumbs={[{ label: 'Cheevo Tracker' }, { label: 'Profile' }]} />
+      <Topbar crumbs={isVisitorMode
+        ? [{ label: 'Cheevo Tracker', href: '../profile/' }, { label: targetUser }]
+        : [{ label: 'Cheevo Tracker' }, { label: 'Profile' }]
+      } />
 
       {/* Header */}
       <header className={`bg-[#1b2838] border-b border-[#2a475e] px-4 md:px-8 pt-8 pb-5 md:pt-5 shadow-md${activeTab !== 'recent' ? ' hidden md:block' : ''}`}>
@@ -1603,49 +1612,32 @@ export default function App() {
           </div>
 
           <div className="flex flex-col gap-5">
-            
-            <div className="bg-[#1b2838] border border-[#2a475e] rounded-[3px] shadow-sm h-fit">
-              <div className="p-2.5 bg-[#172333] border-b border-[#2a475e] rounded-t-[2px] text-[#c6d4df] flex items-center gap-2">
-                <span className="w-[2px] h-[12px] bg-[#66c0f4] rounded-[1px] shrink-0"></span>
-                <span className="text-[11px] uppercase tracking-wide font-semibold flex items-center gap-2">
-                  <Award size={13} className="text-[#66c0f4]" /> Site Awards
-                </span>
-              </div>
-              <div className="p-3 grid grid-cols-5 sm:grid-cols-8 lg:grid-cols-5 gap-2 min-h-[60px]">
-                {PROFILE_DATA.siteAwards.length > 0 ? PROFILE_DATA.siteAwards.map(award => (
-                  award.icon ? (
-                    <img key={award.id} src={award.icon} title={award.title} alt={award.title} className="w-full aspect-square rounded-[2px] border border-[#101214] opacity-80 hover:opacity-100 transition-opacity cursor-help bg-black" />
-                  ) : (
-                    <div key={award.id} title={award.title} className="w-full aspect-square rounded-[2px] border border-[#101214] bg-[#202d39] flex items-center justify-center">
-                        <Award size={16} className="text-[#546270]" />
-                    </div>
-                  )
-                )) : (
-                  <div className="col-span-full text-center text-[#546270] text-[10px] py-2">No site awards yet.</div>
-                )}
-              </div>
-            </div>
 
+            {(() => {
+              const collapseLimit = window.innerWidth >= 640 ? 20 : 10;
+              const visibleAwards = awardsExpanded ? PROFILE_DATA.gameAwards : PROFILE_DATA.gameAwards.slice(0, collapseLimit);
+              const hasMore = PROFILE_DATA.gameAwards.length > collapseLimit;
+              return (
             <div className="bg-[#1b2838] border border-[#2a475e] rounded-[3px] shadow-sm h-fit">
               <div className="p-2.5 bg-[#172333] border-b border-[#2a475e] rounded-t-[2px] text-[#c6d4df] flex items-center gap-2">
                 <span className="w-[2px] h-[12px] bg-[#e5b143] rounded-[1px] shrink-0"></span>
                 <span className="text-[11px] uppercase tracking-wide font-semibold flex items-center gap-2">
                   <Star size={13} className="text-[#e5b143]" /> Game Awards
                 </span>
+                {PROFILE_DATA.gameAwards.length > 0 && (
+                  <span className="ml-auto text-[9px] text-[#546270]">{PROFILE_DATA.gameAwards.length}</span>
+                )}
               </div>
-              <div className="p-3 grid grid-cols-5 sm:grid-cols-8 lg:grid-cols-5 gap-2 min-h-[60px]">
-                {PROFILE_DATA.gameAwards.length > 0 ? PROFILE_DATA.gameAwards.map(award => (
+              <div className="p-3 grid grid-cols-5 gap-2 min-h-[60px]">
+                {PROFILE_DATA.gameAwards.length > 0 ? visibleAwards.map(award => (
                   <div key={award.id} className="relative group cursor-help">
                     <img
                       src={award.icon}
                       alt={award.title}
                       className={`w-full aspect-square rounded-[2px] border transition-all duration-200 bg-black relative z-10 group-hover:scale-110 ${award.type === 'Mastery/Completion' ? 'border-2 border-[#e5b143]' : 'border border-[#e5b143]/30 group-hover:border-[#e5b143]/80'}`}
                     />
-
                     <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[200px] bg-[#1b2838] border border-[#2a475e] rounded-[2px] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-[100] shadow-xl pointer-events-none overflow-hidden">
-                      {/* Gold accent line */}
                       <div className="h-[2px] bg-gradient-to-r from-[#e5b143] to-[#e5b143]/20"></div>
-                      {/* Header */}
                       <div className="flex items-center gap-2 px-2.5 py-2 border-b border-[#2a475e] bg-[#172333]">
                         <img src={award.icon} alt="" className="w-8 h-8 rounded-[2px] border border-[#e5b143]/30 bg-black shrink-0" />
                         <div className="flex flex-col gap-0.5 min-w-0">
@@ -1657,7 +1649,6 @@ export default function App() {
                           {award.isSubset && award.subsetName && <span className="text-[9px] text-[#c8a84b] truncate">{award.subsetName}</span>}
                         </div>
                       </div>
-                      {/* Body */}
                       <div className="px-2.5 py-2 flex flex-col gap-1.5">
                         <div className="flex items-center justify-between">
                           <span className="text-[9px] text-[#546270] uppercase tracking-[0.08em]">Console</span>
@@ -1682,14 +1673,25 @@ export default function App() {
                   <div className="col-span-full text-center text-[#546270] text-[10px] py-2">No game awards yet.</div>
                 )}
               </div>
+              {hasMore && (
+                <button
+                  onClick={() => setAwardsExpanded(v => !v)}
+                  className="w-full flex items-center justify-center gap-1 py-1.5 border-t border-[#1e2d3a] text-[10px] text-[#546270] hover:text-[#8f98a0] transition-colors"
+                >
+                  <ChevronDown size={11} className={`transition-transform duration-200 ${awardsExpanded ? 'rotate-180' : ''}`} />
+                  {awardsExpanded ? 'Show less' : `${PROFILE_DATA.gameAwards.length - collapseLimit} more`}
+                </button>
+              )}
             </div>
+              );
+            })()}
 
           </div>
         </div>
 
         {/* ── Tab bar (natural in-flow position; desktop: sticky) ── */}
-        <div ref={tabBarRef} className="hidden md:block md:sticky md:top-[26px] z-40 bg-[#171a21] -mx-4 md:-mx-8 mb-4 border-b border-[#2a475e]">
-          <div className="flex items-center gap-1 md:gap-6 px-2 md:px-8 overflow-x-auto scrollbar-none" style={{ scrollbarWidth: 'none' }}>
+        <div ref={tabBarRef} className={`${isVisitorMode ? 'block sticky top-0 md:top-[26px] md:-mx-8' : 'hidden md:block md:sticky md:top-[26px] -mx-4 md:-mx-8'} z-40 bg-[#171a21] mb-4 border-b border-[#2a475e]`}>
+          <div className={`flex items-center ${isVisitorMode ? 'gap-1 px-0 md:px-8 overflow-hidden' : 'gap-1 md:gap-6 px-2 md:px-8 overflow-x-auto scrollbar-none'}`} style={isVisitorMode ? undefined : { scrollbarWidth: 'none' }}>
             <button onClick={() => setTab('recent')} className={`flex-1 md:flex-none flex flex-col md:flex-row items-center justify-center gap-1 md:gap-0 py-2.5 md:py-0 md:pb-2 px-1 md:px-0 transition-colors relative ${activeTab === 'recent' ? 'text-white' : 'text-[#546270] hover:text-[#c6d4df]'}`}>
               <Clock size={18} className="block md:hidden shrink-0" />
               <span className="block md:hidden text-[9px] font-semibold uppercase tracking-[0.06em] leading-none">Recent</span>
@@ -1710,24 +1712,30 @@ export default function App() {
                 {activeTab === 'series' && <div className="absolute bottom-[-1px] left-0 w-full h-[3px] bg-[#e5b143]" />}
               </button>
             )}
-            <button onClick={() => setTab('activity')} className={`flex-1 md:flex-none flex flex-col md:flex-row items-center justify-center gap-1 md:gap-0 py-2.5 md:py-0 md:pb-2 px-1 md:px-0 transition-colors relative ${activeTab === 'activity' ? 'text-white' : 'text-[#546270] hover:text-[#c6d4df]'}`}>
-              <Activity size={18} className="block md:hidden shrink-0" />
-              <span className="block md:hidden text-[9px] font-semibold uppercase tracking-[0.06em] leading-none">Activity</span>
-              <span className="hidden md:inline text-[11px] md:text-[14px] uppercase tracking-wide font-medium whitespace-nowrap">Activity</span>
-              {activeTab === 'activity' && <div className="absolute bottom-[-1px] left-0 w-full h-[3px] bg-[#66c0f4]" />}
-            </button>
-            <button onClick={() => setTab('backlog')} className={`flex-1 md:flex-none flex flex-col md:flex-row items-center justify-center gap-1 md:gap-0 py-2.5 md:py-0 md:pb-2 px-1 md:px-0 transition-colors relative ${activeTab === 'backlog' ? 'text-white' : 'text-[#546270] hover:text-[#c6d4df]'}`}>
-              <Star size={18} className="block md:hidden shrink-0" />
-              <span className="block md:hidden text-[9px] font-semibold uppercase tracking-[0.06em] leading-none">Backlog</span>
-              <span className="hidden md:inline text-[11px] md:text-[14px] uppercase tracking-wide font-medium whitespace-nowrap">Backlog</span>
-              {activeTab === 'backlog' && <div className="absolute bottom-[-1px] left-0 w-full h-[3px] bg-[#66c0f4]" />}
-            </button>
-            <button onClick={() => setTab('social')} className={`flex-1 md:flex-none flex flex-col md:flex-row items-center justify-center gap-1 md:gap-0 py-2.5 md:py-0 md:pb-2 px-1 md:px-0 transition-colors relative ${activeTab === 'social' ? 'text-white' : 'text-[#546270] hover:text-[#c6d4df]'}`}>
-              <Users size={18} className="block md:hidden shrink-0" />
-              <span className="block md:hidden text-[9px] font-semibold uppercase tracking-[0.06em] leading-none">Social</span>
-              <span className="hidden md:inline text-[11px] md:text-[14px] uppercase tracking-wide font-medium whitespace-nowrap">Social</span>
-              {activeTab === 'social' && <div className="absolute bottom-[-1px] left-0 w-full h-[3px] bg-[#57cbde]" />}
-            </button>
+            {!isVisitorMode && (
+              <button onClick={() => setTab('activity')} className={`flex-1 md:flex-none flex flex-col md:flex-row items-center justify-center gap-1 md:gap-0 py-2.5 md:py-0 md:pb-2 px-1 md:px-0 transition-colors relative ${activeTab === 'activity' ? 'text-white' : 'text-[#546270] hover:text-[#c6d4df]'}`}>
+                <Activity size={18} className="block md:hidden shrink-0" />
+                <span className="block md:hidden text-[9px] font-semibold uppercase tracking-[0.06em] leading-none">Activity</span>
+                <span className="hidden md:inline text-[11px] md:text-[14px] uppercase tracking-wide font-medium whitespace-nowrap">Activity</span>
+                {activeTab === 'activity' && <div className="absolute bottom-[-1px] left-0 w-full h-[3px] bg-[#66c0f4]" />}
+              </button>
+            )}
+            {!isVisitorMode && (
+              <button onClick={() => setTab('backlog')} className={`flex-1 md:flex-none flex flex-col md:flex-row items-center justify-center gap-1 md:gap-0 py-2.5 md:py-0 md:pb-2 px-1 md:px-0 transition-colors relative ${activeTab === 'backlog' ? 'text-white' : 'text-[#546270] hover:text-[#c6d4df]'}`}>
+                <Star size={18} className="block md:hidden shrink-0" />
+                <span className="block md:hidden text-[9px] font-semibold uppercase tracking-[0.06em] leading-none">Backlog</span>
+                <span className="hidden md:inline text-[11px] md:text-[14px] uppercase tracking-wide font-medium whitespace-nowrap">Backlog</span>
+                {activeTab === 'backlog' && <div className="absolute bottom-[-1px] left-0 w-full h-[3px] bg-[#66c0f4]" />}
+              </button>
+            )}
+            {!isVisitorMode && (
+              <button onClick={() => setTab('social')} className={`flex-1 md:flex-none flex flex-col md:flex-row items-center justify-center gap-1 md:gap-0 py-2.5 md:py-0 md:pb-2 px-1 md:px-0 transition-colors relative ${activeTab === 'social' ? 'text-white' : 'text-[#546270] hover:text-[#c6d4df]'}`}>
+                <Users size={18} className="block md:hidden shrink-0" />
+                <span className="block md:hidden text-[9px] font-semibold uppercase tracking-[0.06em] leading-none">Social</span>
+                <span className="hidden md:inline text-[11px] md:text-[14px] uppercase tracking-wide font-medium whitespace-nowrap">Social</span>
+                {activeTab === 'social' && <div className="absolute bottom-[-1px] left-0 w-full h-[3px] bg-[#57cbde]" />}
+              </button>
+            )}
           </div>
         </div>
 

@@ -480,7 +480,7 @@ function GameApp() {
                   Achievement set actively claimed by{' '}
                   {activeClaims.map((c, i, arr) => (
                     <span key={c.user}>
-                      <a href={`../user/?u=${c.user}`}
+                      <a href={`../profile/?u=${c.user}`}
                         className="transition-colors hover:text-[#f0c96a]" style={{ color: '#e5b143' }}>{c.user}</a>
                       {i < arr.length - 1 ? ', ' : ''}
                     </span>
@@ -729,7 +729,7 @@ function GameApp() {
                             </span>
                             <img src={s.userPic ? getMediaUrl(s.userPic) : `${MEDIA_URL}/UserPic/${s.user}.png`} alt={s.user}
                               className="w-6 h-6 rounded-full border border-[#2a475e] bg-[#131a22] object-cover shrink-0" />
-                            <a href={`../user/?u=${s.user}`}
+                            <a href={`../profile/?u=${s.user}`}
                               className="flex-1 text-[11px] font-medium transition-colors hover:text-white truncate"
                               style={{ color: s.user === creds?.username ? '#57cbde' : '#c6d4df' }}>
                               {s.user}
@@ -811,7 +811,7 @@ function GameApp() {
                                         <span className="text-[10px] font-bold w-5 text-right shrink-0 text-[#546270]">#{e.rank}</span>
                                         <img src={e.userPic ? getMediaUrl(e.userPic) : `${MEDIA_URL}/UserPic/${e.user}.png`} alt={e.user}
                                           className="w-6 h-6 rounded-full border border-[#2a475e] bg-[#131a22] object-cover shrink-0" />
-                                        <a href={`../user/?u=${e.user}`}
+                                        <a href={`../profile/?u=${e.user}`}
                                           className="flex-1 text-[11px] transition-colors hover:text-white"
                                           style={{ color: isMe ? '#57cbde' : '#c6d4df' }}>
                                           {e.user}
@@ -868,7 +868,7 @@ function GameApp() {
                       <div className="flex flex-col divide-y divide-[#1b2838] overflow-y-auto max-h-[220px]">
                         {communityMasters.map(m => (
                           <div key={m.ulid || m.user} className="flex items-center gap-2 py-2">
-                            <a href={`../user/?u=${m.user}`} className="shrink-0">
+                            <a href={`../profile/?u=${m.user}`} className="shrink-0">
                               <img
                                 src={m.userPic ? getMediaUrl(m.userPic) : `${MEDIA_URL}/UserPic/${m.user}.png`}
                                 alt={m.user}
@@ -876,7 +876,7 @@ function GameApp() {
                               />
                             </a>
                             <div className="flex-1 min-w-0">
-                              <a href={`../user/?u=${m.user}`}
+                              <a href={`../profile/?u=${m.user}`}
                                 className="block text-[11px] font-medium text-[#e5b143] hover:text-[#f0c96a] transition-colors truncate">{m.user}</a>
                               <span className="text-[9px] text-[#546270]">{formatTimeAgo(m.lastAward)}</span>
                             </div>
@@ -902,7 +902,7 @@ function GameApp() {
                       <div className="flex flex-col">
                         {communityComments.map((c, i) => (
                           <div key={`${c.ulid || c.user}-${i}`} className="flex gap-3 py-2.5 border-b border-[#1b2838]">
-                            <a href={`../user/?u=${c.user}`} className="shrink-0 mt-0.5">
+                            <a href={`../profile/?u=${c.user}`} className="shrink-0 mt-0.5">
                               <img
                                 src={c.userPic ? getMediaUrl(c.userPic) : `${MEDIA_URL}/UserPic/${c.user}.png`}
                                 alt={c.user}
@@ -911,7 +911,7 @@ function GameApp() {
                             </a>
                             <div className="flex-1 min-w-0">
                               <div className="flex items-baseline gap-2 mb-1">
-                                <a href={`../user/?u=${c.user}`}
+                                <a href={`../profile/?u=${c.user}`}
                                   className="text-[11px] font-medium text-[#e5b143] hover:text-[#f0c96a] transition-colors shrink-0">{c.user}</a>
                                 <span className="text-[9px] text-[#546270]">{formatTimeAgo(c.submitted)}</span>
                               </div>
