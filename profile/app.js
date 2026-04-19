@@ -1407,7 +1407,7 @@ export default function App() {
       } />
 
       {/* Header */}
-      <header className={`bg-[#1b2838] border-b border-[#2a475e] px-4 md:px-8 pt-8 pb-5 md:pt-5 shadow-md${activeTab !== 'recent' ? ' hidden md:block' : ''}`}>
+      <header className={`bg-[#1b2838] border-b border-[#2a475e] px-4 md:px-8 pt-8 pb-5 md:pt-5 shadow-md${(!isVisitorMode && activeTab !== 'recent') ? ' hidden md:block' : ''}`}>
         <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center md:items-start gap-5">
 
           {/* Avatar */}
@@ -1479,7 +1479,7 @@ export default function App() {
 
       <main className="max-w-5xl mx-auto px-4 md:px-8 py-6 flex-1 w-full">
         
-        <div className={`grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6 lg:gap-8 mb-8${activeTab !== 'recent' ? ' hidden md:grid' : ''}`}>
+        <div className={`grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6 lg:gap-8 mb-8${(!isVisitorMode && activeTab !== 'recent') ? ' hidden md:grid' : ''}`}>
           
           <div className="flex flex-col gap-6">
             
