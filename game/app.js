@@ -130,6 +130,7 @@ function GameApp() {
     return ['achievements', 'details', 'leaderboards', 'community', 'hashes'].includes(t) ? t : 'achievements';
   });
   const [filter, setFilter]     = useState('all');          // all | unlocked | locked
+  const [typeFilter, setTypeFilter] = useState('all');      // all | progression | win_condition | missable
   const [sort, setSort]         = useState('order');        // order | points | date
   const [hashes, setHashes]     = useState(null);
   const [loadingHashes, setLoadingHashes] = useState(false);
@@ -282,6 +283,7 @@ function GameApp() {
     let list = achList;
     if (filter === 'unlocked') list = list.filter(a => !!a.dateEarned);
     if (filter === 'locked')   list = list.filter(a => !a.dateEarned);
+    if (typeFilter !== 'all')  list = list.filter(a => a.type === typeFilter);
     return [...list].sort((a, b) => {
       if (sort === 'points') return b.points - a.points;
       if (sort === 'date') {
@@ -549,6 +551,27 @@ function GameApp() {
                       }`}>{opt.label}</button>
                   ))}
                   <span className="ml-auto text-[9px] text-[#546270]">{filteredSorted.length} / {achList.length}</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[8px] uppercase tracking-wider text-[#546270] w-[44px] shrink-0">Type</span>
+                  {[
+                    { value: 'all', label: 'All', color: null },
+                    { value: 'progression',   label: 'Progression',   color: TYPE_CONFIG.progression.color   },
+                    { value: 'win_condition', label: 'Win Condition',  color: TYPE_CONFIG.win_condition.color },
+                    { value: 'missable',      label: 'Missable',       color: TYPE_CONFIG.missable.color      },
+                  ].map(opt => (
+                    <button key={opt.value} type="button" onClick={() => setTypeFilter(opt.value)}
+                      className={`text-[9px] font-semibold uppercase tracking-wider px-2 py-[3px] rounded-sm border transition-colors ${
+                        typeFilter === opt.value
+                          ? 'text-[#101214] border-transparent'
+                          : 'bg-[#101214] text-[#8f98a0] border-[#323f4c] hover:text-[#c6d4df] hover:border-[#546270]'
+                      }`}
+                      style={typeFilter === opt.value ? {
+                        background: opt.color || '#66c0f4',
+                        borderColor: opt.color || '#66c0f4',
+                      } : {}}
+                    >{opt.label}</button>
+                  ))}
                 </div>
               </div>
               {/* List */}

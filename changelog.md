@@ -1,5 +1,13 @@
 # Changelog
 
+## v26.04.22 — Achievement Type Filter
+
+### Game Page
+
+- Added **Type** filter row to the Achievements tab — filter by All / Progression / Win Condition / Missable; button highlights in the type's accent color when active
+
+---
+
 ## v26.04.19 — User Page Unified with Profile, Debug Mode
 
 ### Profile
