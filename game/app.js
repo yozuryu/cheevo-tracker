@@ -283,7 +283,8 @@ function GameApp() {
     let list = achList;
     if (filter === 'unlocked') list = list.filter(a => !!a.dateEarned);
     if (filter === 'locked')   list = list.filter(a => !a.dateEarned);
-    if (typeFilter !== 'all')  list = list.filter(a => a.type === typeFilter);
+    if (typeFilter === 'progression') list = list.filter(a => a.type === 'progression' || a.type === 'win_condition');
+    else if (typeFilter !== 'all')   list = list.filter(a => a.type === typeFilter);
     return [...list].sort((a, b) => {
       if (sort === 'points') return b.points - a.points;
       if (sort === 'date') {
@@ -294,7 +295,7 @@ function GameApp() {
       }
       return a.displayOrder - b.displayOrder;
     });
-  }, [achList, filter, sort]);
+  }, [achList, filter, sort, typeFilter]);
 
   const unlockedCount   = useMemo(() => achList.filter(a => !!a.dateEarned).length, [achList]);
   const totalPoints     = useMemo(() => achList.reduce((s, a) => s + a.points, 0), [achList]);
@@ -555,10 +556,9 @@ function GameApp() {
                 <div className="flex items-center gap-1.5">
                   <span className="text-[8px] uppercase tracking-wider text-[#546270] w-[44px] shrink-0">Type</span>
                   {[
-                    { value: 'all', label: 'All', color: null },
-                    { value: 'progression',   label: 'Progression',   color: TYPE_CONFIG.progression.color   },
-                    { value: 'win_condition', label: 'Win Condition',  color: TYPE_CONFIG.win_condition.color },
-                    { value: 'missable',      label: 'Missable',       color: TYPE_CONFIG.missable.color      },
+                    { value: 'all',         label: 'All',         color: null                            },
+                    { value: 'progression', label: 'Progression', color: TYPE_CONFIG.progression.color   },
+                    { value: 'missable',    label: 'Missable',    color: TYPE_CONFIG.missable.color      },
                   ].map(opt => (
                     <button key={opt.value} type="button" onClick={() => setTypeFilter(opt.value)}
                       className={`text-[9px] font-semibold uppercase tracking-wider px-2 py-[3px] rounded-sm border transition-colors ${
