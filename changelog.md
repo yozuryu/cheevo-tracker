@@ -10,6 +10,7 @@
 - Sort options: **Diff** (biggest gap first, default), **Mine**, **Theirs**, **A–Z**
 - Progress bars color-code to gold when a game is mastered, blue for you, cyan for the other user
 - Following and Followers lists cached for 1 hour in localStorage
+- Compare modal now shows HC/SC mode indicators: flame icon (red) for hardcore, feather icon (gray) for softcore — shown in column headers and per-game rows based on each player's actual unlock mode for that game
 
 ### Game Page
 

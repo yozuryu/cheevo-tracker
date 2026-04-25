@@ -1081,7 +1081,9 @@ const CompareModal = ({ otherUser, myGames, compareData, loading, error, onClose
         const them = otherMap.get(g.gameId);
         const myPct   = g.maxPossible   ? (g.numAwarded        / g.maxPossible)        * 100 : 0;
         const theirPct = them.maxPossible ? (them.numAwarded     / them.maxPossible)     * 100 : 0;
-        return { ...g, them, myPct, theirPct, diff: myPct - theirPct };
+        return { ...g, them, myPct, theirPct, diff: myPct - theirPct,
+          myHC: (g.numAwardedHardcore || 0) > 0,
+          theirHC: (them.numAwardedHardcore || 0) > 0 };
       });
   }, [compareData, myGames]);
 
@@ -1097,6 +1099,13 @@ const CompareModal = ({ otherUser, myGames, compareData, loading, error, onClose
   const meAhead = sharedGames.filter(g => g.myPct > g.theirPct).length;
   const tied    = sharedGames.filter(g => g.myPct === g.theirPct).length;
   const behind  = sharedGames.filter(g => g.myPct < g.theirPct).length;
+
+  const myIsHC    = sharedGames.some(g => g.myHC);
+  const theirIsHC = sharedGames.some(g => g.theirHC);
+
+  const ModeIcon = ({ hc, size = 8 }) => hc
+    ? <Flame size={size} className="shrink-0" style={{ color: '#ff6b6b' }} />
+    : <Feather size={size} className="shrink-0" style={{ color: '#8f98a0' }} />;
 
   const awardBadge = (kind) => {
     if (!kind) return null;
@@ -1193,9 +1202,15 @@ const CompareModal = ({ otherUser, myGames, compareData, loading, error, onClose
               {sharedGames.length > 0 && (
                 <div className="flex items-center gap-2 px-2 mb-1">
                   <div className="flex-1" />
-                  <div className="w-[68px] text-[8px] text-[#66c0f4] uppercase tracking-[0.07em] font-semibold text-center">You</div>
+                  <div className="w-[68px] flex items-center justify-center gap-1 text-[8px] text-[#66c0f4] uppercase tracking-[0.07em] font-semibold">
+                    <ModeIcon hc={myIsHC} size={8} />
+                    <span>You</span>
+                  </div>
                   <div className="w-px h-3 bg-[#2a475e]" />
-                  <div className="w-[68px] text-[8px] text-[#57cbde] uppercase tracking-[0.07em] font-semibold text-center">{otherUser}</div>
+                  <div className="w-[68px] flex items-center justify-center gap-1 text-[8px] text-[#57cbde] uppercase tracking-[0.07em] font-semibold">
+                    <ModeIcon hc={theirIsHC} size={8} />
+                    <span>{otherUser}</span>
+                  </div>
                 </div>
               )}
 
@@ -1220,7 +1235,10 @@ const CompareModal = ({ otherUser, myGames, compareData, loading, error, onClose
                         </div>
                         <div className="w-[68px] shrink-0">
                           <div className="flex items-center justify-between gap-1 mb-[3px]">
-                            <span className={`text-[9px] font-semibold ${g.myPct > g.theirPct ? 'text-[#66c0f4]' : 'text-[#8f98a0]'}`}>{myBar}%</span>
+                            <div className="flex items-center gap-[3px]">
+                              <ModeIcon hc={g.myHC} size={7} />
+                              <span className={`text-[9px] font-semibold ${g.myPct > g.theirPct ? 'text-[#66c0f4]' : 'text-[#8f98a0]'}`}>{myBar}%</span>
+                            </div>
                             {awardBadge(g.highestAwardKind)}
                           </div>
                           <div className="h-[3px] w-full bg-[#131a22] rounded-full overflow-hidden">
@@ -1230,7 +1248,10 @@ const CompareModal = ({ otherUser, myGames, compareData, loading, error, onClose
                         <div className="w-px h-8 bg-[#2a475e] shrink-0" />
                         <div className="w-[68px] shrink-0">
                           <div className="flex items-center justify-between gap-1 mb-[3px]">
-                            <span className={`text-[9px] font-semibold ${g.theirPct > g.myPct ? 'text-[#57cbde]' : 'text-[#8f98a0]'}`}>{theirBar}%</span>
+                            <div className="flex items-center gap-[3px]">
+                              <ModeIcon hc={g.theirHC} size={7} />
+                              <span className={`text-[9px] font-semibold ${g.theirPct > g.myPct ? 'text-[#57cbde]' : 'text-[#8f98a0]'}`}>{theirBar}%</span>
+                            </div>
                             {awardBadge(g.them.highestAwardKind)}
                           </div>
                           <div className="h-[3px] w-full bg-[#131a22] rounded-full overflow-hidden">
