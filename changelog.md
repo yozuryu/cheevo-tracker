@@ -1,5 +1,18 @@
 # Changelog
 
+## v26.04.25 — Compare Progress
+
+### Social
+
+- Added **Compare** button to every user row in the Following and Followers lists
+- Clicking Compare opens a modal that fetches the other user's full completion progress and finds games both users have played
+- Modal shows a summary (shared game count, ahead / tied / behind) and a sortable game list with side-by-side progress bars and M/B award badges for each player
+- Sort options: **Diff** (biggest gap first, default), **Mine**, **Theirs**, **A–Z**
+- Progress bars color-code to gold when a game is mastered, blue for you, cyan for the other user
+- Following and Followers lists cached for 1 hour in localStorage
+
+---
+
 ## v26.04.22 — Achievement Type Filter
 
 ### Game Page

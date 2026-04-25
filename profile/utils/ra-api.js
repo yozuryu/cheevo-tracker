@@ -1357,6 +1357,23 @@ export async function fetchGameDetails(username, apiKey, gameId) {
 }
 
 /**
+ * Fetches both following and followers lists.
+ * Cached for 1 hour in localStorage under key ra_social_{username}.
+ */
+export async function fetchSocial(username, apiKey) {
+  const cacheKey = `ra_social_${username}`;
+  const cached = lcacheGet(cacheKey, 60 * 60 * 1000);
+  if (cached) return cached;
+
+  const following = await getUsersIFollow(username, apiKey);
+  await sleep(500);
+  const followers = await getUsersFollowingMe(username, apiKey);
+  const result = { following, followers };
+  lcacheSet(cacheKey, result);
+  return result;
+}
+
+/**
  * Validates credentials with a minimal API call.
  * Throws 'AUTH_ERROR' if invalid.
  */

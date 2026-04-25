@@ -7,7 +7,7 @@ import { transformData } from './utils/transform.js';
 import {
   getCredentials, clearCredentials,
   fetchProfile, fetchAchievementsChunk, fetchBacklog, fetchGameDetails,
-  getUsersIFollow, getUsersFollowingMe,
+  fetchSocial, getUserCompletionProgress,
 } from './utils/ra-api.js';
 import { Topbar, Footer } from '../assets/ui.js';
 
@@ -1064,7 +1064,193 @@ function SeriesProgressTab({ seriesData, gamesData, backlogData }) {
 
 // ── Social Tab ────────────────────────────────────────────────────────────────
 
-const SocialUserRow = ({ user, isMutual }) => (
+const CompareModal = ({ otherUser, myGames, compareData, loading, error, onClose }) => {
+  const [sortBy, setSortBy] = useState('diff');
+
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = ''; };
+  }, []);
+
+  const sharedGames = useMemo(() => {
+    if (!compareData || !myGames) return [];
+    const otherMap = new Map(compareData.map(g => [g.gameId, g]));
+    return myGames
+      .filter(g => otherMap.has(g.gameId) && g.maxPossible > 0)
+      .map(g => {
+        const them = otherMap.get(g.gameId);
+        const myPct   = g.maxPossible   ? (g.numAwarded        / g.maxPossible)        * 100 : 0;
+        const theirPct = them.maxPossible ? (them.numAwarded     / them.maxPossible)     * 100 : 0;
+        return { ...g, them, myPct, theirPct, diff: myPct - theirPct };
+      });
+  }, [compareData, myGames]);
+
+  const sorted = useMemo(() => {
+    const s = [...sharedGames];
+    if (sortBy === 'diff')   s.sort((a, b) => Math.abs(b.diff) - Math.abs(a.diff));
+    else if (sortBy === 'mine')   s.sort((a, b) => b.myPct - a.myPct);
+    else if (sortBy === 'theirs') s.sort((a, b) => b.theirPct - a.theirPct);
+    else s.sort((a, b) => a.title.localeCompare(b.title));
+    return s;
+  }, [sharedGames, sortBy]);
+
+  const meAhead = sharedGames.filter(g => g.myPct > g.theirPct).length;
+  const tied    = sharedGames.filter(g => g.myPct === g.theirPct).length;
+  const behind  = sharedGames.filter(g => g.myPct < g.theirPct).length;
+
+  const awardBadge = (kind) => {
+    if (!kind) return null;
+    if (kind === 'mastered' || kind === 'completed')
+      return <span className="text-[7px] font-bold uppercase tracking-[0.05em] px-1 py-[1px] rounded-[2px] bg-[rgba(229,177,67,0.15)] text-[#e5b143] border border-[rgba(229,177,67,0.3)] shrink-0">M</span>;
+    if (kind === 'beaten-hardcore' || kind === 'beaten-softcore')
+      return <span className="text-[7px] font-bold uppercase tracking-[0.05em] px-1 py-[1px] rounded-[2px] bg-[rgba(143,152,160,0.1)] text-[#8f98a0] border border-[rgba(143,152,160,0.2)] shrink-0">B</span>;
+    return null;
+  };
+
+  const barColor = (kind, fallback) =>
+    (kind === 'mastered' || kind === 'completed') ? '#e5b143' : fallback;
+
+  return (
+    <div className="fixed inset-0 z-[200] flex items-center justify-center p-4" onClick={onClose}>
+      <div className="absolute inset-0 bg-black/70 backdrop-blur-[2px]" />
+      <div
+        className="relative z-10 w-full max-w-2xl bg-[#1b2838] border border-[#2a475e] rounded-[4px] shadow-2xl flex flex-col max-h-[90vh]"
+        onClick={e => e.stopPropagation()}
+      >
+        <button onClick={onClose} className="absolute top-2 right-2 z-10 text-[#546270] hover:text-[#c6d4df] transition-colors outline-none">
+          <X size={15} />
+        </button>
+
+        <div className="flex items-center gap-3 px-4 py-3 border-b border-[#2a475e] shrink-0">
+          <img
+            src={`${MEDIA_URL}/UserPic/${otherUser}.png`}
+            alt={otherUser}
+            className="w-8 h-8 rounded-full border border-[#101214] bg-[#131a22] object-cover shrink-0"
+            onError={e => { e.currentTarget.style.visibility = 'hidden'; }}
+          />
+          <div>
+            <div className="text-[9px] text-[#546270] uppercase tracking-[0.07em] font-semibold">Comparing with</div>
+            <a href={`../profile/?u=${otherUser}`} className="text-[13px] font-semibold text-[#e5b143] hover:text-[#f0c96a] transition-colors">{otherUser}</a>
+          </div>
+        </div>
+
+        <div className="flex-1 overflow-y-auto p-4">
+          {loading && (
+            <div className="flex flex-col gap-[2px]">
+              {[...Array(7)].map((_, i) => (
+                <div key={i} className="flex items-center gap-2 px-2 py-2 bg-[#202d39] rounded-[2px]">
+                  <div className="shimmer w-7 h-7 rounded-[2px] shrink-0" />
+                  <div className="flex-1">
+                    <div className="shimmer h-2.5 w-36 rounded mb-1" />
+                    <div className="shimmer h-2 w-20 rounded" />
+                  </div>
+                  <div className="shimmer h-4 w-14 rounded" />
+                  <div className="w-px h-6 bg-[#2a475e]" />
+                  <div className="shimmer h-4 w-14 rounded" />
+                </div>
+              ))}
+            </div>
+          )}
+
+          {error && (
+            <div className="text-center text-[12px] text-[#8f98a0] py-10">Failed to load comparison data.</div>
+          )}
+
+          {!loading && !error && compareData && (
+            <>
+              <div className="flex items-center gap-4 mb-4 px-1">
+                <div className="text-center">
+                  <div className="text-[18px] font-bold text-[#c6d4df]">{sharedGames.length}</div>
+                  <div className="text-[8px] text-[#546270] uppercase tracking-[0.07em]">Shared</div>
+                </div>
+                <div className="w-px h-8 bg-[#2a475e]" />
+                <div className="text-center">
+                  <div className="text-[18px] font-bold text-[#66c0f4]">{meAhead}</div>
+                  <div className="text-[8px] text-[#546270] uppercase tracking-[0.07em]">Ahead</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-[18px] font-bold text-[#8f98a0]">{tied}</div>
+                  <div className="text-[8px] text-[#546270] uppercase tracking-[0.07em]">Tied</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-[18px] font-bold text-[#57cbde]">{behind}</div>
+                  <div className="text-[8px] text-[#546270] uppercase tracking-[0.07em]">Behind</div>
+                </div>
+              </div>
+
+              {sharedGames.length > 0 && (
+                <div className="flex items-center gap-1.5 mb-3">
+                  <span className="text-[9px] text-[#546270] uppercase tracking-[0.07em] font-semibold mr-0.5">Sort:</span>
+                  {[['diff', 'Diff'], ['mine', 'Mine'], ['theirs', 'Theirs'], ['az', 'A–Z']].map(([v, label]) => (
+                    <button key={v} onClick={() => setSortBy(v)}
+                      className={`text-[9px] font-semibold uppercase tracking-[0.07em] px-1.5 py-[2px] rounded-[2px] transition-colors ${sortBy === v ? 'bg-[#2a475e] text-[#c6d4df]' : 'text-[#546270] hover:text-[#8f98a0]'}`}>
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {sharedGames.length > 0 && (
+                <div className="flex items-center gap-2 px-2 mb-1">
+                  <div className="flex-1" />
+                  <div className="w-[68px] text-[8px] text-[#66c0f4] uppercase tracking-[0.07em] font-semibold text-center">You</div>
+                  <div className="w-px h-3 bg-[#2a475e]" />
+                  <div className="w-[68px] text-[8px] text-[#57cbde] uppercase tracking-[0.07em] font-semibold text-center">{otherUser}</div>
+                </div>
+              )}
+
+              {sharedGames.length === 0 ? (
+                <div className="text-center text-[12px] text-[#8f98a0] py-10">No shared games found.</div>
+              ) : (
+                <div className="flex flex-col gap-[2px]">
+                  {sorted.map(g => {
+                    const myBar    = Math.round(g.myPct);
+                    const theirBar = Math.round(g.theirPct);
+                    return (
+                      <div key={g.gameId} className="flex items-center gap-2 px-2 py-1.5 bg-[#202d39] hover:bg-[#253443] rounded-[2px] transition-colors">
+                        <img
+                          src={getMediaUrl(g.imageIcon)}
+                          alt={g.title}
+                          className="w-7 h-7 rounded-[2px] border border-[#101214] bg-[#131a22] shrink-0 object-cover"
+                          onError={e => { e.currentTarget.style.opacity = '0.3'; }}
+                        />
+                        <div className="flex-1 min-w-0">
+                          <div className="text-[10px] font-medium text-[#c6d4df] truncate leading-tight">{g.title}</div>
+                          <div className="text-[8px] text-[#546270] truncate">{g.consoleName}</div>
+                        </div>
+                        <div className="w-[68px] shrink-0">
+                          <div className="flex items-center justify-between gap-1 mb-[3px]">
+                            <span className={`text-[9px] font-semibold ${g.myPct > g.theirPct ? 'text-[#66c0f4]' : 'text-[#8f98a0]'}`}>{myBar}%</span>
+                            {awardBadge(g.highestAwardKind)}
+                          </div>
+                          <div className="h-[3px] w-full bg-[#131a22] rounded-full overflow-hidden">
+                            <div className="h-full rounded-full" style={{ width: `${myBar}%`, background: barColor(g.highestAwardKind, '#66c0f4') }} />
+                          </div>
+                        </div>
+                        <div className="w-px h-8 bg-[#2a475e] shrink-0" />
+                        <div className="w-[68px] shrink-0">
+                          <div className="flex items-center justify-between gap-1 mb-[3px]">
+                            <span className={`text-[9px] font-semibold ${g.theirPct > g.myPct ? 'text-[#57cbde]' : 'text-[#8f98a0]'}`}>{theirBar}%</span>
+                            {awardBadge(g.them.highestAwardKind)}
+                          </div>
+                          <div className="h-[3px] w-full bg-[#131a22] rounded-full overflow-hidden">
+                            <div className="h-full rounded-full" style={{ width: `${theirBar}%`, background: barColor(g.them.highestAwardKind, '#57cbde') }} />
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const SocialUserRow = ({ user, isMutual, onCompare }) => (
   <div className="flex items-center gap-2.5 px-2.5 py-2 bg-[#1b2838] hover:bg-[#202d39] rounded-[2px] transition-colors">
     <img
       src={user.userPic ? getMediaUrl(user.userPic) : `${MEDIA_URL}/UserPic/${user.user}.png`}
@@ -1084,10 +1270,15 @@ const SocialUserRow = ({ user, isMutual }) => (
     {user.points != null && (
       <span className="text-[10px] text-[#e5b143] shrink-0">{user.points.toLocaleString()} pts</span>
     )}
+    <button
+      onClick={() => onCompare(user.user)}
+      className="shrink-0 text-[9px] font-semibold uppercase tracking-[0.07em] px-1.5 py-[2px] rounded-[2px] border border-[rgba(87,203,222,0.3)] bg-[rgba(87,203,222,0.07)] text-[#57cbde] hover:bg-[rgba(87,203,222,0.15)] transition-colors">
+      Compare
+    </button>
   </div>
 );
 
-const SocialTab = ({ socialData, socialError, onRetry }) => {
+const SocialTab = ({ socialData, socialError, onRetry, onCompare }) => {
   if (socialError) {
     return (
       <div className="flex flex-col items-center gap-3 py-10 text-center">
@@ -1141,7 +1332,7 @@ const SocialTab = ({ socialData, socialError, onRetry }) => {
             <div className="text-[11px] text-[#546270] py-3">None yet.</div>
           ) : (
             <div className="flex flex-col gap-[2px]">
-              {users.map(u => <SocialUserRow key={u.user} user={u} isMutual={isMutual(u)} />)}
+              {users.map(u => <SocialUserRow key={u.user} user={u} isMutual={isMutual(u)} onCompare={onCompare} />)}
             </div>
           )}
         </div>
@@ -1158,6 +1349,10 @@ export default function App() {
   const [backlogData, setBacklogData] = useState(null);
   const [socialData,    setSocialData]    = useState(null);
   const [socialError,   setSocialError]   = useState(false);
+  const [compareUser,   setCompareUser]   = useState(null);
+  const [compareData,   setCompareData]   = useState(null);
+  const [compareLoading, setCompareLoading] = useState(false);
+  const [compareError,  setCompareError]  = useState(false);
   // gamesData stores only detailedGameProgress, lazy-loaded per game
   const [gamesData,     setGamesData]     = useState({ detailedGameProgress: {} });
   const [loadingGameDetailId, setLoadingGameDetailId] = useState(null);
@@ -1202,6 +1397,31 @@ export default function App() {
   const handleAuthError = () => {
     clearCredentials();
     window.location.replace('../');
+  };
+
+  // ── Compare progress ──────────────────────────────────────
+  const openCompare = async (otherUsername) => {
+    setCompareUser(otherUsername);
+    setCompareData(null);
+    setCompareLoading(true);
+    setCompareError(false);
+    const creds = getCredentials();
+    if (!creds) { handleAuthError(); return; }
+    try {
+      const data = await getUserCompletionProgress(creds.username, creds.apiKey, { u: otherUsername });
+      setCompareData(data);
+    } catch (err) {
+      if (err.message === 'AUTH_ERROR') handleAuthError();
+      else setCompareError(true);
+    } finally {
+      setCompareLoading(false);
+    }
+  };
+
+  const closeCompare = () => {
+    setCompareUser(null);
+    setCompareData(null);
+    setCompareError(false);
   };
 
   // ── Per-game detail lazy loader ───────────────────────────
@@ -1288,18 +1508,12 @@ export default function App() {
     if (isVisitorMode || activeTab !== 'social' || socialData !== null || socialError) return;
     const creds = getCredentials();
     if (!creds) { handleAuthError(); return; }
-    (async () => {
-      try {
-        const following = await getUsersIFollow(creds.username, creds.apiKey);
-        await new Promise(r => setTimeout(r, 500));
-        const followers = await getUsersFollowingMe(creds.username, creds.apiKey);
-        setSocialData({ following, followers });
-        setSocialError(false);
-      } catch (err) {
+    fetchSocial(creds.username, creds.apiKey)
+      .then(data => { setSocialData(data); setSocialError(false); })
+      .catch(err => {
         if (err.message === 'AUTH_ERROR') handleAuthError();
         else setSocialError(true);
-      }
-    })();
+      });
   }, [activeTab, socialError]);
 
   // ── Load all chunks when Activity tab opens ──
@@ -1742,7 +1956,7 @@ export default function App() {
 
         <div className="flex flex-col gap-3">
           {activeTab === 'social' ? (
-            <SocialTab socialData={socialData} socialError={socialError} onRetry={() => setSocialError(false)} />
+            <SocialTab socialData={socialData} socialError={socialError} onRetry={() => setSocialError(false)} onCompare={openCompare} />
           ) : activeTab === 'series' ? (
             <SeriesProgressTab seriesData={seriesData} gamesData={gamesData} backlogData={backlogData} />
           ) : activeTab === 'activity' ? (
@@ -2107,6 +2321,17 @@ export default function App() {
           game={ALL_GAMES.find(g => g.id === selectedGame.id) || selectedGame}
           onClose={() => setSelectedGame(null)}
           loadingDetails={loadingGameDetailId === selectedGame.id}
+        />
+      )}
+
+      {compareUser && (
+        <CompareModal
+          otherUser={compareUser}
+          myGames={profileData?.gameAwardsAndProgress?.results ?? []}
+          compareData={compareData}
+          loading={compareLoading}
+          error={compareError}
+          onClose={closeCompare}
         />
       )}
     </div>
