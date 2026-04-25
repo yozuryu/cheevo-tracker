@@ -27,23 +27,14 @@ const PUBLISHER_MAP = {
   33: 'Sega', 39: 'Sega', 40: 'Sega', 68: 'Sega',
   // Atari
   13: 'Atari', 17: 'Atari', 25: 'Atari', 36: 'Atari', 50: 'Atari', 51: 'Atari', 77: 'Atari',
-  // SNK
-  14: 'SNK', 56: 'SNK',
   // NEC
   8: 'NEC', 47: 'NEC', 49: 'NEC', 67: 'NEC', 76: 'NEC',
   // Microsoft
   22: 'Microsoft',
-  // Bandai
-  53: 'Bandai',
-  // Mattel
-  45: 'Mattel',
-  // Coleco
-  44: 'Coleco',
 };
 
 const PUBLISHER_ORDER = [
-  'Atari', 'Bandai', 'Coleco', 'Mattel', 'Microsoft',
-  'NEC', 'Nintendo', 'Sega', 'SNK', 'Sony', 'Other',
+  'Atari', 'Microsoft', 'NEC', 'Nintendo', 'Sega', 'Sony', 'Other',
 ];
 
 const ERA_MAP = {

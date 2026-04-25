@@ -639,10 +639,10 @@ function GameApp() {
                 </div>
               )}
               {gameProgression && [
-                { label: 'Beat (Casual)', value: gameProgression.medianTimeToBeat },
-                { label: 'Beat (HC)',     value: gameProgression.medianTimeToBeatHardcore },
-                { label: 'Complete',      value: gameProgression.medianTimeToComplete },
-                { label: 'Master',        value: gameProgression.medianTimeToMaster },
+                { label: 'Beat',           value: gameProgression.medianTimeToBeat,          color: '#66c0f4' },
+                { label: 'Beat (Hardcore)', value: gameProgression.medianTimeToBeatHardcore,  color: '#e5b143' },
+                { label: 'Complete',        value: gameProgression.medianTimeToComplete,       color: '#66c0f4' },
+                { label: 'Master',          value: gameProgression.medianTimeToMaster,         color: '#e5b143' },
               ].some(c => c.value) && (
                 <div className="mb-5">
                   <div className="flex items-center gap-2 pb-2 mb-3 border-b border-[#2a475e]">
@@ -652,13 +652,13 @@ function GameApp() {
                   </div>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                     {[
-                      { label: 'Beat (Casual)', value: gameProgression.medianTimeToBeat },
-                      { label: 'Beat (HC)',     value: gameProgression.medianTimeToBeatHardcore },
-                      { label: 'Complete',      value: gameProgression.medianTimeToComplete },
-                      { label: 'Master',        value: gameProgression.medianTimeToMaster },
+                      { label: 'Beat',           value: gameProgression.medianTimeToBeat,          color: '#66c0f4' },
+                      { label: 'Beat (Hardcore)', value: gameProgression.medianTimeToBeatHardcore,  color: '#e5b143' },
+                      { label: 'Complete',        value: gameProgression.medianTimeToComplete,       color: '#66c0f4' },
+                      { label: 'Master',          value: gameProgression.medianTimeToMaster,         color: '#e5b143' },
                     ].filter(c => c.value).map(c => (
                       <div key={c.label} className="bg-[#1b2838] border border-[#2a475e] rounded-[2px] flex flex-col items-center py-2.5 px-2">
-                        <span className="text-[14px] font-bold text-[#e5b143]">{fmtPlaytime(c.value)}</span>
+                        <span className="text-[14px] font-bold" style={{ color: c.color }}>{fmtPlaytime(c.value)}</span>
                         <span className="text-[8px] uppercase tracking-[0.07em] text-[#546270] mt-0.5">{c.label}</span>
                       </div>
                     ))}

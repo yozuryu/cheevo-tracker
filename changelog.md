@@ -11,6 +11,15 @@
 - Progress bars color-code to gold when a game is mastered, blue for you, cyan for the other user
 - Following and Followers lists cached for 1 hour in localStorage
 
+### Game Page
+
+- Renamed Time to Beat labels: **Beat (Casual)** → **Beat**, **Beat (HC)** → **Beat (Hardcore)**
+- Each tier now has its own color: Beat = blue, Beat (Hardcore) = gold, Complete = blue, Master = gold
+
+### Console Page
+
+- Moved Bandai, Coleco, Mattel, and SNK consoles into the **Other** group when browsing by publisher
+
 ---
 
 ## v26.04.22 — Achievement Type Filter
