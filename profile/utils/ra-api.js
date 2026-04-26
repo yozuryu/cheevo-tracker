@@ -1358,7 +1358,7 @@ export async function fetchGameDetails(username, apiKey, gameId) {
 
 /**
  * Fetches both following and followers lists.
- * Cached for 1 hour in localStorage under key ra_social_{username}.
+ * Cache-first: returns localStorage cache if available (1h TTL); fetches from API otherwise.
  */
 export async function fetchSocial(username, apiKey) {
   const cacheKey = `ra_social_${username}`;

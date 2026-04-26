@@ -1,5 +1,16 @@
 # Changelog
 
+## v26.04.26 — Friends Progress on Game Page
+
+### Game Page
+
+- Added **Compare** selector to the Achievements tab — pick a followed user to compare achievements 1-to-1 directly in the list
+- Following list is fetched lazily on first click and cached via `fetchSocial` (1-hour localStorage); selected friend's game data is fetched once and cached in sessionStorage for 5 minutes
+- Each achievement row gains a friend status column: the achievement badge (full color if unlocked, grayscale if not) with a colored stripe — gold for HC, gray for SC, dark for locked
+- Deselect the friend with the × button to return to normal view
+
+---
+
 ## v26.04.25 — Compare Progress
 
 ### Social

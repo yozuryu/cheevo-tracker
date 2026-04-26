@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { createRoot } from 'react-dom/client';
-import { Trophy, Crown, Medal, Lock, ExternalLink, AlertCircle, AlertTriangle, Flame, Feather, Gamepad2, Tag, Code, Calendar, BookOpen, MessageSquare, Loader } from 'lucide-react';
+import { Trophy, Crown, Medal, Lock, ExternalLink, AlertCircle, AlertTriangle, Flame, Feather, Gamepad2, Tag, Code, Calendar, BookOpen, MessageSquare, Loader, X } from 'lucide-react';
 import { MEDIA_URL, SITE_URL, TILDE_TAG_COLORS } from '../profile/utils/constants.js';
 import { getMediaUrl, parseTitle, formatDate, formatTimeAgo } from '../profile/utils/helpers.js';
-import { getCredentials, clearCredentials, getGameInfoAndUserProgress, getGameHashes, getGameProgression, getGameExtended, getActiveClaims, getGameRankAndScore, getComments, getGameLeaderboards, getUserGameLeaderboards, getLeaderboardEntries, getGame } from '../profile/utils/ra-api.js';
+import { getCredentials, clearCredentials, getGameInfoAndUserProgress, getGameHashes, getGameProgression, getGameExtended, getActiveClaims, getGameRankAndScore, getComments, getGameLeaderboards, getUserGameLeaderboards, getLeaderboardEntries, getGame, fetchSocial } from '../profile/utils/ra-api.js';
 import { Topbar, Footer } from '../assets/ui.js';
 
 // ── Constants ─────────────────────────────────────────────────────────────────
@@ -37,7 +37,7 @@ function fmtPlaytime(seconds) {
 
 // ── Achievement row ───────────────────────────────────────────────────────────
 
-function AchievementRow({ ach, totalPlayersCasual, totalPlayersHardcore, extAch }) {
+function AchievementRow({ ach, totalPlayersCasual, totalPlayersHardcore, extAch, friendAch, friendUser }) {
   const unlocked    = !!ach.dateEarned;
   const hardcore    = !!ach.dateEarnedHardcore;
   const typeConf    = ach.type ? TYPE_CONFIG[ach.type] : null;
@@ -112,6 +112,29 @@ function AchievementRow({ ach, totalPlayersCasual, totalPlayersHardcore, extAch 
         </div>
       </div>
 
+      {/* Friend comparison column */}
+      {friendUser !== undefined && (
+        <>
+          <div className="w-[3px] self-stretch rounded-full shrink-0" style={{
+            background: friendUser === null ? '#2a475e'
+              : friendAch?.dateEarnedHardcore ? '#e5b143'
+              : friendAch?.dateEarned         ? '#8f98a0'
+              : '#323f4c'
+          }} />
+          <div className="w-[44px] shrink-0 flex items-center justify-center">
+            {friendUser === null ? (
+              <Loader size={10} className="animate-spin" style={{ color: '#546270' }} />
+            ) : (
+              <img
+                src={`${MEDIA_URL}/Badge/${ach.badgeName || '00001'}.png`}
+                alt={ach.title}
+                className={`w-7 h-7 rounded-[2px] border border-[#101214] object-cover ${friendAch?.dateEarned ? '' : 'grayscale brightness-40'}`}
+              />
+            )}
+          </div>
+        </>
+      )}
+
     </div>
   );
 }
@@ -152,6 +175,12 @@ function GameApp() {
   const [loadingLeaderboards, setLoadingLeaderboards] = useState(false);
   const [loadingBoardId, setLoadingBoardId]     = useState(null);
   const [parentGame, setParentGame]             = useState(null);
+  const [followingList, setFollowingList]         = useState(null);
+  const [loadingFollowing, setLoadingFollowing]   = useState(false);
+  const [selectedFriend, setSelectedFriend]       = useState(null);
+  const [friendGameData, setFriendGameData]       = useState(null);
+  const [loadingFriendData, setLoadingFriendData] = useState(false);
+  const [showFriendPicker, setShowFriendPicker]   = useState(false);
 
   const creds = getCredentials();
 
@@ -260,6 +289,44 @@ function GameApp() {
     }
   }
 
+  async function loadFollowing() {
+    if (followingList !== null || loadingFollowing) return;
+    setLoadingFollowing(true);
+    try {
+      const social = await fetchSocial(creds.username, creds.apiKey);
+      setFollowingList(social.following?.results || []);
+    } catch (err) {
+      if (err?.message === 'AUTH_ERROR') handleAuthError();
+      else setFollowingList([]);
+    } finally {
+      setLoadingFollowing(false);
+    }
+  }
+
+  async function selectFriendForCompare(f) {
+    setSelectedFriend(f);
+    setShowFriendPicker(false);
+    setFriendGameData(null);
+    setLoadingFriendData(true);
+    try {
+      const key = `ra_fg_${f.user}_${gameId}`;
+      try {
+        const raw = sessionStorage.getItem(key);
+        if (raw) {
+          const { ts, data } = JSON.parse(raw);
+          if (Date.now() - ts < 5 * 60 * 1000) { setFriendGameData(data); return; }
+        }
+      } catch {}
+      const data = await getGameInfoAndUserProgress(creds.username, creds.apiKey, { u: f.user, g: gameId });
+      try { sessionStorage.setItem(key, JSON.stringify({ ts: Date.now(), data })); } catch {}
+      setFriendGameData(data);
+    } catch (err) {
+      if (err?.message === 'AUTH_ERROR') handleAuthError();
+    } finally {
+      setLoadingFriendData(false);
+    }
+  }
+
   useEffect(() => {
     if (tab !== 'details' || gameProgression !== null || loadingInfoExtra || !gameId || !creds) return;
     setLoadingInfoExtra(true);
@@ -278,6 +345,11 @@ function GameApp() {
 
   const parsed   = useMemo(() => game ? parseTitle(game.title) : null, [game]);
   const achList  = useMemo(() => game ? Object.values(game.achievements) : [], [game]);
+
+  const friendAchMap = useMemo(() => {
+    if (!friendGameData?.achievements) return new Map();
+    return new Map(Object.values(friendGameData.achievements).map(a => [a.id, a]));
+  }, [friendGameData]);
 
   const filteredSorted = useMemo(() => {
     let list = achList;
@@ -573,7 +645,73 @@ function GameApp() {
                     >{opt.label}</button>
                   ))}
                 </div>
+
+                {/* Compare row */}
+                <div className="flex items-center gap-1.5 relative">
+                  <span className="text-[8px] uppercase tracking-wider text-[#546270] w-[44px] shrink-0">Compare</span>
+                  {!selectedFriend ? (
+                    <>
+                      <button type="button"
+                        onClick={() => { loadFollowing(); setShowFriendPicker(true); }}
+                        className="text-[9px] font-semibold uppercase tracking-wider px-2 py-[3px] rounded-sm border bg-[#101214] text-[#8f98a0] border-[#323f4c] hover:text-[#c6d4df] hover:border-[#546270] transition-colors flex items-center gap-1">
+                        {loadingFollowing ? <><Loader size={9} className="animate-spin" /> Loading…</> : 'Select Friend ▾'}
+                      </button>
+                      {showFriendPicker && (
+                        <>
+                          <div className="fixed inset-0 z-40" onClick={() => setShowFriendPicker(false)} />
+                          <div className="absolute top-full left-[52px] z-50 mt-1 w-56 bg-[#131a22] border border-[#2a475e] rounded-[3px] shadow-2xl overflow-hidden">
+                            {!followingList || followingList.length === 0 ? (
+                              <div className="px-3 py-4 text-[10px] text-[#546270] text-center">
+                                {loadingFollowing ? 'Loading…' : 'No following found.'}
+                              </div>
+                            ) : (
+                              <div className="max-h-56 overflow-y-auto">
+                                {followingList.map(f => (
+                                  <button key={f.user} type="button"
+                                    onClick={() => selectFriendForCompare(f)}
+                                    className="w-full flex items-center gap-2 px-2.5 py-2 hover:bg-[#1b2838] transition-colors text-left">
+                                    <img src={f.userPic ? getMediaUrl(f.userPic) : `${MEDIA_URL}/UserPic/${f.user}.png`}
+                                      alt={f.user}
+                                      className="w-5 h-5 rounded-full border border-[#101214] shrink-0 object-cover bg-[#1b2838]"
+                                      onError={e => { e.currentTarget.style.visibility = 'hidden'; }} />
+                                    <span className="text-[11px] text-[#c6d4df] truncate">{f.user}</span>
+                                  </button>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </>
+                      )}
+                    </>
+                  ) : (
+                    <div className="flex items-center gap-1.5 px-2 py-[3px] bg-[#202d39] border border-[#2a475e] rounded-sm">
+                      <img src={selectedFriend.userPic ? getMediaUrl(selectedFriend.userPic) : `${MEDIA_URL}/UserPic/${selectedFriend.user}.png`}
+                        alt={selectedFriend.user}
+                        className="w-4 h-4 rounded-full border border-[#101214] shrink-0 object-cover bg-[#131a22]"
+                        onError={e => { e.currentTarget.style.visibility = 'hidden'; }} />
+                      <span className="text-[9px] text-[#e5b143] font-semibold">{selectedFriend.user}</span>
+                      {loadingFriendData && <Loader size={9} className="animate-spin" style={{ color: '#546270' }} />}
+                      <button type="button" onClick={() => { setSelectedFriend(null); setFriendGameData(null); }}
+                        className="text-[#546270] hover:text-[#c6d4df] transition-colors ml-0.5">
+                        <X size={10} />
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
+
+              {/* Friend column header */}
+              {selectedFriend && (
+                <div className="flex items-center gap-3 px-2 mb-1">
+                  <div className="w-10 shrink-0" />
+                  <div className="flex-1" />
+                  <div className="w-[3px]" />
+                  <div className="w-[44px] text-[8px] text-[#57cbde] uppercase tracking-[0.07em] font-semibold text-center shrink-0">
+                    {selectedFriend.user}
+                  </div>
+                </div>
+              )}
+
               {/* List */}
               <div className="flex flex-col gap-1.5">
                 {filteredSorted.length === 0 ? (
@@ -588,6 +726,8 @@ function GameApp() {
                       totalPlayersCasual={game.numDistinctPlayersCasual}
                       totalPlayersHardcore={game.numDistinctPlayersHardcore}
                       extAch={gameExtended?.achievements?.[ach.id]}
+                      friendUser={selectedFriend ? selectedFriend.user : undefined}
+                      friendAch={selectedFriend ? (loadingFriendData ? null : friendAchMap.get(ach.id)) : undefined}
                     />
                   ))
                 )}
