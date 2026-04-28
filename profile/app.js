@@ -1863,9 +1863,16 @@ export default function App() {
                 <span className="text-[11px] uppercase tracking-wide font-semibold flex items-center gap-2">
                   <Star size={13} className="text-[#e5b143]" /> Game Awards
                 </span>
-                {PROFILE_DATA.gameAwards.length > 0 && (
-                  <span className="ml-auto text-[9px] text-[#546270]">{PROFILE_DATA.gameAwards.length}</span>
-                )}
+                {PROFILE_DATA.gameAwards.length > 0 && (() => {
+                  const mastered = PROFILE_DATA.gameAwards.filter(a => a.type === 'Mastery/Completion').length;
+                  const beaten   = PROFILE_DATA.gameAwards.length - mastered;
+                  return (
+                    <div className="ml-auto flex items-center gap-2">
+                      {mastered > 0 && <span className="flex items-center gap-0.5 text-[9px] font-semibold" style={{ color: '#e5b143' }}><Trophy size={9} />{mastered}</span>}
+                      {beaten   > 0 && <span className="flex items-center gap-0.5 text-[9px] font-semibold" style={{ color: '#8f98a0' }}><Medal size={9} />{beaten}</span>}
+                    </div>
+                  );
+                })()}
               </div>
               <div className="p-3 grid grid-cols-5 gap-2 min-h-[60px]">
                 {PROFILE_DATA.gameAwards.length > 0 ? visibleAwards.map(award => (

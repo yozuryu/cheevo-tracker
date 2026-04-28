@@ -15,6 +15,7 @@
 
 - Game title and icon in the compare modal are now clickable links to the game page with `?compare=<user>` so the game page auto-enters compare mode for that user
 - Deselecting a friend on the game page now removes the `compare` URL param
+- Game Awards section header now shows separate mastered and beaten counts
 - Leading player's column in the game compare modal now gets a subtle blue (you) or cyan (them) background highlight instead of just colored text
 
 ---
