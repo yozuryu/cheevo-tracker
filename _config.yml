@@ -7,5 +7,5 @@ exclude:
   - .gitignore
   - .claude/
   - node_modules/
-  - profile/utils/CLAUDE.md
   - profile/utils/ra-api.md
+  - docs/

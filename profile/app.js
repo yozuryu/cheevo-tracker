@@ -1202,12 +1202,12 @@ const CompareModal = ({ otherUser, myGames, compareData, loading, error, onClose
               {sharedGames.length > 0 && (
                 <div className="flex items-center gap-2 px-2 mb-1">
                   <div className="flex-1" />
-                  <div className="w-[68px] flex items-center justify-center gap-1 text-[8px] text-[#66c0f4] uppercase tracking-[0.07em] font-semibold">
+                  <div className="w-[120px] flex items-center justify-center gap-1 text-[8px] text-[#66c0f4] uppercase tracking-[0.07em] font-semibold">
                     <ModeIcon hc={myIsHC} size={8} />
                     <span>You</span>
                   </div>
                   <div className="w-px h-3 bg-[#2a475e]" />
-                  <div className="w-[68px] flex items-center justify-center gap-1 text-[8px] text-[#57cbde] uppercase tracking-[0.07em] font-semibold">
+                  <div className="w-[120px] flex items-center justify-center gap-1 text-[8px] text-[#57cbde] uppercase tracking-[0.07em] font-semibold">
                     <ModeIcon hc={theirIsHC} size={8} />
                     <span>{otherUser}</span>
                   </div>
@@ -1223,17 +1223,20 @@ const CompareModal = ({ otherUser, myGames, compareData, loading, error, onClose
                     const theirBar = Math.round(g.theirPct);
                     return (
                       <div key={g.gameId} className="flex items-center gap-2 px-2 py-1.5 bg-[#202d39] hover:bg-[#253443] rounded-[2px] transition-colors">
-                        <img
-                          src={getMediaUrl(g.imageIcon)}
-                          alt={g.title}
-                          className="w-7 h-7 rounded-[2px] border border-[#101214] bg-[#131a22] shrink-0 object-cover"
-                          onError={e => { e.currentTarget.style.opacity = '0.3'; }}
-                        />
+                        <a href={`../game/?id=${g.gameId}&compare=${encodeURIComponent(otherUser)}`} className="shrink-0 w-7 h-7 rounded-[2px] border border-[#101214] bg-[#131a22] overflow-hidden block hover:scale-105 transition-transform">
+                          <img
+                            src={getMediaUrl(g.imageIcon)}
+                            alt={g.title}
+                            className="w-full h-full object-cover"
+                            onError={e => { e.currentTarget.style.opacity = '0.3'; }}
+                          />
+                        </a>
                         <div className="flex-1 min-w-0">
-                          <div className="text-[10px] font-medium text-[#c6d4df] truncate leading-tight">{g.title}</div>
+                          <a href={`../game/?id=${g.gameId}&compare=${encodeURIComponent(otherUser)}`} className="text-[10px] font-medium text-[#c6d4df] hover:text-[#66c0f4] transition-colors truncate leading-tight block">{g.title}</a>
                           <div className="text-[8px] text-[#546270] truncate">{g.consoleName}</div>
                         </div>
-                        <div className="w-[68px] shrink-0">
+                        <div className="w-[120px] shrink-0 rounded-[2px] px-2 py-2.5 transition-colors"
+                          style={{ background: g.myPct > g.theirPct ? 'rgba(102,192,244,0.15)' : 'transparent' }}>
                           <div className="flex items-center justify-between gap-1 mb-[3px]">
                             <div className="flex items-center gap-[3px]">
                               <ModeIcon hc={g.myHC} size={7} />
@@ -1245,8 +1248,9 @@ const CompareModal = ({ otherUser, myGames, compareData, loading, error, onClose
                             <div className="h-full rounded-full" style={{ width: `${myBar}%`, background: barColor(g.highestAwardKind, '#66c0f4') }} />
                           </div>
                         </div>
-                        <div className="w-px h-8 bg-[#2a475e] shrink-0" />
-                        <div className="w-[68px] shrink-0">
+                        <div className="w-px self-stretch bg-[#2a475e] shrink-0" />
+                        <div className="w-[120px] shrink-0 rounded-[2px] px-2 py-2.5 transition-colors"
+                          style={{ background: g.theirPct > g.myPct ? 'rgba(102,192,244,0.15)' : 'transparent' }}>
                           <div className="flex items-center justify-between gap-1 mb-[3px]">
                             <div className="flex items-center gap-[3px]">
                               <ModeIcon hc={g.theirHC} size={7} />

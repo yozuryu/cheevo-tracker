@@ -1,5 +1,24 @@
 # Changelog
 
+## v26.04.28 — Compare Modal Polish + Docs
+
+### Structure
+
+- Created `docs/` folder with agent-oriented documentation: `architecture.md`, `rules.md`, and per-page docs in `docs/pages/`
+- Rewrote `CLAUDE.md` as a lean index pointing to `docs/` with hard rules surfaced at the top
+- Added `docs/` to `_config.yml` exclude list so Jekyll ignores the agent docs
+- Added mobile view rules to all page docs and global rules (`docs/rules.md`)
+- Migrated `profile/utils/CLAUDE.md` content into `docs/architecture.md` and deleted the file; updated `CLAUDE.md` and `_config.yml` accordingly
+- Deprecated `user/` page — visitor mode consolidated into `/profile/?u=<username>`; deleted `user/index.html` and `user/app.js`, removed from `sw.js` precache, deleted `docs/pages/user.md`
+
+### Profile
+
+- Game title and icon in the compare modal are now clickable links to the game page with `?compare=<user>` so the game page auto-enters compare mode for that user
+- Deselecting a friend on the game page now removes the `compare` URL param
+- Leading player's column in the game compare modal now gets a subtle blue (you) or cyan (them) background highlight instead of just colored text
+
+---
+
 ## v26.04.26 — Friends Progress on Game Page
 
 ### Game Page

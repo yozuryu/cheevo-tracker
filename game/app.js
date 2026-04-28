@@ -142,8 +142,9 @@ function AchievementRow({ ach, totalPlayersCasual, totalPlayersHardcore, extAch,
 // ── Main app ──────────────────────────────────────────────────────────────────
 
 function GameApp() {
-  const params  = new URLSearchParams(window.location.search);
-  const gameId  = params.get('id');
+  const params          = new URLSearchParams(window.location.search);
+  const gameId          = params.get('id');
+  const compareUsername = params.get('compare') || null;
 
   const [game, setGame]         = useState(null);
   const [loading, setLoading]   = useState(true);
@@ -326,6 +327,11 @@ function GameApp() {
       setLoadingFriendData(false);
     }
   }
+
+  useEffect(() => {
+    if (!compareUsername || !creds) return;
+    selectFriendForCompare({ user: compareUsername });
+  }, []);
 
   useEffect(() => {
     if (tab !== 'details' || gameProgression !== null || loadingInfoExtra || !gameId || !creds) return;
@@ -691,7 +697,7 @@ function GameApp() {
                         onError={e => { e.currentTarget.style.visibility = 'hidden'; }} />
                       <span className="text-[9px] text-[#e5b143] font-semibold">{selectedFriend.user}</span>
                       {loadingFriendData && <Loader size={9} className="animate-spin" style={{ color: '#546270' }} />}
-                      <button type="button" onClick={() => { setSelectedFriend(null); setFriendGameData(null); }}
+                      <button type="button" onClick={() => { setSelectedFriend(null); setFriendGameData(null); const u = new URL(window.location.href); u.searchParams.delete('compare'); history.replaceState(null, '', u.toString()); }}
                         className="text-[#546270] hover:text-[#c6d4df] transition-colors ml-0.5">
                         <X size={10} />
                       </button>
