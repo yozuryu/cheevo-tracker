@@ -1,5 +1,18 @@
 # Changelog
 
+## v26.04.29 — Mobile Compare Layout Fix
+
+### Profile
+
+- Compare modal game rows now stack title above progress bars on mobile so the game title gets full width; desktop layout unchanged
+- Fixed "You / username" column headers to align with the stacked bar layout on mobile
+- Compare modal sort buttons now use the same bordered pill style as the game page filters
+- Friend comparison on the game page now shows a standalone full-width banner ("Comparing with username") below the filters instead of a cramped chip in the filter row; button changes to "Change ▾" when a friend is active
+- Selecting a friend now sets `?compare=<user>` in the URL so the comparison persists on refresh
+- Friend banner now shows a layered HC/SC progress bar with achievement count once data loads
+
+---
+
 ## v26.04.28 — Compare Modal Polish + Docs
 
 ### Structure

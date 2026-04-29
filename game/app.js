@@ -309,6 +309,9 @@ function GameApp() {
     setShowFriendPicker(false);
     setFriendGameData(null);
     setLoadingFriendData(true);
+    const u = new URL(window.location.href);
+    u.searchParams.set('compare', f.user);
+    history.replaceState(null, '', u.toString());
     try {
       const key = `ra_fg_${f.user}_${gameId}`;
       try {
@@ -655,66 +658,77 @@ function GameApp() {
                 {/* Compare row */}
                 <div className="flex items-center gap-1.5 relative">
                   <span className="text-[8px] uppercase tracking-wider text-[#546270] w-[44px] shrink-0">Compare</span>
-                  {!selectedFriend ? (
+                  <button type="button"
+                    onClick={() => { loadFollowing(); setShowFriendPicker(true); }}
+                    className="text-[9px] font-semibold uppercase tracking-wider px-2 py-[3px] rounded-sm border bg-[#101214] text-[#8f98a0] border-[#323f4c] hover:text-[#c6d4df] hover:border-[#546270] transition-colors flex items-center gap-1">
+                    {loadingFollowing ? <><Loader size={9} className="animate-spin" /> Loading…</> : selectedFriend ? 'Change ▾' : 'Select Friend ▾'}
+                  </button>
+                  {showFriendPicker && (
                     <>
-                      <button type="button"
-                        onClick={() => { loadFollowing(); setShowFriendPicker(true); }}
-                        className="text-[9px] font-semibold uppercase tracking-wider px-2 py-[3px] rounded-sm border bg-[#101214] text-[#8f98a0] border-[#323f4c] hover:text-[#c6d4df] hover:border-[#546270] transition-colors flex items-center gap-1">
-                        {loadingFollowing ? <><Loader size={9} className="animate-spin" /> Loading…</> : 'Select Friend ▾'}
-                      </button>
-                      {showFriendPicker && (
-                        <>
-                          <div className="fixed inset-0 z-40" onClick={() => setShowFriendPicker(false)} />
-                          <div className="absolute top-full left-[52px] z-50 mt-1 w-56 bg-[#131a22] border border-[#2a475e] rounded-[3px] shadow-2xl overflow-hidden">
-                            {!followingList || followingList.length === 0 ? (
-                              <div className="px-3 py-4 text-[10px] text-[#546270] text-center">
-                                {loadingFollowing ? 'Loading…' : 'No following found.'}
-                              </div>
-                            ) : (
-                              <div className="max-h-56 overflow-y-auto">
-                                {followingList.map(f => (
-                                  <button key={f.user} type="button"
-                                    onClick={() => selectFriendForCompare(f)}
-                                    className="w-full flex items-center gap-2 px-2.5 py-2 hover:bg-[#1b2838] transition-colors text-left">
-                                    <img src={f.userPic ? getMediaUrl(f.userPic) : `${MEDIA_URL}/UserPic/${f.user}.png`}
-                                      alt={f.user}
-                                      className="w-5 h-5 rounded-full border border-[#101214] shrink-0 object-cover bg-[#1b2838]"
-                                      onError={e => { e.currentTarget.style.visibility = 'hidden'; }} />
-                                    <span className="text-[11px] text-[#c6d4df] truncate">{f.user}</span>
-                                  </button>
-                                ))}
-                              </div>
-                            )}
+                      <div className="fixed inset-0 z-40" onClick={() => setShowFriendPicker(false)} />
+                      <div className="absolute top-full left-[52px] z-50 mt-1 w-56 bg-[#131a22] border border-[#2a475e] rounded-[3px] shadow-2xl overflow-hidden">
+                        {!followingList || followingList.length === 0 ? (
+                          <div className="px-3 py-4 text-[10px] text-[#546270] text-center">
+                            {loadingFollowing ? 'Loading…' : 'No following found.'}
                           </div>
-                        </>
-                      )}
+                        ) : (
+                          <div className="max-h-56 overflow-y-auto">
+                            {followingList.map(f => (
+                              <button key={f.user} type="button"
+                                onClick={() => selectFriendForCompare(f)}
+                                className="w-full flex items-center gap-2 px-2.5 py-2 hover:bg-[#1b2838] transition-colors text-left">
+                                <img src={f.userPic ? getMediaUrl(f.userPic) : `${MEDIA_URL}/UserPic/${f.user}.png`}
+                                  alt={f.user}
+                                  className="w-5 h-5 rounded-full border border-[#101214] shrink-0 object-cover bg-[#1b2838]"
+                                  onError={e => { e.currentTarget.style.visibility = 'hidden'; }} />
+                                <span className="text-[11px] text-[#c6d4df] truncate">{f.user}</span>
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      </div>
                     </>
-                  ) : (
-                    <div className="flex items-center gap-1.5 px-2 py-[3px] bg-[#202d39] border border-[#2a475e] rounded-sm">
-                      <img src={selectedFriend.userPic ? getMediaUrl(selectedFriend.userPic) : `${MEDIA_URL}/UserPic/${selectedFriend.user}.png`}
-                        alt={selectedFriend.user}
-                        className="w-4 h-4 rounded-full border border-[#101214] shrink-0 object-cover bg-[#131a22]"
-                        onError={e => { e.currentTarget.style.visibility = 'hidden'; }} />
-                      <span className="text-[9px] text-[#e5b143] font-semibold">{selectedFriend.user}</span>
-                      {loadingFriendData && <Loader size={9} className="animate-spin" style={{ color: '#546270' }} />}
-                      <button type="button" onClick={() => { setSelectedFriend(null); setFriendGameData(null); const u = new URL(window.location.href); u.searchParams.delete('compare'); history.replaceState(null, '', u.toString()); }}
-                        className="text-[#546270] hover:text-[#c6d4df] transition-colors ml-0.5">
-                        <X size={10} />
-                      </button>
-                    </div>
                   )}
                 </div>
               </div>
 
-              {/* Friend column header */}
+              {/* Selected friend banner */}
               {selectedFriend && (
-                <div className="flex items-center gap-3 px-2 mb-1">
-                  <div className="w-10 shrink-0" />
-                  <div className="flex-1" />
-                  <div className="w-[3px]" />
-                  <div className="w-[44px] text-[8px] text-[#57cbde] uppercase tracking-[0.07em] font-semibold text-center shrink-0">
-                    {selectedFriend.user}
+                <div className="flex items-center gap-2.5 px-3 py-2 mb-2 bg-[#202d39] border border-[#2a475e] rounded-sm">
+                  <img
+                    src={selectedFriend.userPic ? getMediaUrl(selectedFriend.userPic) : `${MEDIA_URL}/UserPic/${selectedFriend.user}.png`}
+                    alt={selectedFriend.user}
+                    className="w-6 h-6 rounded-full border border-[#101214] shrink-0 object-cover bg-[#131a22]"
+                    onError={e => { e.currentTarget.style.visibility = 'hidden'; }}
+                  />
+                  <div className="flex-1 min-w-0">
+                    <div className="text-[8px] uppercase tracking-wider text-[#546270]">Comparing with</div>
+                    <div className="text-[11px] font-semibold text-[#e5b143] truncate">{selectedFriend.user}</div>
+                    {!loadingFriendData && friendAchMap.size > 0 && (() => {
+                      const total = achList.length;
+                      const hc    = [...friendAchMap.values()].filter(a => a.dateEarnedHardcore).length;
+                      const sc    = [...friendAchMap.values()].filter(a => a.dateEarned && !a.dateEarnedHardcore).length;
+                      const hcPct = total > 0 ? (hc / total) * 100 : 0;
+                      const scPct = total > 0 ? ((hc + sc) / total) * 100 : 0;
+                      return (
+                        <div className="flex items-center gap-2 mt-1">
+                          <div className="flex-1 relative h-[3px] bg-[#131a22] rounded-full overflow-hidden">
+                            <div className="absolute top-0 left-0 h-full rounded-full bg-[#8f98a0]" style={{ width: `${scPct}%` }} />
+                            <div className="absolute top-0 left-0 h-full rounded-full bg-[#e5b143]" style={{ width: `${hcPct}%` }} />
+                          </div>
+                          <span className="text-[9px] shrink-0 tabular-nums" style={{ color: hcPct > 0 ? '#e5b143' : '#8f98a0' }}>
+                            {(hcPct > 0 ? hcPct : scPct).toFixed(1)}%
+                          </span>
+                        </div>
+                      );
+                    })()}
                   </div>
+                  {loadingFriendData && <Loader size={10} className="animate-spin shrink-0" style={{ color: '#546270' }} />}
+                  <button type="button"
+                    onClick={() => { setSelectedFriend(null); setFriendGameData(null); const u = new URL(window.location.href); u.searchParams.delete('compare'); history.replaceState(null, '', u.toString()); }}
+                    className="text-[#546270] hover:text-[#c6d4df] transition-colors shrink-0">
+                    <X size={13} />
+                  </button>
                 </div>
               )}
 

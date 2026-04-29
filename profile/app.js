@@ -1189,10 +1189,10 @@ const CompareModal = ({ otherUser, myGames, compareData, loading, error, onClose
 
               {sharedGames.length > 0 && (
                 <div className="flex items-center gap-1.5 mb-3">
-                  <span className="text-[9px] text-[#546270] uppercase tracking-[0.07em] font-semibold mr-0.5">Sort:</span>
+                  <span className="text-[8px] uppercase tracking-wider text-[#546270] shrink-0">Sort</span>
                   {[['diff', 'Diff'], ['mine', 'Mine'], ['theirs', 'Theirs'], ['az', 'A–Z']].map(([v, label]) => (
                     <button key={v} onClick={() => setSortBy(v)}
-                      className={`text-[9px] font-semibold uppercase tracking-[0.07em] px-1.5 py-[2px] rounded-[2px] transition-colors ${sortBy === v ? 'bg-[#2a475e] text-[#c6d4df]' : 'text-[#546270] hover:text-[#8f98a0]'}`}>
+                      className={`text-[9px] font-semibold uppercase tracking-wider px-2 py-[3px] rounded-sm border transition-colors ${sortBy === v ? 'bg-[#1b2838] text-[#c6d4df] border-[#2a475e]' : 'bg-[#101214] text-[#546270] border-[#323f4c] hover:text-[#c6d4df] hover:border-[#546270]'}`}>
                       {label}
                     </button>
                   ))}
@@ -1201,15 +1201,17 @@ const CompareModal = ({ otherUser, myGames, compareData, loading, error, onClose
 
               {sharedGames.length > 0 && (
                 <div className="flex items-center gap-2 px-2 mb-1">
-                  <div className="flex-1" />
-                  <div className="w-[120px] flex items-center justify-center gap-1 text-[8px] text-[#66c0f4] uppercase tracking-[0.07em] font-semibold">
-                    <ModeIcon hc={myIsHC} size={8} />
-                    <span>You</span>
-                  </div>
-                  <div className="w-px h-3 bg-[#2a475e]" />
-                  <div className="w-[120px] flex items-center justify-center gap-1 text-[8px] text-[#57cbde] uppercase tracking-[0.07em] font-semibold">
-                    <ModeIcon hc={theirIsHC} size={8} />
-                    <span>{otherUser}</span>
+                  <div className="hidden md:block md:flex-1" />
+                  <div className="flex items-center w-full md:w-auto">
+                    <div className="flex-1 md:flex-none md:w-[120px] flex items-center justify-center gap-1 text-[8px] text-[#66c0f4] uppercase tracking-[0.07em] font-semibold">
+                      <ModeIcon hc={myIsHC} size={8} />
+                      <span>You</span>
+                    </div>
+                    <div className="w-px h-3 bg-[#2a475e] shrink-0" />
+                    <div className="flex-1 md:flex-none md:w-[120px] flex items-center justify-center gap-1 text-[8px] text-[#57cbde] uppercase tracking-[0.07em] font-semibold">
+                      <ModeIcon hc={theirIsHC} size={8} />
+                      <span>{otherUser}</span>
+                    </div>
                   </div>
                 </div>
               )}
@@ -1222,44 +1224,50 @@ const CompareModal = ({ otherUser, myGames, compareData, loading, error, onClose
                     const myBar    = Math.round(g.myPct);
                     const theirBar = Math.round(g.theirPct);
                     return (
-                      <div key={g.gameId} className="flex items-center gap-2 px-2 py-1.5 bg-[#202d39] hover:bg-[#253443] rounded-[2px] transition-colors">
-                        <a href={`../game/?id=${g.gameId}&compare=${encodeURIComponent(otherUser)}`} className="shrink-0 w-7 h-7 rounded-[2px] border border-[#101214] bg-[#131a22] overflow-hidden block hover:scale-105 transition-transform">
-                          <img
-                            src={getMediaUrl(g.imageIcon)}
-                            alt={g.title}
-                            className="w-full h-full object-cover"
-                            onError={e => { e.currentTarget.style.opacity = '0.3'; }}
-                          />
-                        </a>
-                        <div className="flex-1 min-w-0">
-                          <a href={`../game/?id=${g.gameId}&compare=${encodeURIComponent(otherUser)}`} className="text-[10px] font-medium text-[#c6d4df] hover:text-[#66c0f4] transition-colors truncate leading-tight block">{g.title}</a>
-                          <div className="text-[8px] text-[#546270] truncate">{g.consoleName}</div>
-                        </div>
-                        <div className="w-[120px] shrink-0 rounded-[2px] px-2 py-2.5 transition-colors"
-                          style={{ background: g.myPct > g.theirPct ? 'rgba(102,192,244,0.15)' : 'transparent' }}>
-                          <div className="flex items-center justify-between gap-1 mb-[3px]">
-                            <div className="flex items-center gap-[3px]">
-                              <ModeIcon hc={g.myHC} size={7} />
-                              <span className={`text-[9px] font-semibold ${g.myPct > g.theirPct ? 'text-[#66c0f4]' : 'text-[#8f98a0]'}`}>{myBar}%</span>
-                            </div>
-                            {awardBadge(g.highestAwardKind)}
-                          </div>
-                          <div className="h-[3px] w-full bg-[#131a22] rounded-full overflow-hidden">
-                            <div className="h-full rounded-full" style={{ width: `${myBar}%`, background: barColor(g.highestAwardKind, '#66c0f4') }} />
+                      <div key={g.gameId} className="flex flex-col gap-1 px-2 py-1.5 bg-[#202d39] hover:bg-[#253443] rounded-[2px] transition-colors md:flex-row md:items-center md:gap-2">
+                        {/* Icon + title */}
+                        <div className="flex items-center gap-2 min-w-0 md:flex-1">
+                          <a href={`../game/?id=${g.gameId}&compare=${encodeURIComponent(otherUser)}`} className="shrink-0 w-7 h-7 rounded-[2px] border border-[#101214] bg-[#131a22] overflow-hidden block hover:scale-105 transition-transform">
+                            <img
+                              src={getMediaUrl(g.imageIcon)}
+                              alt={g.title}
+                              className="w-full h-full object-cover"
+                              onError={e => { e.currentTarget.style.opacity = '0.3'; }}
+                            />
+                          </a>
+                          <div className="flex-1 min-w-0">
+                            <a href={`../game/?id=${g.gameId}&compare=${encodeURIComponent(otherUser)}`} className="text-[10px] font-medium text-[#c6d4df] hover:text-[#66c0f4] transition-colors truncate leading-tight block">{g.title}</a>
+                            <div className="text-[8px] text-[#546270] truncate">{g.consoleName}</div>
                           </div>
                         </div>
-                        <div className="w-px self-stretch bg-[#2a475e] shrink-0" />
-                        <div className="w-[120px] shrink-0 rounded-[2px] px-2 py-2.5 transition-colors"
-                          style={{ background: g.theirPct > g.myPct ? 'rgba(102,192,244,0.15)' : 'transparent' }}>
-                          <div className="flex items-center justify-between gap-1 mb-[3px]">
-                            <div className="flex items-center gap-[3px]">
-                              <ModeIcon hc={g.theirHC} size={7} />
-                              <span className={`text-[9px] font-semibold ${g.theirPct > g.myPct ? 'text-[#57cbde]' : 'text-[#8f98a0]'}`}>{theirBar}%</span>
+                        {/* Progress bars */}
+                        <div className="flex items-stretch">
+                          <div className="flex-1 md:flex-none md:w-[120px] md:shrink-0 rounded-[2px] px-2 py-1.5 md:py-2.5 transition-colors"
+                            style={{ background: g.myPct > g.theirPct ? 'rgba(102,192,244,0.15)' : 'transparent' }}>
+                            <div className="flex items-center justify-between gap-1 mb-[3px]">
+                              <div className="flex items-center gap-[3px]">
+                                <ModeIcon hc={g.myHC} size={7} />
+                                <span className={`text-[9px] font-semibold ${g.myPct > g.theirPct ? 'text-[#66c0f4]' : 'text-[#8f98a0]'}`}>{myBar}%</span>
+                              </div>
+                              {awardBadge(g.highestAwardKind)}
                             </div>
-                            {awardBadge(g.them.highestAwardKind)}
+                            <div className="h-[3px] w-full bg-[#131a22] rounded-full overflow-hidden">
+                              <div className="h-full rounded-full" style={{ width: `${myBar}%`, background: barColor(g.highestAwardKind, '#66c0f4') }} />
+                            </div>
                           </div>
-                          <div className="h-[3px] w-full bg-[#131a22] rounded-full overflow-hidden">
-                            <div className="h-full rounded-full" style={{ width: `${theirBar}%`, background: barColor(g.them.highestAwardKind, '#57cbde') }} />
+                          <div className="w-px self-stretch bg-[#2a475e] shrink-0" />
+                          <div className="flex-1 md:flex-none md:w-[120px] md:shrink-0 rounded-[2px] px-2 py-1.5 md:py-2.5 transition-colors"
+                            style={{ background: g.theirPct > g.myPct ? 'rgba(102,192,244,0.15)' : 'transparent' }}>
+                            <div className="flex items-center justify-between gap-1 mb-[3px]">
+                              <div className="flex items-center gap-[3px]">
+                                <ModeIcon hc={g.theirHC} size={7} />
+                                <span className={`text-[9px] font-semibold ${g.theirPct > g.myPct ? 'text-[#57cbde]' : 'text-[#8f98a0]'}`}>{theirBar}%</span>
+                              </div>
+                              {awardBadge(g.them.highestAwardKind)}
+                            </div>
+                            <div className="h-[3px] w-full bg-[#131a22] rounded-full overflow-hidden">
+                              <div className="h-full rounded-full" style={{ width: `${theirBar}%`, background: barColor(g.them.highestAwardKind, '#57cbde') }} />
+                            </div>
                           </div>
                         </div>
                       </div>
