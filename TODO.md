@@ -2,26 +2,76 @@
 
 ## Profile Page — Social Timeline Tab
 
-Add a **Social Timeline** tab to the profile page showing a unified Steam-style activity feed of achievement unlocks from the logged-in user and everyone they follow.
+Add a **Social** sub-section inside the existing **Activity** tab. Activity tab gains two views: **Mine** (current behaviour) and **Friends** (merged feed of self + all following users sorted by date).
 
-### Data
-- `API_GetUserFollowing` — list of users the logged-in user follows
-- `API_GetUserRecentAchievements?u={user}&c=50` (or `API_GetAchievementsEarnedBetween`) — recent achievements per user
-- Own achievements already available via `achievementChunks`
+---
 
-### Behaviour
-- Lazy-load on first tab open: fetch following list, then fan-out one `API_GetUserRecentAchievements` call per followed user in parallel (cap concurrency to avoid rate limits)
-- Merge own recent achievements + all followed users' achievements, sorted by date descending
-- Manual refresh button (no auto-polling — RA API has no push)
-- Loading state: shimmer skeletons; per-user progress optional
-- Empty states: "You're not following anyone yet" / "No recent activity"
+### Architecture
 
-### UI
-- Feed row per unlock: user avatar (28px, linked to RA profile) · username (gold) · "earned" · achievement icon · achievement name (white) · "in" · game title (muted) · timestamp (relative, right-aligned)
-- Game art thumbnail as left accent or background tint (optional)
-- Group consecutive unlocks from the same user+game into a collapsible card ("X earned 5 achievements in [Game]")
-- Own unlocks styled slightly differently (e.g. cyan `#57cbde` username) to distinguish from friends
-- Section accent: blue `#66c0f4` (engagement/social)
+**Data sources**
+- Own achievements: `achievementChunks[0]` (already loaded, covers ~6 months / 182 days) — used directly in the merge, never re-fetched
+- Friends list: `fetchSocial(u, k)` (cached 1h in localStorage); following list is at `.following.results` — lazy-loaded by the Social tab, so Activity must fetch it independently if Social tab hasn't been opened yet
+- Per-friend achievements: `getAchievementsEarnedBetween(u, k, { u: friendUser, f: start, t: end })` — one call per followed user, 3-month window; returns a flat array (not paginated)
+
+**New state (profile/app.js)**
+```js
+const [socialView,            setSocialView]            = useState('mine');   // 'mine' | 'friends'
+const [friendsActivity,       setFriendsActivity]       = useState({});       // { [username]: achievement[] }
+const [friendsFetchProgress,  setFriendsFetchProgress]  = useState(null);     // { done, total } | null
+const [friendsActivityStatus, setFriendsActivityStatus] = useState('idle');   // 'idle' | 'loading' | 'done' | 'error'
+```
+
+**New composite in ra-api.js**
+```js
+fetchFriendsActivity(username, apiKey, followingList, { onProgress, onUser })
+```
+- Iterates **following list only** (self is excluded — own data comes from `achievementChunks[0]`)
+- Concurrency cap: 4 parallel requests
+- 500ms sleep between batches (rate limit)
+- **Per-user retry:** `withRetry(fn, 2, 1000)` (existing helper — 3 total attempts, 1s delay, re-throws `AUTH_ERROR` immediately); catch the final throw to skip the user and continue
+- Per-user cache: `localStorage` key `ra_fa_{friendUser}` (keyed to the friend's username, e.g. `ra_fa_FriendA`), TTL 1 hour — checked before fetching, written after success
+- On cache hit: calls `onUser(username, cached)` immediately, counts toward `onProgress`
+- Calls `onProgress(done, total)` callback after each user resolves (hit or miss)
+- Returns early per-user results via `onUser(username, achievements)` callback (streaming)
+- `getAchievementsEarnedBetween` returns a flat array in one call — no pagination needed
+
+---
+
+### Phase 1 — Mine / Friends toggle UI
+- [x] Add `socialView` + `friendsActivityStatus` state to profile app
+- [x] Add toggle buttons ("Mine" / "Friends") at the top of the Activity tab content (ActivityTab has no existing controls — the toggle row is the first control)
+- [x] "Mine" shows existing heatmap + achievement chunk list (no change)
+- [x] "Friends" shows a placeholder "Coming soon" card for now; **no heatmap**
+- [x] Toggle only visible when Activity tab is active
+
+### Phase 2 — Friends fetch + streaming
+- [ ] Add `fetchFriendsActivity` composite to `ra-api.js` with streaming callbacks, concurrency cap, per-user retry (3×), and per-user localStorage cache (1h TTL)
+- [ ] Trigger fetch on first switch to "Friends" view (guard with `friendsActivityStatus === 'idle'`); resolve following list via `const social = socialData ?? await fetchSocial(u, k)` then pass `social.following.results` into `fetchFriendsActivity` — reuses the 1h localStorage cache if Social tab was previously opened
+- [ ] Show progress bar + "Fetching X / Y users…" label while fetching
+- [ ] Stream results into `friendsActivity` map as each user resolves — render immediately, don't wait for all
+- [ ] Manual **Refresh** button: clears all `ra_fa_*` localStorage keys, resets `friendsActivity` to `{}`, `friendsFetchProgress` to `null`, and `friendsActivityStatus` to `'idle'` — the status reset triggers re-fetch via the same useEffect
+- [ ] Empty states: "You're not following anyone" / "No activity in the last 3 months"
+- [ ] On fetch complete, set `friendsActivityStatus = 'done'`; on unrecoverable error (all retries exhausted for every user), set `'error'` — render an error card with a **Retry** button that resets status to `'idle'` and re-triggers the fetch
+
+### Phase 3 — Flat merged feed
+- [ ] `FeedRow` component: avatar (28px, linked to `/profile/?u=`) · username · "unlocked" · badge icon (linked to `/achievement/?id=`) · achievement name · "in" · game title (linked to `/game/?id=`) · relative timestamp right-aligned
+- [ ] Own rows: `#57cbde` (cyan) username; friend rows: `#e5b143` (gold) username
+- [ ] HC badge: gold left-border stripe; SC: gray
+- [ ] Merge `achievementChunks[0]` (own) + all `friendsActivity` values into a flat array, sort by date descending
+- [ ] Render incrementally as `friendsActivity` fills in (each `onUser` call triggers re-merge)
+
+### Phase 4 — Grouping
+- [ ] Group consecutive unlocks from the same user + game within a **1-hour** window (≥ 3 achievements) into a collapsed card: "[Avatar] [User] unlocked N achievements in [Game] · [time ago]"
+- [ ] Expand/collapse per group to show individual `FeedRow`s
+- [ ] Ungrouped items render as individual `FeedRow`s
+
+### Phase 5 — Pagination + polish
+- [ ] If merged feed exceeds 200 items: show first 100, "Load more" button appends next 100
+- [ ] On tab re-open within 1 hour (all users still cached): restore feed instantly from cache, no loading state (`friendsActivityStatus` stays `'done'`)
+- [ ] Update `docs/pages/profile.md` and `docs/architecture.md` with new state and composite
+- [ ] Update changelog
+
+---
 
 ---
 
@@ -125,4 +175,3 @@ In the right sidebar on desktop, Info and Hashes need their own section headers 
 ### Scroll behaviour
 
 No scroll containers within sections — everything flows naturally in the page scroll. The sticky tab bar on mobile remains sticky; on desktop it is hidden so no sticky element is needed below the hero.
-

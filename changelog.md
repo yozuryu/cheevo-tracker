@@ -1,5 +1,15 @@
 # Changelog
 
+## v26.05.01 — Social Timeline Phase 1 + Backlog Streaming + Fixes
+
+### Profile
+
+- Activity tab now has a MINE / FRIENDS toggle at the top; "Mine" shows existing heatmap + unlock list (unchanged); "Friends" shows a "Coming soon" placeholder with no heatmap
+- Added `socialView`, `friendsActivityStatus`, `friendsActivity`, `friendsFetchProgress` state for upcoming social feed phases
+- Backlog now streams: first page of games renders immediately on tab open; remaining pages load in the background with a "loading…" indicator in the stats line
+
+---
+
 ## v26.04.29 — Mobile Compare Layout Fix
 
 ### Profile

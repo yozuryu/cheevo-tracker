@@ -404,7 +404,7 @@ const RAchievementModal = ({ game, onClose, loadingDetails }) => {
 
 // ── ActivityTab Component ──────────────────────────────────────────────────
 
-const ActivityTab = ({ achievements, refTime, heatmapData, loadingMore, allLoaded }) => {
+const ActivityTab = ({ achievements, refTime, heatmapData, loadingMore, allLoaded, socialView, setSocialView }) => {
   const [selectedDay, setSelectedDay] = useState(null);
   const [collapsedDays, setCollapsedDays] = useState(new Set());
 
@@ -517,6 +517,24 @@ const ActivityTab = ({ achievements, refTime, heatmapData, loadingMore, allLoade
 
   return (
     <div className="flex flex-col gap-6">
+
+      {/* ── Mine / Friends toggle ── */}
+      <div className="flex items-center gap-1.5">
+        {['mine', 'friends'].map(v => (
+          <button key={v} onClick={() => setSocialView(v)}
+            className={`text-[11px] px-3 py-1 rounded-[2px] border font-medium transition-colors uppercase tracking-wider ${socialView === v ? 'bg-[#1b2838] text-[#c6d4df] border-[#2a475e]' : 'bg-[#101214] text-[#546270] border-[#323f4c] hover:text-[#c6d4df]'}`}>
+            {v}
+          </button>
+        ))}
+      </div>
+
+      {socialView === 'friends' ? (
+        <div className="flex flex-col items-center justify-center py-12 gap-3 border border-[#2a475e] rounded-[2px] bg-[#1b2838]">
+          <Users size={28} className="text-[#546270]" />
+          <div className="text-[12px] text-[#8f98a0] font-medium">Friends Activity</div>
+          <div className="text-[10px] text-[#546270]">Coming soon</div>
+        </div>
+      ) : <>
 
       {/* ── Heatmap ── */}
       <div>
@@ -729,6 +747,7 @@ const ActivityTab = ({ achievements, refTime, heatmapData, loadingMore, allLoade
           ) : null
         )}
       </div>
+      </>}
     </div>
   );
 };
@@ -1379,7 +1398,8 @@ const SocialTab = ({ socialData, socialError, onRetry, onCompare }) => {
 export default function App() {
   // ── Split data state ─────────────────────────────────────
   const [profileData,   setProfileData]   = useState(null);
-  const [backlogData, setBacklogData] = useState(null);
+  const [backlogData,       setBacklogData]       = useState(null);
+  const [backlogLoadingMore, setBacklogLoadingMore] = useState(false);
   const [socialData,    setSocialData]    = useState(null);
   const [socialError,   setSocialError]   = useState(false);
   const [compareUser,   setCompareUser]   = useState(null);
@@ -1425,6 +1445,11 @@ export default function App() {
   const [collapsedGroups, setCollapsedGroups] = useState(new Set());
   const [selectedGame, setSelectedGame] = useState(null);
   const [seriesData, setSeriesData] = useState([]);
+
+  const [socialView,            setSocialView]            = useState('mine');   // 'mine' | 'friends'
+  const [friendsActivityStatus, setFriendsActivityStatus] = useState('idle');  // 'idle' | 'loading' | 'done' | 'error'
+  const [friendsActivity,       setFriendsActivity]       = useState({});       // { [username]: achievement[] }
+  const [friendsFetchProgress,  setFriendsFetchProgress]  = useState(null);     // { done, total } | null
 
   // ── Auth helpers ─────────────────────────────────────────
   const handleAuthError = () => {
@@ -1528,11 +1553,12 @@ export default function App() {
     if (isVisitorMode || activeTab !== 'backlog' || backlogData !== null) return;
     const creds = getCredentials();
     if (!creds) { handleAuthError(); return; }
-    fetchBacklog(creds.username, creds.apiKey)
-      .then(data => setBacklogData(data))
+    setBacklogLoadingMore(true);
+    fetchBacklog(creds.username, creds.apiKey, partial => setBacklogData(partial))
+      .then(data => { setBacklogData(data); setBacklogLoadingMore(false); })
       .catch(err => {
         if (err.message === 'AUTH_ERROR') handleAuthError();
-        else setBacklogData({ total: 0, results: [] });
+        else { setBacklogData({ total: 0, results: [] }); setBacklogLoadingMore(false); }
       });
   }, [activeTab]);
 
@@ -1943,7 +1969,7 @@ export default function App() {
           </div>
         </div>
 
-        {/* ── Tab bar (natural in-flow position; desktop: sticky) ── */}
+        {/* ── Tab bar ── */}
         <div ref={tabBarRef} className={`${isVisitorMode ? 'block sticky top-0 md:top-[26px] md:-mx-8' : 'hidden md:block md:sticky md:top-[26px] -mx-4 md:-mx-8'} z-40 bg-[#171a21] mb-4 border-b border-[#2a475e]`}>
           <div className={`flex items-center ${isVisitorMode ? 'gap-1 px-0 md:px-8 overflow-hidden' : 'gap-1 md:gap-6 px-2 md:px-8 overflow-x-auto scrollbar-none'}`} style={isVisitorMode ? undefined : { scrollbarWidth: 'none' }}>
             <button onClick={() => setTab('recent')} className={`flex-1 md:flex-none flex flex-col md:flex-row items-center justify-center gap-1 md:gap-0 py-2.5 md:py-0 md:pb-2 px-1 md:px-0 transition-colors relative ${activeTab === 'recent' ? 'text-white' : 'text-[#546270] hover:text-[#c6d4df]'}`}>
@@ -1993,7 +2019,6 @@ export default function App() {
           </div>
         </div>
 
-
         <div className="flex flex-col gap-3">
           {activeTab === 'social' ? (
             <SocialTab socialData={socialData} socialError={socialError} onRetry={() => setSocialError(false)} onCompare={openCompare} />
@@ -2008,9 +2033,11 @@ export default function App() {
                   heatmapData={heatmapData}
                   loadingMore={loadingChunkIndices.size > 0}
                   allLoaded={loadedChunkCount === TOTAL_ACH_CHUNKS}
+                  socialView={socialView}
+                  setSocialView={setSocialView}
                 />
           ) : activeTab === 'backlog' ? (
-            (backlogData === null || (backlogData.total > 0 && BACKLOG.games.length === 0)) ? (
+            backlogData === null ? (
               <div className="flex flex-col gap-2">
                 {[...Array(8)].map((_, i) => (
                   <div key={i} className="flex items-center gap-3 p-3 bg-[#1b2838] border border-[#323f4c] rounded-[3px]">
@@ -2173,7 +2200,7 @@ export default function App() {
                   {/* Stats line */}
                   <p className="text-[10px] text-[#546270] px-1 mb-1">
                     <span className="text-[#8f98a0]">{BACKLOG.total.toLocaleString()}</span> games in backlog
-                    {BACKLOG.games.length < BACKLOG.total && <> · showing first {BACKLOG.games.length}</>}
+                    {backlogLoadingMore && <span className="text-[#546270] italic"> · loading…</span>}
                     <span className="mx-2 text-[#2a475e]">|</span>
                     <span className="text-[#c6d4df]">{BACKLOG.games.filter(g => g.achievementsTotal > 0).length}</span> with achievements
                     <span className="mx-1.5 text-[#2a475e]">·</span>

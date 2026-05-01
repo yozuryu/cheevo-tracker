@@ -1233,23 +1233,35 @@ export async function fetchAchievementsChunk(username, apiKey, chunkIndex) {
  * Fetches the user's want-to-play list (all pages, 100/page).
  * Cached for 5 minutes under key ra_backlog_{username}.
  */
-export async function fetchBacklog(username, apiKey) {
+export async function fetchBacklog(username, apiKey, onPartial) {
   const cacheKey = `ra_backlog_${username}`;
   const cached = cacheGet(cacheKey);
   if (cached) return cached;
 
-  const results = await paginate('API_GetUserWantToPlayList.php', username, apiKey, {}, 500);
-  const result = {
-    total: results.length,
-    results: results.map(g => ({
-      id:                    g.ID,
-      title:                 g.Title,
-      consoleName:           g.ConsoleName,
-      imageIcon:             g.ImageIcon,
-      pointsTotal:           g.PointsTotal           || 0,
-      achievementsPublished: g.AchievementsPublished  || 0,
-    })),
-  };
+  const mapGame = g => ({
+    id:                    g.ID,
+    title:                 g.Title,
+    consoleName:           g.ConsoleName,
+    imageIcon:             g.ImageIcon,
+    pointsTotal:           g.PointsTotal           || 0,
+    achievementsPublished: g.AchievementsPublished  || 0,
+  });
+
+  const allResults = [];
+  let offset = 0;
+  let total = 0;
+  while (true) {
+    const data = await withRetry(() =>
+      raFetch('API_GetUserWantToPlayList.php', username, apiKey, { u: username, c: 500, o: offset }));
+    const page = data.Results || [];
+    total = data.Total || total;
+    allResults.push(...page.map(mapGame));
+    if (onPartial) onPartial({ total, results: [...allResults] });
+    if (allResults.length >= total || page.length < 500) break;
+    offset += 500;
+    await sleep(1000);
+  }
+  const result = { total, results: allResults };
   cacheSet(cacheKey, result);
   return result;
 }
