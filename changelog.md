@@ -1,5 +1,22 @@
 # Changelog
 
+## v26.05.02 — Social Timeline (Activity Tab — Friends View)
+
+### Profile
+
+- Activity tab gains a **Mine / Friends** toggle; Friends view shows a merged timeline of own + followed users' achievements
+- `fetchFriendsActivity` composite in `ra-api.js`: fetches 90-day achievements per followed user, one at a time with a 1000ms gap between API calls, per-user localStorage cache (`ra_fa_{user}`, 1h TTL), streams results via `onUser` / `onProgress` callbacks
+- Feed structure mirrors Mine tab: day headers → sessions (same user + game within 1-hour window) with header `[avatar] username unlocked in [game icon] Game · Console [time range]`; `FeedAchRow`s beneath each session header
+- Own username shown in cyan (`#57cbde`), friends in gold (`#e5b143`); HC rows: gold left-border; SC: gray
+- New sessions animate in with `feedIn` keyframe as friends' data streams in
+- Feed paginated at 100 sessions; "Load more · N remaining" button appends 100 more
+- `allFriendsCached(followingList)` skips the loading indicator when all data is already cached; `friendsFetchingRef` prevents re-entry
+- Loading indicator: plain text "X / Y users loaded"; Refresh button clears `ra_fa_*` cache and re-fetches
+- Empty states: "You're not following anyone" / "No activity in the last 3 months"; error state with Retry
+- Docs updated: `docs/pages/profile.md` and `docs/architecture.md`
+
+---
+
 ## v26.05.01 — Social Timeline Phase 1 + Backlog Streaming + Fixes
 
 ### Profile

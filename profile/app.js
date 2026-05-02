@@ -7,7 +7,7 @@ import { transformData } from './utils/transform.js';
 import {
   getCredentials, clearCredentials,
   fetchProfile, fetchAchievementsChunk, fetchBacklog, fetchGameDetails,
-  fetchSocial, getUserCompletionProgress,
+  fetchSocial, fetchFriendsActivity, allFriendsCached, getUserCompletionProgress,
 } from './utils/ra-api.js';
 import { Topbar, Footer } from '../assets/ui.js';
 
@@ -402,11 +402,71 @@ const RAchievementModal = ({ game, onClose, loadingDetails }) => {
   );
 };
 
+// ── FeedAchRow Component — individual achievement row inside a FeedSession ─
+
+const FeedAchRow = ({ ach }) => (
+  <div className={`feed-item flex items-center gap-2 p-2 rounded-[2px] border border-[#2a475e] border-l-[2px] ${ach.hardcoreMode ? 'border-l-[#e5b143] bg-[#202d39]' : 'border-l-[#546270] bg-[#1b2838]'} hover:bg-[#2a475e] transition-colors`}>
+    <a href={`../achievement/?id=${ach.achievementId}`} className="shrink-0 w-8 h-8 rounded-[2px] overflow-hidden border border-[#101214] bg-black block hover:scale-105 transition-transform">
+      <img src={`${MEDIA_URL}/Badge/${ach.badgeName}.png`} alt={ach.title} className="w-full h-full object-cover" />
+    </a>
+    <div className="flex-1 min-w-0">
+      <div className="flex items-center gap-1.5 mb-0.5 flex-wrap">
+        <a href={`../achievement/?id=${ach.achievementId}`} className={`text-[11px] font-medium transition-colors truncate ${ach.hardcoreMode ? 'text-[#e5b143] hover:text-[#f0c96a]' : 'text-[#c6d4df] hover:text-[#66c0f4]'}`}>
+          {ach.title}
+        </a>
+        <span className="text-[9px] font-bold text-[#66c0f4] bg-[#101214] border border-[#323f4c] px-1.5 py-[1px] rounded-sm shrink-0">{ach.points} pts</span>
+      </div>
+      {ach.description && <p className="text-[9px] text-[#546270] truncate">{ach.description}</p>}
+    </div>
+    <span className="text-[8px] text-[#546270] shrink-0 ml-auto">{ach.date ? ach.date.substring(11, 16) : ''}</span>
+  </div>
+);
+
+// ── FeedSession Component — session header + achievement list ─────────────
+
+const FeedSession = ({ session }) => {
+  const { username, isOwn, gameId, gameTitle, gameIcon, consoleName, achievements } = session;
+  const startTime = achievements[achievements.length - 1]?.date || '';
+  const endTime   = achievements[0]?.date || '';
+  const fmtT = (s) => s ? s.substring(11, 16) : '';
+  return (
+    <div className="feed-item mb-3">
+      <div className="flex items-center gap-2 mb-1.5">
+        <a href={`../profile/?u=${username}`} className="shrink-0">
+          <img src={`${MEDIA_URL}/UserPic/${username}.png`} alt={username} className="w-5 h-5 rounded-[2px] object-cover" />
+        </a>
+        <a href={`../profile/?u=${username}`} className="text-[11px] font-medium shrink-0 hover:underline" style={{ color: isOwn ? '#57cbde' : '#e5b143' }}>
+          {username}
+        </a>
+        <span className="text-[9px] text-[#546270] shrink-0">unlocked in</span>
+        <a href={`../game/?id=${gameId}`} className="w-4 h-4 rounded-[1px] overflow-hidden border border-[#101214] bg-black block hover:scale-110 transition-transform shrink-0">
+          <img src={getMediaUrl(gameIcon)} alt="" className="w-full h-full object-cover" />
+        </a>
+        <div className="flex items-center gap-1.5 flex-1 min-w-0">
+          <a href={`../game/?id=${gameId}`} className="text-[9px] text-[#c6d4df] hover:text-[#66c0f4] transition-colors uppercase tracking-wider font-medium truncate">
+            {gameTitle}
+          </a>
+          {consoleName && <span className="text-[8px] text-[#546270] shrink-0">· {consoleName}</span>}
+        </div>
+        <span className="text-[8px] text-[#546270] shrink-0 ml-auto">
+          {fmtT(startTime)}{startTime !== endTime ? `–${fmtT(endTime)}` : ''}
+        </span>
+      </div>
+      <div className="flex flex-col gap-1">
+        {achievements.map((ach, i) => (
+          <FeedAchRow key={`${ach.achievementId}-${i}`} ach={ach} />
+        ))}
+      </div>
+    </div>
+  );
+};
+
 // ── ActivityTab Component ──────────────────────────────────────────────────
 
-const ActivityTab = ({ achievements, refTime, heatmapData, loadingMore, allLoaded, socialView, setSocialView }) => {
+const ActivityTab = ({ achievements, refTime, heatmapData, loadingMore, allLoaded, socialView, setSocialView, friendsActivityStatus, setFriendsActivityStatus, friendsActivity, friendsFetchProgress, onRefreshFriends, ownUsername }) => {
   const [selectedDay, setSelectedDay] = useState(null);
   const [collapsedDays, setCollapsedDays] = useState(new Set());
+  const [visibleSessionCount, setVisibleSessionCount] = useState(100);
 
   const heatmapScrollRef = useRef(null);
   const heatmapKeys = Object.keys(heatmapData).length;
@@ -512,6 +572,53 @@ const ActivityTab = ({ achievements, refTime, heatmapData, loadingMore, allLoade
       });
   }, [achievements, selectedDay, dayMap]);
 
+  // Merged feed for Friends view: own achievements + all friends' achievements, sorted newest first
+  const mergedFeed = useMemo(() => {
+    const ownRows = achievements.map(ach => ({ ach, username: ownUsername, isOwn: true }));
+    const friendRows = Object.entries(friendsActivity).flatMap(([user, achs]) =>
+      achs.map(ach => ({ ach, username: user, isOwn: false }))
+    );
+    return [...ownRows, ...friendRows].sort((a, b) => b.ach.date.localeCompare(a.ach.date));
+  }, [achievements, friendsActivity, ownUsername]);
+
+  // Group consecutive same-user+game unlocks within a 1-hour window into sessions
+  const feedGroups = useMemo(() => {
+    const result = [];
+    let i = 0;
+    while (i < mergedFeed.length) {
+      const { username, ach: firstAch, isOwn } = mergedFeed[i];
+      let j = i + 1;
+      while (j < mergedFeed.length) {
+        const { username: u, ach } = mergedFeed[j];
+        if (u !== username || ach.gameId !== firstAch.gameId) break;
+        if (new Date(firstAch.date) - new Date(ach.date) > 3600000) break;
+        j++;
+      }
+      const slice = mergedFeed.slice(i, j);
+      result.push({ username, isOwn, gameId: firstAch.gameId, gameTitle: firstAch.gameTitle, gameIcon: firstAch.gameIcon, consoleName: firstAch.consoleName, achievements: slice.map(r => r.ach), latestDate: firstAch.date });
+      i = j;
+    }
+    return result;
+  }, [mergedFeed]);
+
+  // Group feed sessions by day for day-header layout (paginated)
+  const feedByDay = useMemo(() => {
+    const byDay = {};
+    feedGroups.slice(0, visibleSessionCount).forEach(item => {
+      const day = item.latestDate.substring(0, 10);
+      if (!byDay[day]) byDay[day] = [];
+      byDay[day].push(item);
+    });
+    return Object.entries(byDay).sort(([a], [b]) => b.localeCompare(a));
+  }, [feedGroups, visibleSessionCount]);
+
+  const [collapsedFeedDays, setCollapsedFeedDays] = useState(new Set());
+  const toggleFeedDay = (day) => setCollapsedFeedDays(prev => {
+    const next = new Set(prev);
+    next.has(day) ? next.delete(day) : next.add(day);
+    return next;
+  });
+
   const fmtTime = (str) => str ? str.substring(11, 16) : '';
   const fmtDay  = (str) => new Date(str + 'T00:00:00').toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
 
@@ -526,13 +633,94 @@ const ActivityTab = ({ achievements, refTime, heatmapData, loadingMore, allLoade
             {v}
           </button>
         ))}
+        {socialView === 'friends' && friendsActivityStatus === 'done' && (
+          <button
+            onClick={onRefreshFriends}
+            className="ml-auto text-[10px] font-semibold uppercase tracking-wider px-3 py-1 rounded-[2px] border border-[#323f4c] text-[#546270] hover:text-[#c6d4df] hover:border-[#546270] transition-colors"
+          >Refresh</button>
+        )}
       </div>
 
       {socialView === 'friends' ? (
-        <div className="flex flex-col items-center justify-center py-12 gap-3 border border-[#2a475e] rounded-[2px] bg-[#1b2838]">
-          <Users size={28} className="text-[#546270]" />
-          <div className="text-[12px] text-[#8f98a0] font-medium">Friends Activity</div>
-          <div className="text-[10px] text-[#546270]">Coming soon</div>
+        <div className="flex flex-col gap-3">
+
+          {/* ── Loading state ── */}
+          {friendsActivityStatus === 'loading' && (
+            <span className="text-[11px] text-[#66c0f4]">
+              {friendsFetchProgress
+                ? `${friendsFetchProgress.done} / ${friendsFetchProgress.total} users loaded`
+                : 'Loading…'}
+            </span>
+          )}
+
+          {/* ── Error state ── */}
+          {friendsActivityStatus === 'error' && (
+            <div className="flex items-center justify-between gap-3 bg-[#1b2838] border border-[#2a475e] rounded-[2px] p-4">
+              <div className="flex items-center gap-2 text-[11px] text-[#ff6b6b]">
+                <AlertCircle size={14} />
+                Failed to load friends activity.
+              </div>
+              <button
+                onClick={() => setFriendsActivityStatus('idle')}
+                className="text-[10px] font-semibold uppercase tracking-wider px-3 py-1 rounded-[2px] border border-[#323f4c] text-[#8f98a0] hover:text-[#c6d4df] hover:border-[#546270] transition-colors"
+              >Retry</button>
+            </div>
+          )}
+
+          {/* ── Empty: not following anyone ── */}
+          {friendsActivityStatus === 'done' && Object.keys(friendsActivity).length === 0 && (
+            <div className="flex flex-col items-center justify-center py-12 gap-2 border border-[#2a475e] rounded-[2px] bg-[#1b2838]">
+              <Users size={24} className="text-[#546270]" />
+              <div className="text-[11px] text-[#546270]">You're not following anyone</div>
+            </div>
+          )}
+
+          {/* ── Merged feed (streaming in or done) ── */}
+          {Object.keys(friendsActivity).length > 0 && (
+            <>
+              {feedByDay.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-12 gap-2 border border-[#2a475e] rounded-[2px] bg-[#1b2838]">
+                  <Users size={24} className="text-[#546270]" />
+                  <div className="text-[11px] text-[#546270]">No activity in the last 3 months</div>
+                </div>
+              ) : (
+                <div className="flex flex-col gap-0">
+                  {feedByDay.map(([day, items]) => {
+                    const isFeedDayCollapsed = collapsedFeedDays.has(day);
+                    const achCount = items.reduce((s, item) => s + item.achievements.length, 0);
+                    return (
+                      <div key={day} className="mb-4">
+                        <button onClick={() => toggleFeedDay(day)} className="w-full flex items-center gap-2 mb-2 group outline-none">
+                          <div className="w-2 h-2 rounded-full bg-[#2a475e] border border-[#66c0f4] shrink-0"></div>
+                          <span className="text-[10px] text-[#66c0f4] font-semibold group-hover:text-[#c6d4df] transition-colors">{fmtDay(day)}</span>
+                          <div className="flex-1 h-px bg-[#2a475e] opacity-40"></div>
+                          <span className="text-[9px] text-[#546270]">{achCount} achievement{achCount !== 1 ? 's' : ''}</span>
+                          <ChevronDown size={11} className={`text-[#546270] transition-transform duration-200 shrink-0 ${isFeedDayCollapsed ? '' : 'rotate-180'}`} />
+                        </button>
+                        {!isFeedDayCollapsed && (
+                          <div className="ml-4 border-l border-[#2a475e] pl-3">
+                            {items.map(item => (
+                              <FeedSession key={`${item.username}-${item.gameId}-${item.latestDate}`} session={item} />
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+              {feedGroups.length > visibleSessionCount && (
+                <button
+                  onClick={() => setVisibleSessionCount(c => c + 100)}
+                  className="w-full mt-2 py-2 text-[11px] text-[#66c0f4] hover:text-[#c6d4df] border border-[#2a475e] hover:border-[#546270] rounded-[2px] transition-colors"
+                >
+                  Load more · {feedGroups.length - visibleSessionCount} sessions remaining
+                </button>
+              )}
+            </>
+          )}
+
+
         </div>
       ) : <>
 
@@ -1450,11 +1638,19 @@ export default function App() {
   const [friendsActivityStatus, setFriendsActivityStatus] = useState('idle');  // 'idle' | 'loading' | 'done' | 'error'
   const [friendsActivity,       setFriendsActivity]       = useState({});       // { [username]: achievement[] }
   const [friendsFetchProgress,  setFriendsFetchProgress]  = useState(null);     // { done, total } | null
+  const friendsFetchingRef = useRef(false);                                      // prevents re-entry during async fetch
 
   // ── Auth helpers ─────────────────────────────────────────
   const handleAuthError = () => {
     clearCredentials();
     window.location.replace('../');
+  };
+
+  const refreshFriendsActivity = () => {
+    Object.keys(localStorage).filter(k => k.startsWith('ra_fa_')).forEach(k => localStorage.removeItem(k));
+    setFriendsActivity({});
+    setFriendsFetchProgress(null);
+    setFriendsActivityStatus('idle');
   };
 
   // ── Compare progress ──────────────────────────────────────
@@ -1561,6 +1757,34 @@ export default function App() {
         else { setBacklogData({ total: 0, results: [] }); setBacklogLoadingMore(false); }
       });
   }, [activeTab]);
+
+  // ── Fetch friends activity when Friends view opens ──
+  useEffect(() => {
+    if (isVisitorMode || activeTab !== 'activity' || socialView !== 'friends' || friendsActivityStatus !== 'idle' || friendsFetchingRef.current) return;
+    const creds = getCredentials();
+    if (!creds) { handleAuthError(); return; }
+    const { username: u, apiKey: k } = creds;
+    friendsFetchingRef.current = true;
+    (async () => {
+      try {
+        const social = socialData ?? await fetchSocial(u, k);
+        const followingList = social.following.results;
+        if (followingList.length === 0) { setFriendsActivityStatus('done'); return; }
+        if (!allFriendsCached(followingList)) setFriendsActivityStatus('loading');
+        await fetchFriendsActivity(u, k, followingList, {
+          onProgress: (done, total) => setFriendsFetchProgress({ done, total }),
+          onUser: (friendUser, achievements) =>
+            setFriendsActivity(prev => ({ ...prev, [friendUser]: achievements })),
+        });
+        setFriendsActivityStatus('done');
+      } catch (e) {
+        if (e.message === 'AUTH_ERROR') { handleAuthError(); return; }
+        setFriendsActivityStatus('error');
+      } finally {
+        friendsFetchingRef.current = false;
+      }
+    })();
+  }, [activeTab, socialView, friendsActivityStatus]);
 
   // ── Load social data when Social tab opens ──
   useEffect(() => {
@@ -2035,6 +2259,12 @@ export default function App() {
                   allLoaded={loadedChunkCount === TOTAL_ACH_CHUNKS}
                   socialView={socialView}
                   setSocialView={setSocialView}
+                  friendsActivityStatus={friendsActivityStatus}
+                  setFriendsActivityStatus={setFriendsActivityStatus}
+                  friendsActivity={friendsActivity}
+                  friendsFetchProgress={friendsFetchProgress}
+                  onRefreshFriends={refreshFriendsActivity}
+                  ownUsername={PROFILE_DATA.username}
                 />
           ) : activeTab === 'backlog' ? (
             backlogData === null ? (
@@ -2349,6 +2579,12 @@ export default function App() {
            mask-image: linear-gradient(to left, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 100%);
            -webkit-mask-image: linear-gradient(to left, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 100%);
         }
+
+        @keyframes feedIn {
+          from { opacity: 0; transform: translateY(-6px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        .feed-item { animation: feedIn 0.2s ease both; }
 
         @keyframes slideUpPill {
           from { opacity: 0; transform: translateX(-50%) translateY(12px); }

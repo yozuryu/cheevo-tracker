@@ -45,31 +45,31 @@ fetchFriendsActivity(username, apiKey, followingList, { onProgress, onUser })
 - [x] Toggle only visible when Activity tab is active
 
 ### Phase 2 — Friends fetch + streaming
-- [ ] Add `fetchFriendsActivity` composite to `ra-api.js` with streaming callbacks, concurrency cap, per-user retry (3×), and per-user localStorage cache (1h TTL)
-- [ ] Trigger fetch on first switch to "Friends" view (guard with `friendsActivityStatus === 'idle'`); resolve following list via `const social = socialData ?? await fetchSocial(u, k)` then pass `social.following.results` into `fetchFriendsActivity` — reuses the 1h localStorage cache if Social tab was previously opened
-- [ ] Show progress bar + "Fetching X / Y users…" label while fetching
-- [ ] Stream results into `friendsActivity` map as each user resolves — render immediately, don't wait for all
-- [ ] Manual **Refresh** button: clears all `ra_fa_*` localStorage keys, resets `friendsActivity` to `{}`, `friendsFetchProgress` to `null`, and `friendsActivityStatus` to `'idle'` — the status reset triggers re-fetch via the same useEffect
-- [ ] Empty states: "You're not following anyone" / "No activity in the last 3 months"
-- [ ] On fetch complete, set `friendsActivityStatus = 'done'`; on unrecoverable error (all retries exhausted for every user), set `'error'` — render an error card with a **Retry** button that resets status to `'idle'` and re-triggers the fetch
+- [x] Add `fetchFriendsActivity` composite to `ra-api.js` with streaming callbacks, concurrency cap, per-user retry (3×), and per-user localStorage cache (1h TTL)
+- [x] Trigger fetch on first switch to "Friends" view (guard with `friendsActivityStatus === 'idle'`); resolve following list via `const social = socialData ?? await fetchSocial(u, k)` then pass `social.following.results` into `fetchFriendsActivity` — reuses the 1h localStorage cache if Social tab was previously opened
+- [x] Show progress bar + "Fetching X / Y users…" label while fetching
+- [x] Stream results into `friendsActivity` map as each user resolves — render immediately, don't wait for all
+- [x] Manual **Refresh** button: clears all `ra_fa_*` localStorage keys, resets `friendsActivity` to `{}`, `friendsFetchProgress` to `null`, and `friendsActivityStatus` to `'idle'` — the status reset triggers re-fetch via the same useEffect
+- [x] Empty states: "You're not following anyone" / "No activity in the last 3 months"
+- [x] On fetch complete, set `friendsActivityStatus = 'done'`; on unrecoverable error (all retries exhausted for every user), set `'error'` — render an error card with a **Retry** button that resets status to `'idle'` and re-triggers the fetch
 
 ### Phase 3 — Flat merged feed
-- [ ] `FeedRow` component: avatar (28px, linked to `/profile/?u=`) · username · "unlocked" · badge icon (linked to `/achievement/?id=`) · achievement name · "in" · game title (linked to `/game/?id=`) · relative timestamp right-aligned
-- [ ] Own rows: `#57cbde` (cyan) username; friend rows: `#e5b143` (gold) username
-- [ ] HC badge: gold left-border stripe; SC: gray
-- [ ] Merge `achievementChunks[0]` (own) + all `friendsActivity` values into a flat array, sort by date descending
-- [ ] Render incrementally as `friendsActivity` fills in (each `onUser` call triggers re-merge)
+- [x] `FeedRow` component: avatar (28px, linked to `/profile/?u=`) · username · "unlocked" · badge icon (linked to `/achievement/?id=`) · achievement name · "in" · game title (linked to `/game/?id=`) · relative timestamp right-aligned
+- [x] Own rows: `#57cbde` (cyan) username; friend rows: `#e5b143` (gold) username
+- [x] HC badge: gold left-border stripe; SC: gray
+- [x] Merge `achievementChunks[0]` (own) + all `friendsActivity` values into a flat array, sort by date descending
+- [x] Render incrementally as `friendsActivity` fills in (each `onUser` call triggers re-merge)
 
 ### Phase 4 — Grouping
-- [ ] Group consecutive unlocks from the same user + game within a **1-hour** window (≥ 3 achievements) into a collapsed card: "[Avatar] [User] unlocked N achievements in [Game] · [time ago]"
-- [ ] Expand/collapse per group to show individual `FeedRow`s
-- [ ] Ungrouped items render as individual `FeedRow`s
+- [x] Group consecutive unlocks from the same user + game within a **1-hour** window (≥ 3 achievements) into a collapsed card: "[Avatar] [User] unlocked N achievements in [Game] · [time ago]"
+- [x] Expand/collapse per group to show individual `FeedRow`s
+- [x] Ungrouped items render as individual `FeedRow`s
 
 ### Phase 5 — Pagination + polish
-- [ ] If merged feed exceeds 200 items: show first 100, "Load more" button appends next 100
-- [ ] On tab re-open within 1 hour (all users still cached): restore feed instantly from cache, no loading state (`friendsActivityStatus` stays `'done'`)
-- [ ] Update `docs/pages/profile.md` and `docs/architecture.md` with new state and composite
-- [ ] Update changelog
+- [x] If merged feed exceeds 200 items: show first 100, "Load more" button appends next 100
+- [x] On tab re-open within 1 hour (all users still cached): restore feed instantly from cache, no loading state (`friendsActivityStatus` stays `'done'`)
+- [x] Update `docs/pages/profile.md` and `docs/architecture.md` with new state and composite
+- [x] Update changelog
 
 ---
 

@@ -33,6 +33,39 @@ Tab state persists in URL query param. Floating pill (mobile) appears when tab b
 | Watchlist tab opens (first time) | `fetchWatchlist()` | `wantToPlayList` |
 | Activity tab scroll (sentinel ref) | `fetchAchievementsChunk(u, k, idx)` idx 1–3 | `achievementChunks` |
 | Game modal opens (achievements not yet loaded) | `fetchGameDetails(u, k, gameId)` | `gamesData.detailedGameProgress[gameId]` |
+| Friends view opens (first time, own session) | `fetchFriendsActivity()` | `friendsActivity`, `friendsActivityStatus` |
+
+## Social Timeline (Activity Tab — Friends View)
+
+The Activity tab has a **Mine / Friends** toggle. Friends view shows a merged timeline of the authed user's own achievements + all followed users' achievements, grouped by day → session (user + game within 1-hour window) → individual achievements.
+
+### State (main app)
+
+| State | Type | Purpose |
+|---|---|---|
+| `socialView` | `'mine' \| 'friends'` | Active sub-tab |
+| `friendsActivityStatus` | `'idle' \| 'loading' \| 'done' \| 'error'` | Fetch lifecycle |
+| `friendsActivity` | `{ [username]: achievement[] }` | Per-friend achievement arrays (streams in) |
+| `friendsFetchProgress` | `{ done, total } \| null` | Progress counter for loading indicator |
+| `friendsFetchingRef` | `useRef(boolean)` | Re-entry guard for the fetch useEffect |
+
+### Fetch flow
+
+1. User switches to Friends view → useEffect fires (deps: `activeTab`, `socialView`, `friendsActivityStatus`)
+2. Resolve following list: `socialData?.following.results ?? fetchSocial()`
+3. `allFriendsCached(followingList)` — if all users have a valid `ra_fa_*` cache entry, skip 'loading' state and resolve instantly
+4. Otherwise set `friendsActivityStatus = 'loading'`; `fetchFriendsActivity` fetches one user at a time (1000ms gap between API calls), streams results via `onUser` callback
+5. On complete: `friendsActivityStatus = 'done'`; on unrecoverable error: `'error'`
+
+### Feed rendering (ActivityTab)
+
+- `mergedFeed`: own `achievements` + all `friendsActivity` values, sorted newest-first
+- `feedGroups`: consecutive same-user+game runs within 1-hour window → session objects
+- `feedByDay`: `feedGroups.slice(0, visibleSessionCount)` grouped by day; paginated at 100 sessions per page with a "Load more" button
+- `FeedSession`: session header (`[avatar] username unlocked in [game icon] Game · Console · time range`) + `FeedAchRow` list
+- Own username shown in cyan (`#57cbde`), friends in gold (`#e5b143`)
+- HC achievement rows: gold left-border; SC: gray
+- New sessions animate in with `feedIn` keyframe (opacity 0→1, translateY −6px→0)
 
 ## `rawData` Memo
 

@@ -1386,6 +1386,57 @@ export async function fetchSocial(username, apiKey) {
 }
 
 /**
+ * Fetches 3-month achievement activity for each user in followingList (self excluded).
+ * Streams results as each user resolves via onUser / onProgress callbacks.
+ * Per-user localStorage cache: ra_fa_{user}, 1h TTL.
+ *
+ * @param {string} username  - authed API caller (not fetched, self excluded)
+ * @param {string} apiKey
+ * @param {Array<{user:string}>} followingList  - from getUsersIFollow().results
+ * @param {{ onProgress:(done,total)=>void, onUser:(user,achievements[])=>void }} callbacks
+ */
+export async function fetchFriendsActivity(username, apiKey, followingList, { onProgress, onUser } = {}) {
+  const TTL_1H = 60 * 60 * 1000;
+  const now   = Math.floor(Date.now() / 1000);
+  const start = now - 90 * 24 * 60 * 60;
+  const total = followingList.length;
+  let done = 0;
+
+  for (let i = 0; i < total; i++) {
+    const { user: friendUser } = followingList[i];
+    const cacheKey = `ra_fa_${friendUser}`;
+    const cached = lcacheGet(cacheKey, TTL_1H);
+    if (cached) {
+      onUser?.(friendUser, cached);
+      onProgress?.(++done, total);
+    } else {
+      try {
+        const achievements = await withRetry(
+          () => getAchievementsEarnedBetween(username, apiKey, { u: friendUser, f: start, t: now }),
+          2, 1000
+        );
+        lcacheSet(cacheKey, achievements);
+        onUser?.(friendUser, achievements);
+      } catch (e) {
+        if (e.message === 'AUTH_ERROR') throw e;
+        // skip user on exhausted retries
+      }
+      onProgress?.(++done, total);
+      if (i < total - 1) await sleep(1000);
+    }
+  }
+}
+
+/**
+ * Returns true if every user in followingList has a valid ra_fa_* cache entry (1h TTL).
+ * Used to skip the loading indicator when all data can be served from cache.
+ */
+export function allFriendsCached(followingList) {
+  const TTL_1H = 60 * 60 * 1000;
+  return followingList.every(({ user }) => lcacheGet(`ra_fa_${user}`, TTL_1H) !== null);
+}
+
+/**
  * Validates credentials with a minimal API call.
  * Throws 'AUTH_ERROR' if invalid.
  */
