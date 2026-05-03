@@ -1,6 +1,6 @@
 # Changelog
 
-## v26.05.03 — Friends Feed Polish + Cache Improvements
+## v26.05.03 — Friends Feed Polish + Cache Improvements + Tab Bar Fixes
 
 ### Profile
 
@@ -17,6 +17,11 @@
 - Loading progress moved to toggle row right side: spinning `Loader2` icon + `X/Y` counter replaces the Refresh/Reset buttons while fetching
 - Backlog rows animate in with `feedIn` (0.3s) on async page load — no more blink when streaming pages arrive
 - Backlog "loading…" text replaced with a spinning `Loader2` icon in the stats line
+- Tab bar sticky offset corrected for desktop: `md:top-[37px]` (was 26px) so tabs sit flush below the Topbar instead of overlapping it
+- Visitor mode tab bar inner container now matches own-profile styling: `gap-1 md:gap-6`, `px-2 md:px-8`, `overflow-x-auto` — was `gap-1` with `overflow-hidden` causing layout differences
+- Floating tab pill added for visitor mode on mobile: appears after scrolling 150px, slides up from above the bottom nav with Recent/Progress/Series buttons; disappears when scrolling back to top; own-profile mobile nav already covers all tabs so no pill there
+- Sticky tab bar hidden on mobile for both modes (`hidden md:block`) — visitor mode floating pill replaces it; own-profile uses the bottom nav
+- "Completion Progress" section header added for mobile view (same style as "Recently Played"), appears above the filter bar; `md:hidden` so desktop is unaffected
 
 ---
 

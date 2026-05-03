@@ -806,7 +806,7 @@ const ActivityTab = ({ achievements, refTime, heatmapData, loadingMore, allLoade
                         key={key}
                         onClick={() => setSelectedDay(selectedDay === key ? null : key)}
                         title={`${key}${heatmapData[key] ? ` · ${heatmapData[key].count} achievements · ${heatmapData[key].points} pts` : ''}`}
-                        style={{ height: '12px', borderRadius: '1px', background: getColor(key), cursor: heatmapData[key] ? 'pointer' : 'default', outline: selectedDay === key ? '2px solid #66c0f4' : 'none' }}
+                        style={{ height: '12px', borderRadius: '1px', background: getColor(key), cursor: heatmapData[key] ? 'pointer' : 'default', outline: selectedDay === key ? '2px solid #66c0f4' : 'none', transition: 'background-color 0.4s ease' }}
                       />
                     ))}
                   </div>
@@ -865,7 +865,7 @@ const ActivityTab = ({ achievements, refTime, heatmapData, loadingMore, allLoade
             {timelineGroups.map(({ day, dayPts, achCount, sessions }) => {
               const isCollapsed = collapsedDays.has(day);
               return (
-              <div key={day} className="mb-4">
+              <div key={day} className="mb-4 feed-item">
                 {/* Day header — clickable to collapse */}
                 <button onClick={() => toggleDay(day)} className="w-full flex items-center gap-2 mb-2 group outline-none">
                   <div className="w-2 h-2 rounded-full bg-[#2a475e] border border-[#66c0f4] shrink-0"></div>
@@ -1786,6 +1786,7 @@ export default function App() {
     setActiveTab(tab);
     const url = new URL(window.location);
     url.searchParams.set('tab', tab);
+    if (tab !== 'activity') url.searchParams.delete('view');
     window.history.replaceState({}, '', url);
   };
 
@@ -1924,9 +1925,8 @@ export default function App() {
     const onScroll = () => {
       const y = window.scrollY;
       setShowScrollTop(y > 400);
-      if (!isVisitorMode && window.innerWidth < 768 && tabBarRef.current) {
-        const bottom = tabBarRef.current.getBoundingClientRect().bottom;
-        if (bottom < 0) {
+      if (isVisitorMode && window.innerWidth < 768) {
+        if (y > 150) {
           if (pillLeaveTimer.current) { clearTimeout(pillLeaveTimer.current); pillLeaveTimer.current = null; }
           setPillLeaving(false);
           setShowFloatingTabs(true);
@@ -2269,8 +2269,8 @@ export default function App() {
         </div>
 
         {/* ── Tab bar ── */}
-        <div ref={tabBarRef} className={`${isVisitorMode ? 'block sticky top-0 md:top-[26px] md:-mx-8' : 'hidden md:block md:sticky md:top-[26px] -mx-4 md:-mx-8'} z-40 bg-[#171a21] mb-4 border-b border-[#2a475e]`}>
-          <div className={`flex items-center ${isVisitorMode ? 'gap-1 px-0 md:px-8 overflow-hidden' : 'gap-1 md:gap-6 px-2 md:px-8 overflow-x-auto scrollbar-none'}`} style={isVisitorMode ? undefined : { scrollbarWidth: 'none' }}>
+        <div ref={tabBarRef} className="hidden md:block md:sticky md:top-[37px] -mx-4 md:-mx-8 z-40 bg-[#171a21] mb-4 border-b border-[#2a475e]">
+          <div className="flex items-center gap-1 md:gap-6 px-2 md:px-8 overflow-x-auto scrollbar-none" style={{ scrollbarWidth: 'none' }}>
             <button onClick={() => setTab('recent')} className={`flex-1 md:flex-none flex flex-col md:flex-row items-center justify-center gap-1 md:gap-0 py-2.5 md:py-0 md:pb-2 px-1 md:px-0 transition-colors relative ${activeTab === 'recent' ? 'text-white' : 'text-[#546270] hover:text-[#c6d4df]'}`}>
               <Clock size={18} className="block md:hidden shrink-0" />
               <span className="block md:hidden text-[9px] font-semibold uppercase tracking-[0.06em] leading-none">Recent</span>
@@ -2561,6 +2561,10 @@ export default function App() {
               {/* Filter bar — only for Completion Progress */}
               {activeTab === 'progress' && (
                 <>
+                  <div className="flex md:hidden items-center gap-2 pb-2 mb-3 border-b border-[#2a475e]">
+                    <span className="w-[3px] h-[14px] bg-[#66c0f4] rounded-[1px] shrink-0" />
+                    <span className="text-[13px] text-white tracking-wide uppercase font-medium">Completion Progress</span>
+                  </div>
                   <div className="flex items-center gap-2 mb-3">
                     <span className="text-[9px] text-[#546270] uppercase tracking-wider">Filter</span>
                     <button
@@ -2608,6 +2612,7 @@ export default function App() {
           )}
         </div>
 
+        {isVisitorMode && <div className="md:hidden h-14" />}
       </main>
 
       <Footer
@@ -2625,6 +2630,43 @@ export default function App() {
         >
           <ChevronDown size={16} className="rotate-180" />
         </button>
+      )}
+
+      {/* Floating tab pill — mobile only, appears after scrolling 150px */}
+      {(showFloatingTabs || pillLeaving) && (
+        <div
+          className="md:hidden fixed left-1/2 z-[210]"
+          style={{
+            bottom: 'calc(68px + env(safe-area-inset-bottom, 0px))',
+            transform: 'translateX(-50%)',
+            animation: pillLeaving
+              ? 'slideDownPill 0.21s ease forwards'
+              : 'slideUpPill 0.18s ease forwards',
+          }}
+        >
+          <div className="flex items-center gap-0.5 px-1.5 py-1.5 bg-[#131a22] border border-[#2a475e] rounded-full shadow-xl">
+            {[
+              { id: 'recent',   Icon: Clock,     label: 'Recent',   color: '#66c0f4' },
+              { id: 'progress', Icon: BarChart2,  label: 'Progress', color: '#66c0f4' },
+              ...(seriesData.some(s => s.showProgress) ? [{ id: 'series', Icon: Layers, label: 'Series', color: '#e5b143' }] : []),
+              ...(!isVisitorMode ? [
+                { id: 'activity', Icon: Activity, label: 'Activity', color: '#66c0f4' },
+                { id: 'backlog',  Icon: Star,     label: 'Backlog',  color: '#66c0f4' },
+                { id: 'social',   Icon: Users,    label: 'Social',   color: '#57cbde' },
+              ] : []),
+            ].map(({ id, Icon, label, color }) => (
+              <button
+                key={id}
+                onClick={() => setTab(id)}
+                className={`flex flex-col items-center gap-0.5 px-2.5 py-1 rounded-full transition-colors ${activeTab === id ? 'bg-[#1b2838]' : 'hover:bg-[#1b2838]/50'}`}
+                style={{ color: activeTab === id ? color : '#546270' }}
+              >
+                <Icon size={13} />
+                <span className="text-[7px] font-bold uppercase tracking-wider leading-none">{label}</span>
+              </button>
+            ))}
+          </div>
+        </div>
       )}
 
       <style>{`
