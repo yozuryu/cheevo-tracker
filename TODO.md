@@ -1,77 +1,48 @@
 # Todo
 
-## Profile Page — Social Timeline Tab
+## Mobile Menu / Settings Unification
 
-Add a **Social** sub-section inside the existing **Activity** tab. Activity tab gains two views: **Mine** (current behaviour) and **Friends** (merged feed of self + all following users sorted by date).
+### Goal
 
----
+Unify the menu and settings experience across mobile and desktop so both surfaces expose the same actions without navigating to a separate settings page on mobile.
 
-### Architecture
+### Current state
 
-**Data sources**
-- Own achievements: `achievementChunks[0]` (already loaded, covers ~6 months / 182 days) — used directly in the merge, never re-fetched
-- Friends list: `fetchSocial(u, k)` (cached 1h in localStorage); following list is at `.following.results` — lazy-loaded by the Social tab, so Activity must fetch it independently if Social tab hasn't been opened yet
-- Per-friend achievements: `getAchievementsEarnedBetween(u, k, { u: friendUser, f: start, t: end })` — one call per followed user, 3-month window; returns a flat array (not paginated)
+**Desktop (topbar `MenuDropdown` in `assets/ui.js`):**
+- Consoles · Changelog · Refresh Data · Purge Cache · Debug toggle · Log Out
 
-**New state (profile/app.js)**
-```js
-const [socialView,            setSocialView]            = useState('mine');   // 'mine' | 'friends'
-const [friendsActivity,       setFriendsActivity]       = useState({});       // { [username]: achievement[] }
-const [friendsFetchProgress,  setFriendsFetchProgress]  = useState(null);     // { done, total } | null
-const [friendsActivityStatus, setFriendsActivityStatus] = useState('idle');   // 'idle' | 'loading' | 'done' | 'error'
-```
+**Mobile (bottom nav in `assets/mobile-nav.js`):**
+- Profile · Progress · Activity · Consoles · Social · Settings (links to `/settings/` page)
 
-**New composite in ra-api.js**
-```js
-fetchFriendsActivity(username, apiKey, followingList, { onProgress, onUser })
-```
-- Iterates **following list only** (self is excluded — own data comes from `achievementChunks[0]`)
-- Concurrency cap: 4 parallel requests
-- 500ms sleep between batches (rate limit)
-- **Per-user retry:** `withRetry(fn, 2, 1000)` (existing helper — 3 total attempts, 1s delay, re-throws `AUTH_ERROR` immediately); catch the final throw to skip the user and continue
-- Per-user cache: `localStorage` key `ra_fa_{friendUser}` (keyed to the friend's username, e.g. `ra_fa_FriendA`), TTL 1 hour — checked before fetching, written after success
-- On cache hit: calls `onUser(username, cached)` immediately, counts toward `onProgress`
-- Calls `onProgress(done, total)` callback after each user resolves (hit or miss)
-- Returns early per-user results via `onUser(username, achievements)` callback (streaming)
-- `getAchievementsEarnedBetween` returns a flat array in one call — no pagination needed
+The mobile bottom nav has a dedicated Settings tab that navigates to a full page. The desktop has a hamburger menu in the topbar covering app-level actions. There is no inline settings panel on mobile.
 
----
+### What to change
 
-### Phase 1 — Mine / Friends toggle UI
-- [x] Add `socialView` + `friendsActivityStatus` state to profile app
-- [x] Add toggle buttons ("Mine" / "Friends") at the top of the Activity tab content (ActivityTab has no existing controls — the toggle row is the first control)
-- [x] "Mine" shows existing heatmap + achievement chunk list (no change)
-- [x] "Friends" shows a placeholder "Coming soon" card for now; **no heatmap**
-- [x] Toggle only visible when Activity tab is active
+**Mobile bottom nav (`assets/mobile-nav.js`):**
+- Remove the Settings tab
+- Replace with a **Menu** tab (hamburger icon) that opens a slide-up sheet instead of navigating away
+- Decide on the 5th slot — options: keep Social, replace with Changelog, or add a placeholder; needs a decision
 
-### Phase 2 — Friends fetch + streaming
-- [x] Add `fetchFriendsActivity` composite to `ra-api.js` with streaming callbacks, concurrency cap, per-user retry (3×), and per-user localStorage cache (1h TTL)
-- [x] Trigger fetch on first switch to "Friends" view (guard with `friendsActivityStatus === 'idle'`); resolve following list via `const social = socialData ?? await fetchSocial(u, k)` then pass `social.following.results` into `fetchFriendsActivity` — reuses the 1h localStorage cache if Social tab was previously opened
-- [x] Show progress bar + "Fetching X / Y users…" label while fetching
-- [x] Stream results into `friendsActivity` map as each user resolves — render immediately, don't wait for all
-- [x] Manual **Refresh** button: clears all `ra_fa_*` localStorage keys, resets `friendsActivity` to `{}`, `friendsFetchProgress` to `null`, and `friendsActivityStatus` to `'idle'` — the status reset triggers re-fetch via the same useEffect
-- [x] Empty states: "You're not following anyone" / "No activity in the last 3 months"
-- [x] On fetch complete, set `friendsActivityStatus = 'done'`; on unrecoverable error (all retries exhausted for every user), set `'error'` — render an error card with a **Retry** button that resets status to `'idle'` and re-triggers the fetch
+**Slide-up menu sheet (new, mobile only):**
+- Triggered by tapping the Menu tab in the bottom nav
+- Slides up from the bottom, full-width, with a dark backdrop
+- Contains the same items as the desktop `MenuDropdown`: Consoles · Changelog · Refresh Data · Purge Cache · Debug toggle · Log Out
+- Also exposes any settings currently only on `/settings/` that are useful inline (e.g. appearance options)
+- Dismissable by tapping the backdrop or tapping Menu tab again
+- Should live in `assets/mobile-nav.js` as a self-contained IIFE addition (no JSX, plain DOM + CSS)
 
-### Phase 3 — Flat merged feed
-- [x] `FeedRow` component: avatar (28px, linked to `/profile/?u=`) · username · "unlocked" · badge icon (linked to `/achievement/?id=`) · achievement name · "in" · game title (linked to `/game/?id=`) · relative timestamp right-aligned
-- [x] Own rows: `#57cbde` (cyan) username; friend rows: `#e5b143` (gold) username
-- [x] HC badge: gold left-border stripe; SC: gray
-- [x] Merge `achievementChunks[0]` (own) + all `friendsActivity` values into a flat array, sort by date descending
-- [x] Render incrementally as `friendsActivity` fills in (each `onUser` call triggers re-merge)
+**Settings page (`/settings/`):**
+- Remove entirely — no longer needed once all actions are in the slide-up sheet and desktop dropdown
+- Delete `settings/index.html`, `settings/app.js`; remove from `sw.js` precache list; remove any nav links pointing to `/settings/`
 
-### Phase 4 — Grouping
-- [x] Group consecutive unlocks from the same user + game within a **1-hour** window (≥ 3 achievements) into a collapsed card: "[Avatar] [User] unlocked N achievements in [Game] · [time ago]"
-- [x] Expand/collapse per group to show individual `FeedRow`s
-- [x] Ungrouped items render as individual `FeedRow`s
+**Menu animations:**
+- Desktop `MenuDropdown` (`assets/ui.js`): add a short slide-down + fade-in on open, fade-out on close (CSS `@keyframes` or transition on the dropdown div)
+- Mobile slide-up sheet: animate in from bottom (`translateY(100%) → translateY(0)`) with backdrop fade-in; animate out on dismiss
+- Both should feel snappy — ~150–200ms ease-out in, ~120ms ease-in out
 
-### Phase 5 — Pagination + polish
-- [x] If merged feed exceeds 200 items: show first 100, "Load more" button appends next 100
-- [x] On tab re-open within 1 hour (all users still cached): restore feed instantly from cache, no loading state (`friendsActivityStatus` stays `'done'`)
-- [x] Update `docs/pages/profile.md` and `docs/architecture.md` with new state and composite
-- [x] Update changelog
-
----
+### Open questions before implementation
+- Which 5 tabs to keep in the mobile nav after removing Settings? (currently: Profile, Progress, Activity, Consoles, Social — Menu replaces one)
+- Should the slide-up sheet be injected by `mobile-nav.js` (IIFE, pure DOM) or managed by each page's React app?
 
 ---
 
