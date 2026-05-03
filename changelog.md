@@ -15,6 +15,8 @@
 - `feedIn` animation slowed from 0.2s to 0.5s
 - Mine / Friends sub-view persisted in `?view=` URL param — reload restores the active view
 - Loading progress moved to toggle row right side: spinning `Loader2` icon + `X/Y` counter replaces the Refresh/Reset buttons while fetching
+- Backlog rows animate in with `feedIn` (0.3s) on async page load — no more blink when streaming pages arrive
+- Backlog "loading…" text replaced with a spinning `Loader2` icon in the stats line
 
 ---
 
