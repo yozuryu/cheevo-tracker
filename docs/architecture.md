@@ -87,7 +87,7 @@ The only functions `app.js` calls directly (Layer 2). All cache in `sessionStora
 | `fetchWatchlist(u, k)` | `ra_watchlist_{u}` | Full want-to-play list, all pages |
 | `fetchGameDetails(u, k, gameId)` | `ra_game_{u}_{gameId}` | Game metadata + per-achievement user progress incl. `userTotalPlaytime` |
 | `fetchSocial(u, k)` | `ra_social_{u}` (localStorage, 1h) | Following + followers lists |
-| `fetchFriendsActivity(u, k, followingList, { onProgress, onUser })` | `ra_fa_{friendUser}` per user (localStorage, 1h) | Fetches 90-day achievements for each followed user; sequential with 1000ms gap between API calls; streams results via callbacks; skips cache-hit users with no delay |
+| `fetchFriendsActivity(u, k, followingList, { onProgress, onUser, onError })` | `ra_fa_{friendUser}` per user (localStorage, 1h) | Fetches 30-day achievements for each followed user via 3 × 10-day chunks (server caps at ~500 results/call; 10-day windows safe up to 50 achievements/day); sequential with 300ms between chunks + 1000ms between users; streams results via callbacks |
 | `allFriendsCached(followingList)` | — | Returns true if every user in the list has a valid `ra_fa_*` cache entry; used to skip the loading indicator on instant restore |
 | `validateCredentials(u, k)` | — | Minimal profile call; throws `AUTH_ERROR` if invalid |
 
@@ -153,7 +153,7 @@ RA API (live)
 |---|---|---|
 | `sessionStorage` | 5 min | Profile data, achievement chunks, game details, watchlist (`ra_*` keys) |
 | `localStorage` | 1 hour | Social data (following/followers, `ra_social_*`) |
-| `localStorage` | 1 hour | Per-friend activity (90-day achievements, `ra_fa_{username}`) |
+| `localStorage` | 1 hour | Per-friend activity (30-day achievements via 3×10-day chunks, `ra_fa_{username}`) |
 | `sessionStorage` | 5 min | Per-friend game data on game page (`ra_fg_*`) |
 
 Bust cache: `sessionStorage.clear()` for session data, `localStorage.removeItem(key)` for social.

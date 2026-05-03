@@ -1393,13 +1393,14 @@ export async function fetchSocial(username, apiKey) {
  * @param {string} username  - authed API caller (not fetched, self excluded)
  * @param {string} apiKey
  * @param {Array<{user:string}>} followingList  - from getUsersIFollow().results
- * @param {{ onProgress:(done,total)=>void, onUser:(user,achievements[])=>void }} callbacks
+ * @param {{ onProgress:(done,total)=>void, onUser:(user,achievements[])=>void, onError:(user,msg)=>void }} callbacks
  */
-export async function fetchFriendsActivity(username, apiKey, followingList, { onProgress, onUser } = {}) {
-  const TTL_1H = 60 * 60 * 1000;
-  const now   = Math.floor(Date.now() / 1000);
-  const start = now - 90 * 24 * 60 * 60;
-  const total = followingList.length;
+export async function fetchFriendsActivity(username, apiKey, followingList, { onProgress, onUser, onError } = {}) {
+  const TTL_1H     = 60 * 60 * 1000;
+  const now        = Math.floor(Date.now() / 1000);
+  const WINDOW_SEC = 10 * 24 * 60 * 60; // 10-day chunks — server caps at ~500 results/call
+  const NUM_CHUNKS = 3;                  // 3 × 10 days = 30-day total window
+  const total      = followingList.length;
   let done = 0;
 
   for (let i = 0; i < total; i++) {
@@ -1411,15 +1412,30 @@ export async function fetchFriendsActivity(username, apiKey, followingList, { on
       onProgress?.(++done, total);
     } else {
       try {
-        const achievements = await withRetry(
-          () => getAchievementsEarnedBetween(username, apiKey, { u: friendUser, f: start, t: now }),
-          2, 1000
-        );
-        lcacheSet(cacheKey, achievements);
-        onUser?.(friendUser, achievements);
+        // Fetch 3 × 10-day windows (oldest→newest) and merge.
+        // The API caps responses at ~500 results; 10-day windows handle up to
+        // 50 achievements/day before truncation, safe for all but extreme grinders.
+        const seen = new Set();
+        const allAchs = [];
+        for (let c = 0; c < NUM_CHUNKS; c++) {
+          const t = now - (NUM_CHUNKS - 1 - c) * WINDOW_SEC;
+          const f = t - WINDOW_SEC;
+          const chunk = await withRetry(
+            () => getAchievementsEarnedBetween(username, apiKey, { u: friendUser, f, t }),
+            2, 1000
+          );
+          for (const ach of chunk) {
+            const key = `${ach.achievementId}|${ach.date}`;
+            if (!seen.has(key)) { seen.add(key); allAchs.push(ach); }
+          }
+          if (c < NUM_CHUNKS - 1) await sleep(300);
+        }
+        lcacheSet(cacheKey, allAchs);
+        onUser?.(friendUser, allAchs);
       } catch (e) {
         if (e.message === 'AUTH_ERROR') throw e;
-        // skip user on exhausted retries
+        console.warn(`[friends activity] fetch failed for ${friendUser}:`, e.message);
+        onError?.(friendUser, e.message);
       }
       onProgress?.(++done, total);
       if (i < total - 1) await sleep(1000);

@@ -463,7 +463,7 @@ const FeedSession = ({ session }) => {
 
 // ── ActivityTab Component ──────────────────────────────────────────────────
 
-const ActivityTab = ({ achievements, refTime, heatmapData, loadingMore, allLoaded, socialView, setSocialView, friendsActivityStatus, setFriendsActivityStatus, friendsActivity, friendsFetchProgress, onRefreshFriends, ownUsername }) => {
+const ActivityTab = ({ achievements, refTime, heatmapData, loadingMore, allLoaded, socialView, setSocialView, friendsActivityStatus, setFriendsActivityStatus, friendsActivity, friendsFetchProgress, failedFriends, onRefreshFriends, ownUsername }) => {
   const [selectedDay, setSelectedDay] = useState(null);
   const [collapsedDays, setCollapsedDays] = useState(new Set());
   const [visibleSessionCount, setVisibleSessionCount] = useState(100);
@@ -667,6 +667,16 @@ const ActivityTab = ({ achievements, refTime, heatmapData, loadingMore, allLoade
             </div>
           )}
 
+          {/* ── Warning: some users failed to load ── */}
+          {failedFriends.length > 0 && (
+            <div className="flex items-start gap-2 bg-[#1b2838] border border-[#2a475e] rounded-[2px] px-3 py-2">
+              <AlertCircle size={13} className="text-[#e5b143] shrink-0 mt-[1px]" />
+              <span className="text-[11px] text-[#8f98a0]">
+                Could not load activity for: <span className="text-[#c6d4df]">{failedFriends.join(', ')}</span>. They may have earned no achievements recently, or the API returned an error.
+              </span>
+            </div>
+          )}
+
           {/* ── Empty: not following anyone ── */}
           {friendsActivityStatus === 'done' && Object.keys(friendsActivity).length === 0 && (
             <div className="flex flex-col items-center justify-center py-12 gap-2 border border-[#2a475e] rounded-[2px] bg-[#1b2838]">
@@ -681,7 +691,7 @@ const ActivityTab = ({ achievements, refTime, heatmapData, loadingMore, allLoade
               {feedByDay.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-12 gap-2 border border-[#2a475e] rounded-[2px] bg-[#1b2838]">
                   <Users size={24} className="text-[#546270]" />
-                  <div className="text-[11px] text-[#546270]">No activity in the last 3 months</div>
+                  <div className="text-[11px] text-[#546270]">No activity in the last 30 days</div>
                 </div>
               ) : (
                 <div className="flex flex-col gap-0">
@@ -1638,6 +1648,7 @@ export default function App() {
   const [friendsActivityStatus, setFriendsActivityStatus] = useState('idle');  // 'idle' | 'loading' | 'done' | 'error'
   const [friendsActivity,       setFriendsActivity]       = useState({});       // { [username]: achievement[] }
   const [friendsFetchProgress,  setFriendsFetchProgress]  = useState(null);     // { done, total } | null
+  const [failedFriends,         setFailedFriends]         = useState([]);        // usernames that failed to load
   const friendsFetchingRef = useRef(false);                                      // prevents re-entry during async fetch
 
   // ── Auth helpers ─────────────────────────────────────────
@@ -1650,6 +1661,7 @@ export default function App() {
     Object.keys(localStorage).filter(k => k.startsWith('ra_fa_')).forEach(k => localStorage.removeItem(k));
     setFriendsActivity({});
     setFriendsFetchProgress(null);
+    setFailedFriends([]);
     setFriendsActivityStatus('idle');
   };
 
@@ -1775,6 +1787,8 @@ export default function App() {
           onProgress: (done, total) => setFriendsFetchProgress({ done, total }),
           onUser: (friendUser, achievements) =>
             setFriendsActivity(prev => ({ ...prev, [friendUser]: achievements })),
+          onError: (friendUser) =>
+            setFailedFriends(prev => [...prev, friendUser]),
         });
         setFriendsActivityStatus('done');
       } catch (e) {
@@ -2263,6 +2277,7 @@ export default function App() {
                   setFriendsActivityStatus={setFriendsActivityStatus}
                   friendsActivity={friendsActivity}
                   friendsFetchProgress={friendsFetchProgress}
+                  failedFriends={failedFriends}
                   onRefreshFriends={refreshFriendsActivity}
                   ownUsername={PROFILE_DATA.username}
                 />

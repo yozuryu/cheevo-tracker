@@ -13,6 +13,8 @@
 - `allFriendsCached(followingList)` skips the loading indicator when all data is already cached; `friendsFetchingRef` prevents re-entry
 - Loading indicator: plain text "X / Y users loaded"; Refresh button clears `ra_fa_*` cache and re-fetches
 - Empty states: "You're not following anyone" / "No activity in the last 3 months"; error state with Retry
+- Fixed missing activity for very active friends: friends now fetched as 3 × 10-day chunks (30-day window) instead of a single 90-day call; the server's ~500 result cap was silently dropping the most recent achievements since results are ordered oldest-first
+- Failed users now surfaced in the UI: amber warning banner lists usernames that errored after all retries; `console.warn` added for fetch failures; `onError` callback added to `fetchFriendsActivity`
 - Docs updated: `docs/pages/profile.md` and `docs/architecture.md`
 
 ---
