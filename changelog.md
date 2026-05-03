@@ -13,7 +13,12 @@
 - `allFriendsCached(followingList)` skips the loading indicator when all data is already cached; `friendsFetchingRef` prevents re-entry
 - Loading indicator: plain text "X / Y users loaded"; Refresh button clears `ra_fa_*` cache and re-fetches
 - Empty states: "You're not following anyone" / "No activity in the last 3 months"; error state with Retry
-- Fixed missing activity for very active friends: friends now fetched as 3 × 10-day chunks (30-day window) instead of a single 90-day call; the server's ~500 result cap was silently dropping the most recent achievements since results are ordered oldest-first
+- Fixed missing activity for very active friends: friends now fetched as 3 × 10-day chunks (30-day window); server's ~500 result cap was dropping most-recent achievements since results are ordered oldest-first
+- Smarter cache strategy for friends activity: stale cache (>1h) is served immediately then updated with an incremental delta fetch — delta ≤10d=1 call, ≤20d=2 calls, ≤30d=3 calls, >30d=full refresh; past achievements are never re-fetched unnecessarily
+- Split friends feed toolbar into **Refresh** (soft: keeps feed visible, incremental delta update with progress counter) and **Reset** (hard: clears cache, full re-fetch with shimmer); added `'updating'` status to drive the progress counter during soft refresh
+- Friends feed: shimmer skeleton (3 fake sessions) shown on initial load before any data arrives; replaced by inline "X / Y users loaded" counter once the first user streams in
+- Friends feed: game titles now parsed for `~Tag~` prefixes and `[Subset - Name]` suffixes, rendered consistently with Mine tab
+- Friends feed: game links open with `?compare=username` so the game page loads with that friend's comparison pre-selected
 - Failed users now surfaced in the UI: amber warning banner lists usernames that errored after all retries; `console.warn` added for fetch failures; `onError` callback added to `fetchFriendsActivity`
 - Docs updated: `docs/pages/profile.md` and `docs/architecture.md`
 

@@ -1386,50 +1386,118 @@ export async function fetchSocial(username, apiKey) {
 }
 
 /**
- * Fetches 3-month achievement activity for each user in followingList (self excluded).
- * Streams results as each user resolves via onUser / onProgress callbacks.
- * Per-user localStorage cache: ra_fa_{user}, 1h TTL.
+ * Fetches 30-day achievement activity for each user in followingList.
+ * Cache strategy:
+ *   - No cache        → full fetch: 3 × 10-day windows
+ *   - Fresh (< 1h)    → serve instantly, no API call
+ *   - Stale (≥ 1h)    → serve stale data immediately, then incremental update:
+ *       delta ≤ 10d   → 1 call
+ *       delta ≤ 20d   → 2 calls (older part + last 10d)
+ *       delta ≤ 30d   → 3 calls (oldest part + middle 10d + last 10d)
+ *       delta  > 30d  → full refresh (treat as no cache)
  *
- * @param {string} username  - authed API caller (not fetched, self excluded)
+ * @param {string} username  - authed API caller
  * @param {string} apiKey
- * @param {Array<{user:string}>} followingList  - from getUsersIFollow().results
- * @param {{ onProgress:(done,total)=>void, onUser:(user,achievements[])=>void, onError:(user,msg)=>void }} callbacks
+ * @param {Array<{user:string}>} followingList
+ * @param {{ onProgress, onUser, onError }} callbacks
  */
 export async function fetchFriendsActivity(username, apiKey, followingList, { onProgress, onUser, onError } = {}) {
   const TTL_1H     = 60 * 60 * 1000;
   const now        = Math.floor(Date.now() / 1000);
-  const WINDOW_SEC = 10 * 24 * 60 * 60; // 10-day chunks — server caps at ~500 results/call
-  const NUM_CHUNKS = 3;                  // 3 × 10 days = 30-day total window
+  const WINDOW_SEC = 10 * 24 * 60 * 60;
+  const MAX_SEC    = 3 * WINDOW_SEC;        // 30-day total window
+  const CUTOFF_SEC = now - MAX_SEC;         // trim anything older than 30 days
   const total      = followingList.length;
   let done = 0;
+
+  // Fetch an array of {f,t} windows and return a merged, deduplicated achievement list.
+  async function fetchWindows(friendUser, windows) {
+    const seen = new Set();
+    const result = [];
+    for (let c = 0; c < windows.length; c++) {
+      const { f, t } = windows[c];
+      const chunk = await withRetry(
+        () => getAchievementsEarnedBetween(username, apiKey, { u: friendUser, f, t }),
+        2, 1000
+      );
+      for (const ach of chunk) {
+        const key = `${ach.achievementId}|${ach.date}`;
+        if (!seen.has(key)) { seen.add(key); result.push(ach); }
+      }
+      if (c < windows.length - 1) await sleep(300);
+    }
+    return result;
+  }
+
+  // 3 × 10-day windows covering the full 30-day range.
+  function fullWindows() {
+    return [0, 1, 2].map(c => ({
+      f: now - (3 - c) * WINDOW_SEC,
+      t: now - (2 - c) * WINDOW_SEC,
+    }));
+  }
+
+  // 1–3 windows covering sinceTs→now in ≤10-day chunks, newest anchor.
+  // Returns null when delta > 30 days (caller should do a full fetch instead).
+  function incrementalWindows(sinceTs) {
+    if (now - sinceTs > MAX_SEC) return null;
+    const windows = [];
+    let t = now;
+    while (t > sinceTs) {
+      const f = Math.max(sinceTs, t - WINDOW_SEC);
+      windows.unshift({ f, t });
+      t = f;
+    }
+    return windows;
+  }
 
   for (let i = 0; i < total; i++) {
     const { user: friendUser } = followingList[i];
     const cacheKey = `ra_fa_${friendUser}`;
-    const cached = lcacheGet(cacheKey, TTL_1H);
-    if (cached) {
-      onUser?.(friendUser, cached);
+    const rawJson  = localStorage.getItem(cacheKey);
+    let madeApiCall = false;
+
+    if (rawJson) {
+      const { ts, data } = JSON.parse(rawJson);
+      const fresh = (Date.now() - ts) <= TTL_1H;
+
+      // Always serve existing data immediately (stale or fresh).
+      onUser?.(friendUser, data);
       onProgress?.(++done, total);
-    } else {
-      try {
-        // Fetch 3 × 10-day windows (oldest→newest) and merge.
-        // The API caps responses at ~500 results; 10-day windows handle up to
-        // 50 achievements/day before truncation, safe for all but extreme grinders.
-        const seen = new Set();
-        const allAchs = [];
-        for (let c = 0; c < NUM_CHUNKS; c++) {
-          const t = now - (NUM_CHUNKS - 1 - c) * WINDOW_SEC;
-          const f = t - WINDOW_SEC;
-          const chunk = await withRetry(
-            () => getAchievementsEarnedBetween(username, apiKey, { u: friendUser, f, t }),
-            2, 1000
-          );
-          for (const ach of chunk) {
-            const key = `${ach.achievementId}|${ach.date}`;
-            if (!seen.has(key)) { seen.add(key); allAchs.push(ach); }
+
+      if (!fresh) {
+        madeApiCall = true;
+        const sinceTs = Math.floor(ts / 1000);
+        const incWindows = incrementalWindows(sinceTs);
+        try {
+          const windows = incWindows ?? fullWindows();
+          const delta = await fetchWindows(friendUser, windows);
+          if (incWindows) {
+            // Incremental: prepend new achievements, trim old ones, deduplicate.
+            const deltaKeys = new Set(delta.map(a => `${a.achievementId}|${a.date}`));
+            const kept = data.filter(a =>
+              new Date(a.date).getTime() / 1000 >= CUTOFF_SEC && !deltaKeys.has(`${a.achievementId}|${a.date}`)
+            );
+            const merged = [...delta, ...kept];
+            lcacheSet(cacheKey, merged);
+            if (delta.length > 0) onUser?.(friendUser, merged);
+            else lcacheSet(cacheKey, kept); // just refresh the timestamp
+          } else {
+            // Full refresh: replace entirely.
+            lcacheSet(cacheKey, delta);
+            onUser?.(friendUser, delta);
           }
-          if (c < NUM_CHUNKS - 1) await sleep(300);
+        } catch (e) {
+          if (e.message === 'AUTH_ERROR') throw e;
+          console.warn(`[friends activity] incremental update failed for ${friendUser}:`, e.message);
+          // Stale data already served — silently keep it.
         }
+      }
+    } else {
+      // No cache: full 3 × 10-day fetch.
+      madeApiCall = true;
+      try {
+        const allAchs = await fetchWindows(friendUser, fullWindows());
         lcacheSet(cacheKey, allAchs);
         onUser?.(friendUser, allAchs);
       } catch (e) {
@@ -1438,18 +1506,18 @@ export async function fetchFriendsActivity(username, apiKey, followingList, { on
         onError?.(friendUser, e.message);
       }
       onProgress?.(++done, total);
-      if (i < total - 1) await sleep(1000);
     }
+
+    if (madeApiCall && i < total - 1) await sleep(1000);
   }
 }
 
 /**
- * Returns true if every user in followingList has a valid ra_fa_* cache entry (1h TTL).
- * Used to skip the loading indicator when all data can be served from cache.
+ * Returns true if every user in followingList has any ra_fa_* cache entry (fresh or stale).
+ * Stale entries will be updated incrementally — existing data is served immediately.
  */
 export function allFriendsCached(followingList) {
-  const TTL_1H = 60 * 60 * 1000;
-  return followingList.every(({ user }) => lcacheGet(`ra_fa_${user}`, TTL_1H) !== null);
+  return followingList.every(({ user }) => localStorage.getItem(`ra_fa_${user}`) !== null);
 }
 
 /**

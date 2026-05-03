@@ -87,8 +87,8 @@ The only functions `app.js` calls directly (Layer 2). All cache in `sessionStora
 | `fetchWatchlist(u, k)` | `ra_watchlist_{u}` | Full want-to-play list, all pages |
 | `fetchGameDetails(u, k, gameId)` | `ra_game_{u}_{gameId}` | Game metadata + per-achievement user progress incl. `userTotalPlaytime` |
 | `fetchSocial(u, k)` | `ra_social_{u}` (localStorage, 1h) | Following + followers lists |
-| `fetchFriendsActivity(u, k, followingList, { onProgress, onUser, onError })` | `ra_fa_{friendUser}` per user (localStorage, 1h) | Fetches 30-day achievements for each followed user via 3 × 10-day chunks (server caps at ~500 results/call; 10-day windows safe up to 50 achievements/day); sequential with 300ms between chunks + 1000ms between users; streams results via callbacks |
-| `allFriendsCached(followingList)` | — | Returns true if every user in the list has a valid `ra_fa_*` cache entry; used to skip the loading indicator on instant restore |
+| `fetchFriendsActivity(u, k, followingList, { onProgress, onUser, onError })` | `ra_fa_{friendUser}` per user (localStorage, append) | 30-day window via 10-day chunks. No cache → full 3-chunk fetch. Fresh (<1h) → instant serve. Stale (≥1h) → serve stale immediately then incremental delta (≤10d=1 call, ≤20d=2, ≤30d=3, >30d=full refresh). 300ms between chunks, 1000ms between users (only when API called). |
+| `allFriendsCached(followingList)` | — | Returns true if every user has any `ra_fa_*` entry (fresh or stale); stale entries are still served immediately then updated incrementally |
 | `validateCredentials(u, k)` | — | Minimal profile call; throws `AUTH_ERROR` if invalid |
 
 ### `profileData` shape
@@ -153,7 +153,7 @@ RA API (live)
 |---|---|---|
 | `sessionStorage` | 5 min | Profile data, achievement chunks, game details, watchlist (`ra_*` keys) |
 | `localStorage` | 1 hour | Social data (following/followers, `ra_social_*`) |
-| `localStorage` | 1 hour | Per-friend activity (30-day achievements via 3×10-day chunks, `ra_fa_{username}`) |
+| `localStorage` | append (1h freshness) | Per-friend activity (`ra_fa_{username}`): served instantly if any cache exists; incremental delta fetched when stale; full refresh only when missing or delta >30d |
 | `sessionStorage` | 5 min | Per-friend game data on game page (`ra_fg_*`) |
 
 Bust cache: `sessionStorage.clear()` for session data, `localStorage.removeItem(key)` for social.

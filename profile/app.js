@@ -429,6 +429,8 @@ const FeedSession = ({ session }) => {
   const startTime = achievements[achievements.length - 1]?.date || '';
   const endTime   = achievements[0]?.date || '';
   const fmtT = (s) => s ? s.substring(11, 16) : '';
+  const { baseTitle, subsetName, isSubset, tags } = parseTitle(gameTitle);
+  const gameHref = isOwn ? `../game/?id=${gameId}` : `../game/?id=${gameId}&compare=${username}`;
   return (
     <div className="feed-item mb-3">
       <div className="flex items-center gap-2 mb-1.5">
@@ -438,14 +440,16 @@ const FeedSession = ({ session }) => {
         <a href={`../profile/?u=${username}`} className="text-[11px] font-medium shrink-0 hover:underline" style={{ color: isOwn ? '#57cbde' : '#e5b143' }}>
           {username}
         </a>
-        <span className="text-[9px] text-[#546270] shrink-0">unlocked in</span>
-        <a href={`../game/?id=${gameId}`} className="w-4 h-4 rounded-[1px] overflow-hidden border border-[#101214] bg-black block hover:scale-110 transition-transform shrink-0">
+        <span className="text-[9px] text-[#546270] shrink-0">earned in</span>
+        <a href={gameHref} className="w-4 h-4 rounded-[1px] overflow-hidden border border-[#101214] bg-black block hover:scale-110 transition-transform shrink-0">
           <img src={getMediaUrl(gameIcon)} alt="" className="w-full h-full object-cover" />
         </a>
         <div className="flex items-center gap-1.5 flex-1 min-w-0">
-          <a href={`../game/?id=${gameId}`} className="text-[9px] text-[#c6d4df] hover:text-[#66c0f4] transition-colors uppercase tracking-wider font-medium truncate">
-            {gameTitle}
+          <a href={gameHref} className="text-[9px] text-[#c6d4df] hover:text-[#66c0f4] transition-colors uppercase tracking-wider font-medium truncate">
+            {baseTitle}
           </a>
+          {isSubset && <><span className="text-[7px] font-bold uppercase tracking-[0.07em] px-1 py-[1px] rounded-[2px] border border-[rgba(229,177,67,0.3)] bg-[rgba(229,177,67,0.1)] text-[#c8a84b] shrink-0">Subset</span><span className="text-[8px] text-[#c8a84b] shrink-0 truncate">{subsetName}</span></>}
+          {!isSubset && renderTildeTags(tags)}
           {consoleName && <span className="text-[8px] text-[#546270] shrink-0">· {consoleName}</span>}
         </div>
         <span className="text-[8px] text-[#546270] shrink-0 ml-auto">
@@ -463,7 +467,7 @@ const FeedSession = ({ session }) => {
 
 // ── ActivityTab Component ──────────────────────────────────────────────────
 
-const ActivityTab = ({ achievements, refTime, heatmapData, loadingMore, allLoaded, socialView, setSocialView, friendsActivityStatus, setFriendsActivityStatus, friendsActivity, friendsFetchProgress, failedFriends, onRefreshFriends, ownUsername }) => {
+const ActivityTab = ({ achievements, refTime, heatmapData, loadingMore, allLoaded, socialView, setSocialView, friendsActivityStatus, setFriendsActivityStatus, friendsActivity, friendsFetchProgress, failedFriends, onRefreshFriends, onResetFriends, ownUsername }) => {
   const [selectedDay, setSelectedDay] = useState(null);
   const [collapsedDays, setCollapsedDays] = useState(new Set());
   const [visibleSessionCount, setVisibleSessionCount] = useState(100);
@@ -634,23 +638,48 @@ const ActivityTab = ({ achievements, refTime, heatmapData, loadingMore, allLoade
           </button>
         ))}
         {socialView === 'friends' && friendsActivityStatus === 'done' && (
-          <button
-            onClick={onRefreshFriends}
-            className="ml-auto text-[10px] font-semibold uppercase tracking-wider px-3 py-1 rounded-[2px] border border-[#323f4c] text-[#546270] hover:text-[#c6d4df] hover:border-[#546270] transition-colors"
-          >Refresh</button>
+          <div className="ml-auto flex items-center gap-1.5">
+            <button onClick={onRefreshFriends}
+              className="text-[10px] font-semibold uppercase tracking-wider px-3 py-1 rounded-[2px] border border-[#323f4c] text-[#546270] hover:text-[#c6d4df] hover:border-[#546270] transition-colors"
+            >Refresh</button>
+            <button onClick={onResetFriends}
+              className="text-[10px] font-semibold uppercase tracking-wider px-3 py-1 rounded-[2px] border border-[#323f4c] text-[#546270] hover:text-[#ff6b6b] hover:border-[#ff6b6b] transition-colors"
+              title="Clear all cached data and re-fetch from scratch"
+            >Reset</button>
+          </div>
         )}
       </div>
 
       {socialView === 'friends' ? (
         <div className="flex flex-col gap-3">
 
-          {/* ── Loading state ── */}
-          {friendsActivityStatus === 'loading' && (
-            <span className="text-[11px] text-[#66c0f4]">
-              {friendsFetchProgress
-                ? `${friendsFetchProgress.done} / ${friendsFetchProgress.total} users loaded`
-                : 'Loading…'}
-            </span>
+          {/* ── Loading: shimmer until first data arrives, then inline progress ── */}
+          {friendsActivityStatus === 'loading' && Object.keys(friendsActivity).length === 0 && (
+            <div className="flex flex-col gap-3">
+              {[...Array(3)].map((_, i) => (
+                <div key={i} className="mb-1">
+                  <div className="flex items-center gap-2 mb-1.5">
+                    <div className="shimmer w-5 h-5 rounded-[2px] shrink-0" />
+                    <div className="shimmer h-2.5 w-14 rounded shrink-0" />
+                    <div className="shimmer h-2 w-10 rounded shrink-0" />
+                    <div className="shimmer w-4 h-4 rounded-[1px] shrink-0" />
+                    <div className="shimmer h-2.5 flex-1 rounded" />
+                  </div>
+                  {[...Array(i === 1 ? 3 : 2)].map((_, j) => (
+                    <div key={j} className="flex items-center gap-2 p-2 rounded-[2px] border border-[#2a475e] bg-[#1b2838] mb-1">
+                      <div className="shimmer w-8 h-8 rounded-[2px] shrink-0" />
+                      <div className="flex-1 flex flex-col gap-1.5">
+                        <div className="shimmer h-2.5 rounded" style={{ width: `${55 + (i * 13 + j * 17) % 30}%` }} />
+                        <div className="shimmer h-2 rounded" style={{ width: `${35 + (i * 11 + j * 19) % 25}%` }} />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
+          )}
+          {(friendsActivityStatus === 'loading' || friendsActivityStatus === 'updating') && Object.keys(friendsActivity).length > 0 && friendsFetchProgress && (
+            <span className="text-[11px] text-[#66c0f4]">{friendsFetchProgress.done} / {friendsFetchProgress.total} users loaded</span>
           )}
 
           {/* ── Error state ── */}
@@ -1645,7 +1674,7 @@ export default function App() {
   const [seriesData, setSeriesData] = useState([]);
 
   const [socialView,            setSocialView]            = useState('mine');   // 'mine' | 'friends'
-  const [friendsActivityStatus, setFriendsActivityStatus] = useState('idle');  // 'idle' | 'loading' | 'done' | 'error'
+  const [friendsActivityStatus, setFriendsActivityStatus] = useState('idle');  // 'idle' | 'loading' | 'updating' | 'done' | 'error'
   const [friendsActivity,       setFriendsActivity]       = useState({});       // { [username]: achievement[] }
   const [friendsFetchProgress,  setFriendsFetchProgress]  = useState(null);     // { done, total } | null
   const [failedFriends,         setFailedFriends]         = useState([]);        // usernames that failed to load
@@ -1658,6 +1687,21 @@ export default function App() {
   };
 
   const refreshFriendsActivity = () => {
+    // Soft refresh: mark all cached entries as stale (ts=0) so incremental updates
+    // fire immediately, but keep existing data so the feed stays visible.
+    Object.keys(localStorage).filter(k => k.startsWith('ra_fa_')).forEach(k => {
+      try {
+        const { data } = JSON.parse(localStorage.getItem(k));
+        localStorage.setItem(k, JSON.stringify({ ts: 0, data }));
+      } catch {}
+    });
+    setFailedFriends([]);
+    setFriendsFetchProgress(null);
+    setFriendsActivityStatus('updating');
+  };
+
+  const resetFriendsActivity = () => {
+    // Hard reset: clear all cache and re-fetch from scratch.
     Object.keys(localStorage).filter(k => k.startsWith('ra_fa_')).forEach(k => localStorage.removeItem(k));
     setFriendsActivity({});
     setFriendsFetchProgress(null);
@@ -1772,7 +1816,7 @@ export default function App() {
 
   // ── Fetch friends activity when Friends view opens ──
   useEffect(() => {
-    if (isVisitorMode || activeTab !== 'activity' || socialView !== 'friends' || friendsActivityStatus !== 'idle' || friendsFetchingRef.current) return;
+    if (isVisitorMode || activeTab !== 'activity' || socialView !== 'friends' || (friendsActivityStatus !== 'idle' && friendsActivityStatus !== 'updating') || friendsFetchingRef.current) return;
     const creds = getCredentials();
     if (!creds) { handleAuthError(); return; }
     const { username: u, apiKey: k } = creds;
@@ -2279,6 +2323,7 @@ export default function App() {
                   friendsFetchProgress={friendsFetchProgress}
                   failedFriends={failedFriends}
                   onRefreshFriends={refreshFriendsActivity}
+                  onResetFriends={resetFriendsActivity}
                   ownUsername={PROFILE_DATA.username}
                 />
           ) : activeTab === 'backlog' ? (
@@ -2599,7 +2644,7 @@ export default function App() {
           from { opacity: 0; transform: translateY(-6px); }
           to   { opacity: 1; transform: translateY(0); }
         }
-        .feed-item { animation: feedIn 0.2s ease both; }
+        .feed-item { animation: feedIn 0.5s ease both; }
 
         @keyframes slideUpPill {
           from { opacity: 0; transform: translateX(-50%) translateY(12px); }
