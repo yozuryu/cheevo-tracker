@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { createRoot } from 'react-dom/client';
-import { Gamepad2, Activity, BarChart2, Award, Star, ChevronDown, AlertCircle, Trophy, Crown, Lock, Unlock, AlertTriangle, Flame, Feather, Medal, ShieldOff, CircleDashed, X, Clock, Layers, Users } from 'lucide-react';
+import { Gamepad2, Activity, BarChart2, Award, Star, ChevronDown, AlertCircle, Trophy, Crown, Lock, Unlock, AlertTriangle, Flame, Feather, Medal, ShieldOff, CircleDashed, X, Clock, Layers, Users, Loader2 } from 'lucide-react';
 import { MEDIA_URL, SITE_URL, TILDE_TAG_COLORS } from './utils/constants.js';
 import { getMediaUrl, parseTitle, formatTimeAgo } from './utils/helpers.js';
 import { transformData } from './utils/transform.js';
@@ -637,15 +637,25 @@ const ActivityTab = ({ achievements, refTime, heatmapData, loadingMore, allLoade
             {v}
           </button>
         ))}
-        {socialView === 'friends' && friendsActivityStatus === 'done' && (
+        {socialView === 'friends' && (
           <div className="ml-auto flex items-center gap-1.5">
-            <button onClick={onRefreshFriends}
-              className="text-[10px] font-semibold uppercase tracking-wider px-3 py-1 rounded-[2px] border border-[#323f4c] text-[#546270] hover:text-[#c6d4df] hover:border-[#546270] transition-colors"
-            >Refresh</button>
-            <button onClick={onResetFriends}
-              className="text-[10px] font-semibold uppercase tracking-wider px-3 py-1 rounded-[2px] border border-[#323f4c] text-[#546270] hover:text-[#ff6b6b] hover:border-[#ff6b6b] transition-colors"
-              title="Clear all cached data and re-fetch from scratch"
-            >Reset</button>
+            {(friendsActivityStatus === 'loading' || friendsActivityStatus === 'updating') && (
+              <div className="flex items-center gap-1.5">
+                <Loader2 size={11} className="text-[#66c0f4] animate-spin" />
+                {friendsFetchProgress && (
+                  <span className="text-[11px] text-[#66c0f4] font-medium tabular-nums">{friendsFetchProgress.done}/{friendsFetchProgress.total}</span>
+                )}
+              </div>
+            )}
+            {friendsActivityStatus === 'done' && (<>
+              <button onClick={onRefreshFriends}
+                className="text-[10px] font-semibold uppercase tracking-wider px-3 py-1 rounded-[2px] border border-[#1a5a8a] text-[#66c0f4] hover:bg-[#1a3a5c] transition-colors"
+              >Refresh</button>
+              <button onClick={onResetFriends}
+                className="text-[10px] font-semibold uppercase tracking-wider px-3 py-1 rounded-[2px] border border-[#6b2222] text-[#ff6b6b] hover:bg-[#3a1515] transition-colors"
+                title="Clear all cached data and re-fetch from scratch"
+              >Reset</button>
+            </>)}
           </div>
         )}
       </div>
@@ -677,9 +687,6 @@ const ActivityTab = ({ achievements, refTime, heatmapData, loadingMore, allLoade
                 </div>
               ))}
             </div>
-          )}
-          {(friendsActivityStatus === 'loading' || friendsActivityStatus === 'updating') && Object.keys(friendsActivity).length > 0 && friendsFetchProgress && (
-            <span className="text-[11px] text-[#66c0f4]">{friendsFetchProgress.done} / {friendsFetchProgress.total} users loaded</span>
           )}
 
           {/* ── Error state ── */}
@@ -1673,7 +1680,10 @@ export default function App() {
   const [selectedGame, setSelectedGame] = useState(null);
   const [seriesData, setSeriesData] = useState([]);
 
-  const [socialView,            setSocialView]            = useState('mine');   // 'mine' | 'friends'
+  const [socialView,            setSocialView]            = useState(() => {
+    const v = new URLSearchParams(window.location.search).get('view');
+    return v === 'friends' ? 'friends' : 'mine';
+  });
   const [friendsActivityStatus, setFriendsActivityStatus] = useState('idle');  // 'idle' | 'loading' | 'updating' | 'done' | 'error'
   const [friendsActivity,       setFriendsActivity]       = useState({});       // { [username]: achievement[] }
   const [friendsFetchProgress,  setFriendsFetchProgress]  = useState(null);     // { done, total } | null
@@ -1776,6 +1786,13 @@ export default function App() {
     setActiveTab(tab);
     const url = new URL(window.location);
     url.searchParams.set('tab', tab);
+    window.history.replaceState({}, '', url);
+  };
+
+  const setSocialViewUrl = (view) => {
+    setSocialView(view);
+    const url = new URL(window.location);
+    url.searchParams.set('view', view);
     window.history.replaceState({}, '', url);
   };
 
@@ -2316,7 +2333,7 @@ export default function App() {
                   loadingMore={loadingChunkIndices.size > 0}
                   allLoaded={loadedChunkCount === TOTAL_ACH_CHUNKS}
                   socialView={socialView}
-                  setSocialView={setSocialView}
+                  setSocialView={setSocialViewUrl}
                   friendsActivityStatus={friendsActivityStatus}
                   setFriendsActivityStatus={setFriendsActivityStatus}
                   friendsActivity={friendsActivity}

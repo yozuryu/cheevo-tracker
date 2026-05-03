@@ -1,25 +1,35 @@
 # Changelog
 
+## v26.05.03 — Friends Feed Polish + Cache Improvements
+
+### Profile
+
+- Fixed missing activity for very active friends: friends now fetched as 3 × 10-day chunks (30-day window); server's ~500 result cap was dropping most-recent achievements since results are ordered oldest-first
+- Smarter cache strategy for friends activity: stale cache (>1h) is served immediately then updated with an incremental delta fetch — delta ≤10d=1 call, ≤20d=2 calls, ≤30d=3 calls, >30d=full refresh; past achievements are never re-fetched unnecessarily
+- Split friends feed toolbar into **Refresh** (soft: keeps feed visible, incremental delta update with progress counter, blue) and **Reset** (hard: clears cache, full re-fetch with shimmer, red); added `'updating'` status to drive the progress counter during soft refresh
+- Shimmer skeleton (3 fake sessions) shown on initial load before any data arrives; replaced by inline "X / Y users loaded" counter once the first user streams in
+- Game titles in feed now parsed for `~Tag~` prefixes and `[Subset - Name]` suffixes, rendered consistently with Mine tab
+- Game links open with `?compare=username` so the game page loads with that friend's comparison pre-selected
+- Failed users surfaced in UI: amber warning banner lists usernames that errored after all retries; `onError` callback added to `fetchFriendsActivity`
+- "unlocked in" → "earned in" to match RA terminology
+- `feedIn` animation slowed from 0.2s to 0.5s
+- Mine / Friends sub-view persisted in `?view=` URL param — reload restores the active view
+- Loading progress moved to toggle row right side: spinning `Loader2` icon + `X/Y` counter replaces the Refresh/Reset buttons while fetching
+
+---
+
 ## v26.05.02 — Social Timeline (Activity Tab — Friends View)
 
 ### Profile
 
 - Activity tab gains a **Mine / Friends** toggle; Friends view shows a merged timeline of own + followed users' achievements
-- `fetchFriendsActivity` composite in `ra-api.js`: fetches 90-day achievements per followed user, one at a time with a 1000ms gap between API calls, per-user localStorage cache (`ra_fa_{user}`, 1h TTL), streams results via `onUser` / `onProgress` callbacks
-- Feed structure mirrors Mine tab: day headers → sessions (same user + game within 1-hour window) with header `[avatar] username unlocked in [game icon] Game · Console [time range]`; `FeedAchRow`s beneath each session header
+- `fetchFriendsActivity` composite in `ra-api.js`: sequential fetch per followed user, 1000ms gap between API calls, per-user localStorage cache (`ra_fa_{user}`), streams results via `onUser` / `onProgress` callbacks
+- Feed structure mirrors Mine tab: day headers → sessions (same user + game within 1-hour window) with header `[avatar] username earned in [game icon] Game · Console [time range]`; `FeedAchRow`s beneath each session header
 - Own username shown in cyan (`#57cbde`), friends in gold (`#e5b143`); HC rows: gold left-border; SC: gray
 - New sessions animate in with `feedIn` keyframe as friends' data streams in
 - Feed paginated at 100 sessions; "Load more · N remaining" button appends 100 more
 - `allFriendsCached(followingList)` skips the loading indicator when all data is already cached; `friendsFetchingRef` prevents re-entry
-- Loading indicator: plain text "X / Y users loaded"; Refresh button clears `ra_fa_*` cache and re-fetches
-- Empty states: "You're not following anyone" / "No activity in the last 3 months"; error state with Retry
-- Fixed missing activity for very active friends: friends now fetched as 3 × 10-day chunks (30-day window); server's ~500 result cap was dropping most-recent achievements since results are ordered oldest-first
-- Smarter cache strategy for friends activity: stale cache (>1h) is served immediately then updated with an incremental delta fetch — delta ≤10d=1 call, ≤20d=2 calls, ≤30d=3 calls, >30d=full refresh; past achievements are never re-fetched unnecessarily
-- Split friends feed toolbar into **Refresh** (soft: keeps feed visible, incremental delta update with progress counter) and **Reset** (hard: clears cache, full re-fetch with shimmer); added `'updating'` status to drive the progress counter during soft refresh
-- Friends feed: shimmer skeleton (3 fake sessions) shown on initial load before any data arrives; replaced by inline "X / Y users loaded" counter once the first user streams in
-- Friends feed: game titles now parsed for `~Tag~` prefixes and `[Subset - Name]` suffixes, rendered consistently with Mine tab
-- Friends feed: game links open with `?compare=username` so the game page loads with that friend's comparison pre-selected
-- Failed users now surfaced in the UI: amber warning banner lists usernames that errored after all retries; `console.warn` added for fetch failures; `onError` callback added to `fetchFriendsActivity`
+- Empty states: "You're not following anyone" / "No activity in the last 30 days"; error state with Retry
 - Docs updated: `docs/pages/profile.md` and `docs/architecture.md`
 
 ---
