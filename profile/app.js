@@ -2421,7 +2421,7 @@ export default function App() {
                 const hasNoAch     = status === 'noach';
                 const stripe = isMastered ? 'border-l-[#e5b143]' : isInProgress ? 'border-l-[#66c0f4]' : hasNoAch ? 'border-l-[#1e2a35]' : 'border-l-[#546270]';
                 return (
-                  <div key={game.id} className={`grid gap-2 px-3 py-[5px] border-b border-[#1b2838] last:border-b-0 items-center hover:bg-[#1b2838] transition-colors border-l-[2px] ${stripe} ${hasNoAch ? 'opacity-50' : ''} ${colClass}`}>
+                  <div key={game.id} className={`backlog-item grid gap-2 px-3 py-[5px] border-b border-[#1b2838] last:border-b-0 items-center hover:bg-[#1b2838] transition-colors border-l-[2px] ${stripe} ${hasNoAch ? 'opacity-50' : ''} ${colClass}`}>
                     <a href={`../game/?id=${game.id}`} className="shrink-0 w-6 h-6 rounded-[2px] overflow-hidden border border-[#101214] bg-black block hover:scale-110 transition-transform">
                       <img src={game.icon} alt={game.title} className="w-full h-full object-cover" />
                     </a>
@@ -2507,7 +2507,7 @@ export default function App() {
                   {/* Stats line */}
                   <p className="text-[10px] text-[#546270] px-1 mb-1">
                     <span className="text-[#8f98a0]">{BACKLOG.total.toLocaleString()}</span> games in backlog
-                    {backlogLoadingMore && <span className="text-[#546270] italic"> · loading…</span>}
+                    {backlogLoadingMore && <Loader2 size={11} className="text-[#546270] animate-spin inline-block ml-1.5" />}
                     <span className="mx-2 text-[#2a475e]">|</span>
                     <span className="text-[#c6d4df]">{BACKLOG.games.filter(g => g.achievementsTotal > 0).length}</span> with achievements
                     <span className="mx-1.5 text-[#2a475e]">·</span>
@@ -2662,6 +2662,7 @@ export default function App() {
           to   { opacity: 1; transform: translateY(0); }
         }
         .feed-item { animation: feedIn 0.5s ease both; }
+        .backlog-item { animation: feedIn 0.3s ease both; }
 
         @keyframes slideUpPill {
           from { opacity: 0; transform: translateX(-50%) translateY(12px); }
