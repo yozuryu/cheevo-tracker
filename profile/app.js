@@ -11,6 +11,9 @@ import {
 } from './utils/ra-api.js';
 import { Topbar, Footer } from '../assets/ui.js';
 
+const _visitedUser = new URLSearchParams(window.location.search).get('u');
+const compareParam = _visitedUser ? `&compare=${encodeURIComponent(_visitedUser)}` : '';
+
 // --- JSX Helpers ---
 const renderTildeTags = (tags) => {
   if (!tags || tags.length === 0) return null;
@@ -58,7 +61,7 @@ const GameCard = ({ game }) => {
           <div className="absolute inset-0 bg-gradient-to-r from-[#202d39] via-[#202d39]/95 to-transparent"></div>
         </div>
 
-        <a href={`../game/?id=${game.id}`} className="relative z-10 shrink-0 w-16 h-16 md:w-20 md:h-20 rounded-[2px] shadow-sm border border-[#101214] overflow-hidden bg-[#101214] hover:scale-105 transition-transform">
+        <a href={`../game/?id=${game.id}${compareParam}`} className="relative z-10 shrink-0 w-16 h-16 md:w-20 md:h-20 rounded-[2px] shadow-sm border border-[#101214] overflow-hidden bg-[#101214] hover:scale-105 transition-transform">
            <img src={game.icon} alt={game.title} className="w-full h-full object-cover" />
         </a>
 
@@ -66,7 +69,7 @@ const GameCard = ({ game }) => {
 
           <div className="flex flex-col mb-1">
             <div className="flex items-center gap-2 flex-wrap">
-              <a href={`../game/?id=${game.id}`} className="text-[15px] md:text-base text-white font-medium tracking-wide drop-shadow-sm hover:text-[#66c0f4] transition-colors">
+              <a href={`../game/?id=${game.id}${compareParam}`} className="text-[15px] md:text-base text-white font-medium tracking-wide drop-shadow-sm hover:text-[#66c0f4] transition-colors">
                 {game.baseTitle || game.title}
               </a>
               {game.isSubset && (
@@ -216,14 +219,14 @@ const RAchievementModal = ({ game, onClose, loadingDetails }) => {
 
         {/* Header */}
         <div className="flex items-center gap-4 px-4 py-4 border-b border-[#2a475e] shrink-0">
-          <a href={`../game/?id=${game.id}`}
+          <a href={`../game/?id=${game.id}${compareParam}`}
             className="shrink-0 w-16 h-16 rounded-[2px] overflow-hidden border border-[#101214] bg-[#101214] hover:scale-105 transition-transform">
             <img src={game.icon} alt={game.title} className="w-full h-full object-cover" />
           </a>
           <div className="flex-1 min-w-0">
             <div className="flex flex-col mb-1">
               <div className="flex items-center gap-2 flex-wrap">
-                <a href={`../game/?id=${game.id}`}
+                <a href={`../game/?id=${game.id}${compareParam}`}
                   className="text-[15px] font-medium text-white hover:text-[#66c0f4] transition-colors leading-tight truncate">
                   {game.baseTitle || game.title}
                 </a>
@@ -899,12 +902,12 @@ const ActivityTab = ({ achievements, refTime, heatmapData, loadingMore, allLoade
                   <div key={si} className="ml-4 border-l border-[#2a475e] pl-3 mb-3">
                     {/* Session label */}
                     <div className="flex items-center gap-2 mb-1.5">
-                      <a href={`../game/?id=${session.gameId}`} className="w-4 h-4 rounded-[1px] overflow-hidden border border-[#101214] bg-black block hover:scale-110 transition-transform shrink-0">
+                      <a href={`../game/?id=${session.gameId}${compareParam}`} className="w-4 h-4 rounded-[1px] overflow-hidden border border-[#101214] bg-black block hover:scale-110 transition-transform shrink-0">
                         <img src={session.gameIcon} alt="" className="w-full h-full object-cover" />
                       </a>
                       <div className="flex items-center gap-1.5 flex-1 min-w-0">
                         {(() => { const p = parseTitle(session.gameTitle); return (<>
-                          <a href={`../game/?id=${session.gameId}`} className="text-[9px] text-[#c6d4df] hover:text-[#66c0f4] transition-colors uppercase tracking-wider font-medium truncate">
+                          <a href={`../game/?id=${session.gameId}${compareParam}`} className="text-[9px] text-[#c6d4df] hover:text-[#66c0f4] transition-colors uppercase tracking-wider font-medium truncate">
                             {p.baseTitle}
                           </a>
                           {p.isSubset && (
@@ -1260,7 +1263,7 @@ function SeriesProgressTab({ seriesData, gamesData, backlogData }) {
               )}
 
               {/* Cover icon */}
-              <a href={`../game/?id=${coverId}`}
+              <a href={`../game/?id=${coverId}${compareParam}`}
                 className="relative z-10 shrink-0 w-16 h-16 md:w-20 md:h-20 rounded-[2px] shadow-sm border border-[#101214] overflow-hidden bg-[#101214] hover:scale-105 transition-transform">
                 {coverIcon
                   ? <img src={coverIcon} alt={series.name} className="w-full h-full object-cover" />
@@ -1284,7 +1287,7 @@ function SeriesProgressTab({ seriesData, gamesData, backlogData }) {
                     <a href={`../achievement/?id=${latestAch.achId}`}
                       className="text-[9px] text-[#8f98a0] hover:text-[#c6d4df] truncate transition-colors">{latestAch.title}</a>
                     <span className="text-[9px] text-[#546270] shrink-0">in</span>
-                    <a href={`../game/?id=${latestAch.gameId}`}
+                    <a href={`../game/?id=${latestAch.gameId}${compareParam}`}
                       className="text-[9px] text-[#66c0f4] hover:text-[#c6d4df] truncate transition-colors">{latestAch.gameTitle}</a>
                     <span className="text-[9px] text-[#546270] shrink-0">at {latestAchTimeAgo}</span>
                   </div>
@@ -1316,7 +1319,7 @@ function SeriesProgressTab({ seriesData, gamesData, backlogData }) {
             {shownIcons.length > 0 && (
               <div className="flex items-center gap-1 px-3 pb-2.5 flex-wrap border-t border-[#2a475e] pt-2.5">
                 {shownIcons.map(g => (
-                  <a key={g.id} href={`../game/?id=${g.id}`}
+                  <a key={g.id} href={`../game/?id=${g.id}${compareParam}`}
                     className={`shrink-0 w-8 h-8 rounded-[2px] overflow-hidden bg-black hover:scale-110 transition-transform block ${g.isMastered ? 'border-2 border-[#e5b143]' : 'border border-[#101214]'}`}>
                     <img src={g.icon} alt={g.title} className={`w-full h-full object-cover ${g.hasAch ? '' : 'brightness-[0.35] grayscale'}`} />
                   </a>
@@ -1594,6 +1597,15 @@ const SocialUserRow = ({ user, isMutual, onCompare }) => (
 );
 
 const SocialTab = ({ socialData, socialError, onRetry, onCompare }) => {
+  const [sortBy, setSortBy] = useState('az');
+
+  const sortUsers = (users) => {
+    const s = [...users];
+    if (sortBy === 'points') s.sort((a, b) => (b.points ?? 0) - (a.points ?? 0));
+    else s.sort((a, b) => a.user.localeCompare(b.user));
+    return s;
+  };
+
   if (socialError) {
     return (
       <div className="flex flex-col items-center gap-3 py-10 text-center">
@@ -1636,6 +1648,15 @@ const SocialTab = ({ socialData, socialError, onRetry, onCompare }) => {
 
   return (
     <div className="flex flex-col gap-6">
+      <div className="flex items-center gap-1.5">
+        <span className="text-[8px] uppercase tracking-wider text-[#546270] shrink-0">Sort</span>
+        {[['az', 'A–Z'], ['points', 'Points']].map(([v, label]) => (
+          <button key={v} onClick={() => setSortBy(v)}
+            className={`text-[9px] font-semibold uppercase tracking-wider px-2 py-[3px] rounded-sm border transition-colors ${sortBy === v ? 'bg-[#1b2838] text-[#c6d4df] border-[#2a475e]' : 'bg-[#101214] text-[#546270] border-[#323f4c] hover:text-[#c6d4df] hover:border-[#546270]'}`}>
+            {label}
+          </button>
+        ))}
+      </div>
       {sections.map(({ title, users, total, isMutual }) => (
         <div key={title}>
           <div className="flex items-center gap-2 mb-2">
@@ -1647,7 +1668,7 @@ const SocialTab = ({ socialData, socialError, onRetry, onCompare }) => {
             <div className="text-[11px] text-[#546270] py-3">None yet.</div>
           ) : (
             <div className="flex flex-col gap-[2px]">
-              {users.map(u => <SocialUserRow key={u.user} user={u} isMutual={isMutual(u)} onCompare={onCompare} />)}
+              {sortUsers(users).map(u => <SocialUserRow key={u.user} user={u} isMutual={isMutual(u)} onCompare={onCompare} />)}
             </div>
           )}
         </div>
@@ -2094,12 +2115,12 @@ export default function App() {
               <div className="flex flex-col gap-2">
                 {PROFILE_DATA.mostRecentGame ? (
                   <div className="bg-[#1b2838]/80 border border-[#323f4c] border-l-[3px] border-l-[#66c0f4] rounded-[3px] p-3 flex gap-4 hover:bg-[#202d39] transition-colors shadow-sm">
-                    <a href={`../game/?id=${PROFILE_DATA.mostRecentGame.id}`} className="w-14 h-14 shrink-0 rounded-[2px] overflow-hidden border border-[#101214] bg-black block hover:scale-105 transition-transform">
+                    <a href={`../game/?id=${PROFILE_DATA.mostRecentGame.id}${compareParam}`} className="w-14 h-14 shrink-0 rounded-[2px] overflow-hidden border border-[#101214] bg-black block hover:scale-105 transition-transform">
                       <img src={PROFILE_DATA.mostRecentGame.icon} alt="Icon" className="w-full h-full object-cover"/>
                     </a>
                     <div className="flex-1 min-w-0 flex flex-col justify-center">
                       <div className="flex items-center gap-1.5 mb-0.5 flex-wrap">
-                        <a href={`../game/?id=${PROFILE_DATA.mostRecentGame.id}`} className="text-[#c6d4df] hover:text-[#66c0f4] font-medium text-[14px] truncate leading-tight">
+                        <a href={`../game/?id=${PROFILE_DATA.mostRecentGame.id}${compareParam}`} className="text-[#c6d4df] hover:text-[#66c0f4] font-medium text-[14px] truncate leading-tight">
                           {PROFILE_DATA.mostRecentGame.baseTitle}
                         </a>
                         {PROFILE_DATA.mostRecentGame.isSubset && (
@@ -2153,7 +2174,7 @@ export default function App() {
                     </div>
                     <p className="text-[10px] text-[#8f98a0] leading-snug mb-1 truncate">{PROFILE_DATA.mostRecentAchievement.description}</p>
                     <div className="flex items-center gap-1.5 text-[10px] min-w-0">
-                      <a href={`../game/?id=${PROFILE_DATA.mostRecentAchievement.gameId}`} className="flex items-center gap-1 group min-w-0 shrink truncate">
+                      <a href={`../game/?id=${PROFILE_DATA.mostRecentAchievement.gameId}${compareParam}`} className="flex items-center gap-1 group min-w-0 shrink truncate">
                         <img src={PROFILE_DATA.mostRecentAchievement.gameIcon} alt="" className="w-3.5 h-3.5 rounded-[1px] border border-[#101214] shrink-0" />
                         <span className="text-[#66c0f4] group-hover:text-[#c6d4df] transition-colors truncate">{PROFILE_DATA.mostRecentAchievement.baseTitle || PROFILE_DATA.mostRecentAchievement.gameTitle}</span>
                         {renderTildeTags(PROFILE_DATA.mostRecentAchievement.tags)}
@@ -2452,12 +2473,12 @@ export default function App() {
                 const stripe = isMastered ? 'border-l-[#e5b143]' : isInProgress ? 'border-l-[#66c0f4]' : hasNoAch ? 'border-l-[#1e2a35]' : 'border-l-[#546270]';
                 return (
                   <div key={game.id} className={`backlog-item grid gap-2 px-3 py-[5px] border-b border-[#1b2838] last:border-b-0 items-center hover:bg-[#1b2838] transition-colors border-l-[2px] ${stripe} ${hasNoAch ? 'opacity-50' : ''} ${colClass}`}>
-                    <a href={`../game/?id=${game.id}`} className="shrink-0 w-6 h-6 rounded-[2px] overflow-hidden border border-[#101214] bg-black block hover:scale-110 transition-transform">
+                    <a href={`../game/?id=${game.id}${compareParam}`} className="shrink-0 w-6 h-6 rounded-[2px] overflow-hidden border border-[#101214] bg-black block hover:scale-110 transition-transform">
                       <img src={game.icon} alt={game.title} className="w-full h-full object-cover" />
                     </a>
                     <div className="min-w-0">
                       <div className="flex items-center gap-1.5 flex-wrap">
-                        <a href={`../game/?id=${game.id}`} className="text-[11px] text-[#c6d4df] font-medium hover:text-[#66c0f4] transition-colors truncate leading-tight">{game.baseTitle || game.title}</a>
+                        <a href={`../game/?id=${game.id}${compareParam}`} className="text-[11px] text-[#c6d4df] font-medium hover:text-[#66c0f4] transition-colors truncate leading-tight">{game.baseTitle || game.title}</a>
                         {game.isSubset && <span className="text-[7px] font-bold uppercase tracking-[0.07em] px-1 py-[1px] rounded-[2px] border border-[rgba(229,177,67,0.3)] bg-[rgba(229,177,67,0.1)] text-[#c8a84b] shrink-0">Subset</span>}
                         {renderTildeTags(game.tags)}
                       </div>

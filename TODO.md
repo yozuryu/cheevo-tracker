@@ -1,5 +1,56 @@
 # Todo
 
+## Console Completion %
+
+Show library completion stats per console on the console page — what % of that console's total game count the user has played at least one achievement in, and what % they've mastered.
+
+### Data sources
+
+- **Console game list:** `fetchConsoleGames(consoleId)` — already cached 24h in `ra_consolegames_*`; gives total game count and per-game data
+- **User's played games:** available from the profile's `allAchievements` / progress data — games with `numAchieved > 0` are "played", games with `pctWon >= 1.0` (or `hardcoreMode` completion) are "mastered"
+- Cross-reference the two lists by `gameId` to compute played and mastered counts
+
+### Display
+
+On the console list page (`console/app.js`), add a compact stat strip under each console name:
+- `X / Y played` (how many games touched out of total)
+- `Z mastered` (how many at 100%)
+- A thin progress bar showing played % (filled) with mastered % overlay (brighter fill)
+- Only shown when user credentials exist and data is loaded; skeleton shimmer while loading
+
+Data is fetched per-console lazily as the user scrolls (IntersectionObserver), so the page doesn't hammer the API on load.
+
+---
+
+## "Playing Now" Detection
+
+Surface a subtle live indicator in the friends feed when a friend earned achievements within the last 30 minutes — making the feed feel closer to real-time.
+
+### Detection logic
+
+In `fetchFriendsActivity`, the most recent achievement timestamp per user is already available in the cached data. After loading (status `done`), compute:
+
+```js
+const PLAYING_NOW_MS = 30 * 60 * 1000;
+const isPlayingNow = (achievements) =>
+  achievements.length > 0 &&
+  Date.now() - new Date(achievements[0].date).getTime() < PLAYING_NOW_MS;
+```
+
+### Display
+
+- In the friends feed day groups, sessions where the user is "playing now" get a small green pulsing dot next to their avatar
+- The dot uses a CSS `ping` animation (Tailwind `animate-ping`) with a solid inner dot
+- Colour: `#57de8f` (green, distinct from the existing blue/gold palette)
+- No separate "online" section — just the dot on existing sessions; keeps it subtle
+
+### Caveats
+
+- Timestamps come from the RA API and reflect when the achievement was earned server-side; clock skew under a minute is expected
+- The 30-minute window matches a typical gaming session gap — short enough to feel live, long enough to survive brief pauses
+
+---
+
 ## Game Page — Desktop Single-Page Layout
 
 On desktop (`md:` and above), hide the tab bar and display all sections simultaneously in a structured layout. Mobile keeps the existing tab behaviour unchanged.
