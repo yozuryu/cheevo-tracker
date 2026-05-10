@@ -1,47 +1,5 @@
 # Todo
 
-## Mobile Menu / Settings Unification
-
-### Goal
-
-Unify the menu and settings experience across mobile and desktop so both surfaces expose the same actions without navigating to a separate settings page on mobile.
-
-### Current state
-
-**Desktop (topbar `MenuDropdown` in `assets/ui.js`):**
-- Consoles · Changelog · Refresh Data · Purge Cache · Debug toggle · Log Out
-
-**Mobile (bottom nav in `assets/mobile-nav.js`):**
-- Profile · Progress · Activity · Consoles · Social · Settings (links to `/settings/` page)
-
-The mobile bottom nav has a dedicated Settings tab that navigates to a full page. The desktop has a hamburger menu in the topbar covering app-level actions. There is no inline settings panel on mobile.
-
-### What to change
-
-**Mobile bottom nav (`assets/mobile-nav.js`):**
-- Replace the Settings tab with a **Menu** tab (hamburger icon) — nav stays at 6 tabs, Settings → Menu, no tab is dropped
-- Menu tab opens the slide-up sheet instead of navigating away
-
-**Slide-up menu sheet (new, mobile only):**
-- Triggered by tapping the Menu tab; dismissed by tapping the backdrop or tapping Menu again
-- Slides up from the bottom, full-width, dark backdrop
-- Lives in `assets/mobile-nav.js` as a pure DOM addition (no JSX) — runs on every page automatically; Debug toggle dispatches `CustomEvent('raDebugModeChange')` same as the existing settings page does
-- **Content (merge of settings page + desktop dropdown):** username display · Consoles · Changelog · Refresh Data · Purge Cache · Debug toggle · Log Out
-  - Username pulled from `localStorage.getItem('raCredentials')`
-  - Backlog shortcut omitted — already reachable via the profile tab
-
-**Settings page (`/settings/`):**
-- Remove entirely — content fully covered by slide-up sheet + desktop dropdown
-- Delete `settings/index.html`, `settings/app.js`
-- Remove from `sw.js` precache list and bump `CACHE_NAME` to force cache invalidation
-- Remove Settings link from mobile nav (replaced by Menu tab above)
-
-**Menu animations:**
-- Desktop `MenuDropdown` (`assets/ui.js`): animate **entry only** — short slide-down + fade-in on open (~150ms ease-out); skip close animation to avoid the complexity of keeping the element mounted after `open` goes false
-- Mobile slide-up sheet: animate in (`translateY(100%) → translateY(0)`) with backdrop fade-in (~200ms ease-out); reverse on dismiss (~150ms ease-in) using a CSS class swap before removing from DOM
-
----
-
 ## Game Page — Desktop Single-Page Layout
 
 On desktop (`md:` and above), hide the tab bar and display all sections simultaneously in a structured layout. Mobile keeps the existing tab behaviour unchanged.

@@ -1,10 +1,15 @@
 # Changelog
 
-## v26.05.10 — Cache Deletion Fix + Friends Feed Spinner Fix
+## v26.05.10 — Mobile Menu Unification + Cache Fixes
 
 ### Structure
 
-- Fixed "Delete Data" and "Purge PWA Cache" buttons not clearing `ra_social_*` and `ra_fa_*` localStorage entries — both now clear all `ra_` prefixed keys instead of only console-related ones; applies to settings page and menu dropdown
+- Replaced mobile nav Settings tab with a **Menu** tab (hamburger icon) that opens a slide-up sheet; sheet contains username display, Consoles, Changelog, Refresh Data, Purge Cache, Debug toggle, and Log Out — no page navigation required
+- Replaced mobile nav Consoles tab with **Backlog** (star icon, links to `?tab=backlog`) — Consoles is now accessible via the Menu sheet
+- Deleted `settings/index.html` and `settings/app.js` — all functionality is now covered by the slide-up sheet (mobile) and the topbar dropdown (desktop)
+- Removed settings page from `sw.js` PRECACHE; bumped `CACHE_NAME` to force cache invalidation
+- Desktop `MenuDropdown` now animates in with a short slide-down + fade (~150ms ease-out) on open
+- Fixed "Delete Data" and "Purge PWA Cache" buttons not clearing `ra_social_*` and `ra_fa_*` localStorage entries — both now clear all `ra_` prefixed keys instead of only console-related ones
 
 ### Profile
 

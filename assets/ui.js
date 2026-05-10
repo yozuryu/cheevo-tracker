@@ -167,6 +167,13 @@ function DebugFab() {
 
 // ── Menu dropdown ─────────────────────────────────────────────────────────────
 
+// Inject dropdown entry animation once per page load
+(() => {
+  const s = document.createElement('style');
+  s.textContent = '@keyframes menuDropIn{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:translateY(0)}}';
+  document.head.appendChild(s);
+})();
+
 function MenuDropdown({ onClose }) {
   const ref = React.useRef(null);
   const [debugMode, setDebugMode] = React.useState(() => localStorage.getItem('raDebugMode') === 'true');
@@ -226,6 +233,7 @@ function MenuDropdown({ onClose }) {
     {
       ref,
       className: 'absolute top-full right-0 mt-1 w-44 bg-[#1b2838] border border-[#2a475e] rounded-[3px] overflow-hidden shadow-xl z-50',
+      style: { animation: 'menuDropIn 0.15s ease-out' },
     },
     ...rows.map((row, i) => {
       if (row === null) {
