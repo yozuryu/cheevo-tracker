@@ -13,6 +13,7 @@
 
 ### Profile
 
+- Fixed friends feed session header truncating on mobile with long game/console/username — on mobile the header splits into two rows (user row + game row with stacked title/console); desktop keeps the original single-row layout unchanged
 - Fixed friends feed showing no loading spinner/counter when opening with stale cache — now correctly sets `updating` status so the spinner and X/Y progress counter appear during the incremental background fetch
 
 ## v26.05.03 — Friends Feed Polish + Cache Improvements + Tab Bar Fixes

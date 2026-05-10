@@ -433,28 +433,47 @@ const FeedSession = ({ session }) => {
   const gameHref = isOwn ? `../game/?id=${gameId}` : `../game/?id=${gameId}&compare=${username}`;
   return (
     <div className="feed-item mb-3">
-      <div className="flex items-center gap-2 mb-1.5">
-        <a href={`../profile/?u=${username}`} className="shrink-0">
-          <img src={`${MEDIA_URL}/UserPic/${username}.png`} alt={username} className="w-5 h-5 rounded-[2px] object-cover" />
-        </a>
-        <a href={`../profile/?u=${username}`} className="text-[11px] font-medium shrink-0 hover:underline" style={{ color: isOwn ? '#57cbde' : '#e5b143' }}>
-          {username}
-        </a>
-        <span className="text-[9px] text-[#546270] shrink-0">earned in</span>
-        <a href={gameHref} className="w-4 h-4 rounded-[1px] overflow-hidden border border-[#101214] bg-black block hover:scale-110 transition-transform shrink-0">
-          <img src={getMediaUrl(gameIcon)} alt="" className="w-full h-full object-cover" />
-        </a>
-        <div className="flex items-center gap-1.5 flex-1 min-w-0">
-          <a href={gameHref} className="text-[9px] text-[#c6d4df] hover:text-[#66c0f4] transition-colors uppercase tracking-wider font-medium truncate">
-            {baseTitle}
+      <div className="mb-1.5">
+        {/* Row 1: always visible — user + earned in + [desktop: game info] + time */}
+        <div className="flex items-center gap-2 mb-1 md:mb-0">
+          <a href={`../profile/?u=${username}`} className="shrink-0">
+            <img src={`${MEDIA_URL}/UserPic/${username}.png`} alt={username} className="w-5 h-5 rounded-[2px] object-cover" />
           </a>
-          {isSubset && <><span className="text-[7px] font-bold uppercase tracking-[0.07em] px-1 py-[1px] rounded-[2px] border border-[rgba(229,177,67,0.3)] bg-[rgba(229,177,67,0.1)] text-[#c8a84b] shrink-0">Subset</span><span className="text-[8px] text-[#c8a84b] shrink-0 truncate">{subsetName}</span></>}
-          {!isSubset && renderTildeTags(tags)}
-          {consoleName && <span className="text-[8px] text-[#546270] shrink-0">· {consoleName}</span>}
+          <a href={`../profile/?u=${username}`} className="text-[11px] font-medium min-w-0 truncate hover:underline" style={{ color: isOwn ? '#57cbde' : '#e5b143' }}>
+            {username}
+          </a>
+          <span className="text-[9px] text-[#546270] shrink-0">earned in</span>
+          <a href={gameHref} className="hidden md:block w-4 h-4 rounded-[1px] overflow-hidden border border-[#101214] bg-black hover:scale-110 transition-transform shrink-0">
+            <img src={getMediaUrl(gameIcon)} alt="" className="w-full h-full object-cover" />
+          </a>
+          <div className="hidden md:flex items-center gap-1.5 flex-1 min-w-0">
+            <a href={gameHref} className="text-[9px] text-[#c6d4df] hover:text-[#66c0f4] transition-colors uppercase tracking-wider font-medium truncate">
+              {baseTitle}
+            </a>
+            {isSubset && <><span className="text-[7px] font-bold uppercase tracking-[0.07em] px-1 py-[1px] rounded-[2px] border border-[rgba(229,177,67,0.3)] bg-[rgba(229,177,67,0.1)] text-[#c8a84b] shrink-0">Subset</span><span className="text-[8px] text-[#c8a84b] shrink-0 truncate">{subsetName}</span></>}
+            {!isSubset && renderTildeTags(tags)}
+            {consoleName && <span className="text-[8px] text-[#546270] shrink-0">· {consoleName}</span>}
+          </div>
+          <span className="text-[8px] text-[#546270] shrink-0 ml-auto">
+            {fmtT(startTime)}{startTime !== endTime ? `–${fmtT(endTime)}` : ''}
+          </span>
         </div>
-        <span className="text-[8px] text-[#546270] shrink-0 ml-auto">
-          {fmtT(startTime)}{startTime !== endTime ? `–${fmtT(endTime)}` : ''}
-        </span>
+        {/* Row 2: mobile only — game icon + title + console stacked */}
+        <div className="md:hidden flex items-center gap-1.5 pl-7">
+          <a href={gameHref} className="w-4 h-4 rounded-[1px] overflow-hidden border border-[#101214] bg-black block hover:scale-110 transition-transform shrink-0">
+            <img src={getMediaUrl(gameIcon)} alt="" className="w-full h-full object-cover" />
+          </a>
+          <div className="flex flex-col min-w-0 flex-1">
+            <div className="flex items-center gap-1.5 min-w-0">
+              <a href={gameHref} className="text-[9px] text-[#c6d4df] hover:text-[#66c0f4] transition-colors uppercase tracking-wider font-medium truncate">
+                {baseTitle}
+              </a>
+              {isSubset && <><span className="text-[7px] font-bold uppercase tracking-[0.07em] px-1 py-[1px] rounded-[2px] border border-[rgba(229,177,67,0.3)] bg-[rgba(229,177,67,0.1)] text-[#c8a84b] shrink-0">Subset</span><span className="text-[8px] text-[#c8a84b] shrink-0 truncate">{subsetName}</span></>}
+              {!isSubset && renderTildeTags(tags)}
+            </div>
+            {consoleName && <span className="text-[8px] text-[#546270] truncate">{consoleName}</span>}
+          </div>
+        </div>
       </div>
       <div className="flex flex-col gap-1">
         {achievements.map((ach, i) => (
