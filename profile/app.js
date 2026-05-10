@@ -1845,6 +1845,7 @@ export default function App() {
         const followingList = social.following.results;
         if (followingList.length === 0) { setFriendsActivityStatus('done'); return; }
         if (!allFriendsCached(followingList)) setFriendsActivityStatus('loading');
+        else setFriendsActivityStatus('updating');
         await fetchFriendsActivity(u, k, followingList, {
           onProgress: (done, total) => setFriendsFetchProgress({ done, total }),
           onUser: (friendUser, achievements) =>

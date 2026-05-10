@@ -19,30 +19,26 @@ The mobile bottom nav has a dedicated Settings tab that navigates to a full page
 ### What to change
 
 **Mobile bottom nav (`assets/mobile-nav.js`):**
-- Remove the Settings tab
-- Replace with a **Menu** tab (hamburger icon) that opens a slide-up sheet instead of navigating away
-- Decide on the 5th slot — options: keep Social, replace with Changelog, or add a placeholder; needs a decision
+- Replace the Settings tab with a **Menu** tab (hamburger icon) — nav stays at 6 tabs, Settings → Menu, no tab is dropped
+- Menu tab opens the slide-up sheet instead of navigating away
 
 **Slide-up menu sheet (new, mobile only):**
-- Triggered by tapping the Menu tab in the bottom nav
-- Slides up from the bottom, full-width, with a dark backdrop
-- Contains the same items as the desktop `MenuDropdown`: Consoles · Changelog · Refresh Data · Purge Cache · Debug toggle · Log Out
-- Also exposes any settings currently only on `/settings/` that are useful inline (e.g. appearance options)
-- Dismissable by tapping the backdrop or tapping Menu tab again
-- Should live in `assets/mobile-nav.js` as a self-contained IIFE addition (no JSX, plain DOM + CSS)
+- Triggered by tapping the Menu tab; dismissed by tapping the backdrop or tapping Menu again
+- Slides up from the bottom, full-width, dark backdrop
+- Lives in `assets/mobile-nav.js` as a pure DOM addition (no JSX) — runs on every page automatically; Debug toggle dispatches `CustomEvent('raDebugModeChange')` same as the existing settings page does
+- **Content (merge of settings page + desktop dropdown):** username display · Consoles · Changelog · Refresh Data · Purge Cache · Debug toggle · Log Out
+  - Username pulled from `localStorage.getItem('raCredentials')`
+  - Backlog shortcut omitted — already reachable via the profile tab
 
 **Settings page (`/settings/`):**
-- Remove entirely — no longer needed once all actions are in the slide-up sheet and desktop dropdown
-- Delete `settings/index.html`, `settings/app.js`; remove from `sw.js` precache list; remove any nav links pointing to `/settings/`
+- Remove entirely — content fully covered by slide-up sheet + desktop dropdown
+- Delete `settings/index.html`, `settings/app.js`
+- Remove from `sw.js` precache list and bump `CACHE_NAME` to force cache invalidation
+- Remove Settings link from mobile nav (replaced by Menu tab above)
 
 **Menu animations:**
-- Desktop `MenuDropdown` (`assets/ui.js`): add a short slide-down + fade-in on open, fade-out on close (CSS `@keyframes` or transition on the dropdown div)
-- Mobile slide-up sheet: animate in from bottom (`translateY(100%) → translateY(0)`) with backdrop fade-in; animate out on dismiss
-- Both should feel snappy — ~150–200ms ease-out in, ~120ms ease-in out
-
-### Open questions before implementation
-- Which 5 tabs to keep in the mobile nav after removing Settings? (currently: Profile, Progress, Activity, Consoles, Social — Menu replaces one)
-- Should the slide-up sheet be injected by `mobile-nav.js` (IIFE, pure DOM) or managed by each page's React app?
+- Desktop `MenuDropdown` (`assets/ui.js`): animate **entry only** — short slide-down + fade-in on open (~150ms ease-out); skip close animation to avoid the complexity of keeping the element mounted after `open` goes false
+- Mobile slide-up sheet: animate in (`translateY(100%) → translateY(0)`) with backdrop fade-in (~200ms ease-out); reverse on dismiss (~150ms ease-in) using a CSS class swap before removing from DOM
 
 ---
 

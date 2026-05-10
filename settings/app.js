@@ -59,15 +59,14 @@ function SettingsApp() {
 
   function handleRefresh() {
     sessionStorage.clear();
-    const lsKeys = Object.keys(localStorage).filter(k => k === 'ra_consoles' || k.startsWith('ra_consolegames_'));
+    const lsKeys = Object.keys(localStorage).filter(k => k.startsWith('ra_'));
     lsKeys.forEach(k => localStorage.removeItem(k));
     location.reload();
   }
 
   async function handlePurgeCache() {
     sessionStorage.clear();
-    // Clear long-lived localStorage API caches (console list + game lists)
-    const lsKeys = Object.keys(localStorage).filter(k => k === 'ra_consoles' || k.startsWith('ra_consolegames_'));
+    const lsKeys = Object.keys(localStorage).filter(k => k.startsWith('ra_'));
     lsKeys.forEach(k => localStorage.removeItem(k));
     if ('caches' in window) {
       const keys = await caches.keys();

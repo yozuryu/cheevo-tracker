@@ -1,5 +1,15 @@
 # Changelog
 
+## v26.05.10 — Cache Deletion Fix + Friends Feed Spinner Fix
+
+### Structure
+
+- Fixed "Delete Data" and "Purge PWA Cache" buttons not clearing `ra_social_*` and `ra_fa_*` localStorage entries — both now clear all `ra_` prefixed keys instead of only console-related ones; applies to settings page and menu dropdown
+
+### Profile
+
+- Fixed friends feed showing no loading spinner/counter when opening with stale cache — now correctly sets `updating` status so the spinner and X/Y progress counter appear during the incremental background fetch
+
 ## v26.05.03 — Friends Feed Polish + Cache Improvements + Tab Bar Fixes
 
 ### Profile
