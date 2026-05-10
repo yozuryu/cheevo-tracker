@@ -13,6 +13,7 @@
 
 ### Profile
 
+- Fixed activity tab Mine view showing sessions oldest-first within a day — sessions now appear newest-first; ascending sort is kept internally for correct session grouping and time-range tracking, then reversed for display
 - Game links in visitor mode now include `?compare=<username>` so the game page opens with that user's comparison pre-selected — applies to all game links across the profile: recent game, recent achievement, activity sessions, progress series, backlog, and social compare
 - Added sort controls to the Social tab (Following/Followers lists): A–Z (default) and Points; applies to both sections simultaneously
 - Fixed social compare game list not parsing subset badges and tilde tags from game titles — now shows base title + Subset badge/name or tilde tag chips, consistent with other views

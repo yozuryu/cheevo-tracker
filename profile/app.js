@@ -593,6 +593,7 @@ const ActivityTab = ({ achievements, refTime, heatmapData, loadingMore, allLoade
             sessions.push({ gameId: ach.gameId, gameTitle: ach.gameTitle, gameIcon: getMediaUrl(ach.gameIcon), consoleName: ach.consoleName, startTime: ach.date, endTime: ach.date, achievements: [ach] });
           }
         });
+        sessions.reverse(); // newest session first within a day
         const dayPts = achs.reduce((s, a) => s + (a.points || 0), 0);
         return { day, dayPts, achCount: achs.length, sessions };
       });
