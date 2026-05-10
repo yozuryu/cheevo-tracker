@@ -13,6 +13,7 @@
 
 ### Profile
 
+- Fixed social compare game list not parsing subset badges and tilde tags from game titles — now shows base title + Subset badge/name or tilde tag chips, consistent with other views
 - Fixed friends feed session header truncating on mobile with long game/console/username — on mobile the header splits into two rows (user row + game row with stacked title/console); desktop keeps the original single-row layout unchanged
 - Fixed friends feed showing no loading spinner/counter when opening with stale cache — now correctly sets `updating` status so the spinner and X/Y progress counter appear during the incremental background fetch
 

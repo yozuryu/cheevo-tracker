@@ -1495,6 +1495,7 @@ const CompareModal = ({ otherUser, myGames, compareData, loading, error, onClose
                   {sorted.map(g => {
                     const myBar    = Math.round(g.myPct);
                     const theirBar = Math.round(g.theirPct);
+                    const { baseTitle, subsetName, isSubset, tags } = parseTitle(g.title);
                     return (
                       <div key={g.gameId} className="flex flex-col gap-1 px-2 py-1.5 bg-[#202d39] hover:bg-[#253443] rounded-[2px] transition-colors md:flex-row md:items-center md:gap-2">
                         {/* Icon + title */}
@@ -1508,7 +1509,16 @@ const CompareModal = ({ otherUser, myGames, compareData, loading, error, onClose
                             />
                           </a>
                           <div className="flex-1 min-w-0">
-                            <a href={`../game/?id=${g.gameId}&compare=${encodeURIComponent(otherUser)}`} className="text-[10px] font-medium text-[#c6d4df] hover:text-[#66c0f4] transition-colors truncate leading-tight block">{g.title}</a>
+                            <a href={`../game/?id=${g.gameId}&compare=${encodeURIComponent(otherUser)}`} className="text-[10px] font-medium text-[#c6d4df] hover:text-[#66c0f4] transition-colors truncate leading-tight block">{baseTitle}</a>
+                            {isSubset && (
+                              <div className="flex items-center gap-1 mt-[1px]">
+                                <span className="text-[7px] font-bold uppercase tracking-[0.07em] px-1 py-[1px] rounded-[2px] border border-[rgba(229,177,67,0.3)] bg-[rgba(229,177,67,0.1)] text-[#c8a84b] shrink-0">Subset</span>
+                                <span className="text-[8px] text-[#c8a84b] truncate">{subsetName}</span>
+                              </div>
+                            )}
+                            {!isSubset && tags.length > 0 && (
+                              <div className="flex items-center gap-1 mt-[1px]">{renderTildeTags(tags)}</div>
+                            )}
                             <div className="text-[8px] text-[#546270] truncate">{g.consoleName}</div>
                           </div>
                         </div>
