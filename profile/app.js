@@ -1289,7 +1289,7 @@ function SeriesProgressTab({ seriesData, gamesData, backlogData }) {
                       className="text-[9px] text-[#8f98a0] hover:text-[#c6d4df] truncate transition-colors">{latestAch.title}</a>
                     <span className="text-[9px] text-[#546270] shrink-0">in</span>
                     <a href={`../game/?id=${latestAch.gameId}${compareParam}`}
-                      className="text-[9px] text-[#66c0f4] hover:text-[#c6d4df] truncate transition-colors">{latestAch.gameTitle}</a>
+                      className="text-[9px] text-[#66c0f4] hover:text-[#c6d4df] truncate transition-colors">{parseTitle(latestAch.gameTitle).baseTitle}</a>
                     <span className="text-[9px] text-[#546270] shrink-0">at {latestAchTimeAgo}</span>
                   </div>
                 )}
@@ -2178,7 +2178,13 @@ export default function App() {
                       <a href={`../game/?id=${PROFILE_DATA.mostRecentAchievement.gameId}${compareParam}`} className="flex items-center gap-1 group min-w-0 shrink truncate">
                         <img src={PROFILE_DATA.mostRecentAchievement.gameIcon} alt="" className="w-3.5 h-3.5 rounded-[1px] border border-[#101214] shrink-0" />
                         <span className="text-[#66c0f4] group-hover:text-[#c6d4df] transition-colors truncate">{PROFILE_DATA.mostRecentAchievement.baseTitle || PROFILE_DATA.mostRecentAchievement.gameTitle}</span>
-                        {renderTildeTags(PROFILE_DATA.mostRecentAchievement.tags)}
+                        {PROFILE_DATA.mostRecentAchievement.isSubset && (
+                          <>
+                            <span className="text-[7px] font-bold uppercase tracking-[0.07em] px-1 py-[1px] rounded-[2px] border border-[rgba(229,177,67,0.3)] bg-[rgba(229,177,67,0.1)] text-[#c8a84b] shrink-0">Subset</span>
+                            <span className="text-[8px] text-[#c8a84b] truncate">{PROFILE_DATA.mostRecentAchievement.subsetName}</span>
+                          </>
+                        )}
+                        {!PROFILE_DATA.mostRecentAchievement.isSubset && renderTildeTags(PROFILE_DATA.mostRecentAchievement.tags)}
                       </a>
                       <span className="text-[#546270] shrink-0">•</span>
                       <span className="text-[#8f98a0] truncate shrink">{PROFILE_DATA.mostRecentAchievement.consoleName}</span>

@@ -1,5 +1,12 @@
 # Changelog
 
+## v26.05.13
+
+### Profile
+
+- Fixed "Most Recently Unlocked" game title not rendering subset badge and name — now shows Subset badge + subset name for subset games, consistent with the friends feed
+- Fixed Series Progress "latest achievement" game title not stripping subset brackets — now renders base title via `parseTitle`
+
 ## v26.05.10 — Mobile Menu Unification + Cache Fixes
 
 ### Structure
