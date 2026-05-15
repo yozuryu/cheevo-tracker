@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { createRoot } from 'react-dom/client';
-import { Gamepad2, Activity, BarChart2, Award, Star, ChevronDown, AlertCircle, Trophy, Crown, Lock, Unlock, AlertTriangle, Flame, Feather, Medal, ShieldOff, CircleDashed, X, Clock, Layers, Users, Loader2 } from 'lucide-react';
+import { Gamepad2, Activity, BarChart2, Award, Star, ChevronDown, ChevronUp, AlertCircle, Trophy, Crown, Lock, Unlock, AlertTriangle, Flame, Feather, Medal, ShieldOff, CircleDashed, X, Clock, Layers, Users, Loader2 } from 'lucide-react';
 import { MEDIA_URL, SITE_URL, TILDE_TAG_COLORS } from './utils/constants.js';
 import { getMediaUrl, parseTitle, formatTimeAgo } from './utils/helpers.js';
 import { transformData } from './utils/transform.js';
@@ -19,6 +19,12 @@ const toLocalDay = (str) => {
   const s = str.includes('T') || str.endsWith('Z') ? str : str.replace(' ', 'T') + 'Z';
   const d = new Date(s);
   return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+};
+const toLocalTime = (str) => {
+  if (!str) return '';
+  const s = str.includes('T') || str.endsWith('Z') ? str : str.replace(' ', 'T') + 'Z';
+  const d = new Date(s);
+  return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
 };
 
 // --- JSX Helpers ---
@@ -428,68 +434,108 @@ const FeedAchRow = ({ ach }) => (
       </div>
       {ach.description && <p className="text-[9px] text-[#546270] truncate">{ach.description}</p>}
     </div>
-    <span className="text-[8px] text-[#546270] shrink-0 ml-auto">{ach.date ? ach.date.substring(11, 16) : ''}</span>
+    <span className="text-[8px] text-[#546270] shrink-0 ml-auto">{toLocalTime(ach.date)}</span>
   </div>
 );
 
 // ── FeedSession Component — session header + achievement list ─────────────
 
-const FeedSession = ({ session }) => {
+const FeedSession = ({ session, hideUser = false }) => {
   const { username, isOwn, gameId, gameTitle, gameIcon, consoleName, achievements } = session;
   const startTime = achievements[achievements.length - 1]?.date || '';
   const endTime   = achievements[0]?.date || '';
-  const fmtT = (s) => s ? s.substring(11, 16) : '';
+  const fmtT = toLocalTime;
   const { baseTitle, subsetName, isSubset, tags } = parseTitle(gameTitle);
   const gameHref = isOwn ? `../game/?id=${gameId}` : `../game/?id=${gameId}&compare=${username}`;
+  const [collapsed, setCollapsed] = React.useState(hideUser && achievements.length > 3);
+
   return (
-    <div className="feed-item mb-3">
-      <div className="mb-1.5">
-        {/* Row 1: always visible — user + earned in + [desktop: game info] + time */}
-        <div className="flex items-center gap-2 mb-1 md:mb-0">
-          <a href={`../profile/?u=${username}`} className="shrink-0">
-            <img src={`${MEDIA_URL}/UserPic/${username}.png`} alt={username} className="w-5 h-5 rounded-[2px] object-cover" />
-          </a>
-          <a href={`../profile/?u=${username}`} className="text-[11px] font-medium min-w-0 truncate hover:underline" style={{ color: isOwn ? '#57cbde' : '#e5b143' }}>
-            {username}
-          </a>
-          <span className="text-[9px] text-[#546270] shrink-0">earned in</span>
-          <a href={gameHref} className="hidden md:block w-4 h-4 rounded-[1px] overflow-hidden border border-[#101214] bg-black hover:scale-110 transition-transform shrink-0">
-            <img src={getMediaUrl(gameIcon)} alt="" className="w-full h-full object-cover" />
-          </a>
-          <div className="hidden md:flex items-center gap-1.5 flex-1 min-w-0">
+    <div className={`feed-item ${hideUser ? '' : 'mb-3'}`}>
+      <div className={hideUser ? '' : 'mb-1.5'}>
+        {hideUser ? (<>
+          {/* compact: game header row — links navigate, no toggle */}
+          <div className="flex items-center gap-2">
+            <a href={gameHref} className="w-4 h-4 rounded-[1px] overflow-hidden border border-[#101214] bg-black block hover:scale-110 transition-transform shrink-0">
+              <img src={getMediaUrl(gameIcon)} alt="" className="w-full h-full object-cover" />
+            </a>
             <a href={gameHref} className="text-[9px] text-[#c6d4df] hover:text-[#66c0f4] transition-colors uppercase tracking-wider font-medium truncate">
               {baseTitle}
             </a>
             {isSubset && <><span className="text-[7px] font-bold uppercase tracking-[0.07em] px-1 py-[1px] rounded-[2px] border border-[rgba(229,177,67,0.3)] bg-[rgba(229,177,67,0.1)] text-[#c8a84b] shrink-0">Subset</span><span className="text-[8px] text-[#c8a84b] shrink-0 truncate">{subsetName}</span></>}
             {!isSubset && renderTildeTags(tags)}
             {consoleName && <span className="text-[8px] text-[#546270] shrink-0">· {consoleName}</span>}
+            <span className="text-[8px] text-[#546270] shrink-0 ml-auto">{fmtT(startTime)}{startTime !== endTime ? `–${fmtT(endTime)}` : ''}</span>
           </div>
-          <span className="text-[8px] text-[#546270] shrink-0 ml-auto">
-            {fmtT(startTime)}{startTime !== endTime ? `–${fmtT(endTime)}` : ''}
-          </span>
-        </div>
-        {/* Row 2: mobile only — game icon + title + console stacked */}
-        <div className="md:hidden flex items-center gap-1.5 pl-7">
-          <a href={gameHref} className="w-4 h-4 rounded-[1px] overflow-hidden border border-[#101214] bg-black block hover:scale-110 transition-transform shrink-0">
-            <img src={getMediaUrl(gameIcon)} alt="" className="w-full h-full object-cover" />
-          </a>
-          <div className="flex flex-col min-w-0 flex-1">
-            <div className="flex items-center gap-1.5 min-w-0">
+          {collapsed && achievements.length > 0 && (
+            <button onClick={() => setCollapsed(false)} className="w-full mt-1.5 flex items-center gap-1.5 bg-[#1b2838] border border-[#2a475e] rounded-[2px] px-2 py-2 hover:bg-[#202d39] transition-colors outline-none">
+              {achievements.slice(0, 8).map((ach, i) => (
+                <img key={i} src={`${MEDIA_URL}/Badge/${ach.badgeName}.png`} alt={ach.title} title={ach.title}
+                  className={`w-8 h-8 rounded-[2px] border shrink-0 ${i >= 5 ? 'hidden md:block' : ''} ${ach.hardcoreMode ? 'border-[#e5b143]' : 'border-[#2a475e]'}`} />
+              ))}
+              {achievements.length > 5 && (
+                <span className="text-[10px] text-[#546270] ml-1 shrink-0 md:hidden">+{achievements.length - 5}</span>
+              )}
+              {achievements.length > 8 && (
+                <span className="text-[10px] text-[#546270] ml-1 shrink-0 hidden md:inline">+{achievements.length - 8}</span>
+              )}
+            </button>
+          )}
+        </>) : (<>
+          {/* Row 1: always visible — user + earned in + [desktop: game info] + time */}
+          <div className="flex items-center gap-2 mb-1 md:mb-0">
+            <a href={`../profile/?u=${username}`} className="shrink-0">
+              <img src={`${MEDIA_URL}/UserPic/${username}.png`} alt={username} className="w-5 h-5 rounded-[2px] object-cover" />
+            </a>
+            <a href={`../profile/?u=${username}`} className="text-[11px] font-medium min-w-0 truncate hover:underline" style={{ color: isOwn ? '#57cbde' : '#e5b143' }}>
+              {username}
+            </a>
+            <span className="text-[9px] text-[#546270] shrink-0">earned in</span>
+            <div className="hidden md:flex items-center gap-1.5 flex-1 min-w-0">
+              <a href={gameHref} className="w-4 h-4 rounded-[1px] overflow-hidden border border-[#101214] bg-black block hover:scale-110 transition-transform shrink-0">
+                <img src={getMediaUrl(gameIcon)} alt="" className="w-full h-full object-cover" />
+              </a>
               <a href={gameHref} className="text-[9px] text-[#c6d4df] hover:text-[#66c0f4] transition-colors uppercase tracking-wider font-medium truncate">
                 {baseTitle}
               </a>
               {isSubset && <><span className="text-[7px] font-bold uppercase tracking-[0.07em] px-1 py-[1px] rounded-[2px] border border-[rgba(229,177,67,0.3)] bg-[rgba(229,177,67,0.1)] text-[#c8a84b] shrink-0">Subset</span><span className="text-[8px] text-[#c8a84b] shrink-0 truncate">{subsetName}</span></>}
               {!isSubset && renderTildeTags(tags)}
+              {consoleName && <span className="text-[8px] text-[#546270] shrink-0">· {consoleName}</span>}
             </div>
-            {consoleName && <span className="text-[8px] text-[#546270] truncate">{consoleName}</span>}
+            <span className="text-[8px] text-[#546270] shrink-0 ml-auto">
+              {fmtT(startTime)}{startTime !== endTime ? `–${fmtT(endTime)}` : ''}
+            </span>
           </div>
+          {/* Row 2: mobile only — game icon + title + console stacked */}
+          <div className="md:hidden flex items-center gap-1.5 pl-7">
+            <a href={gameHref} className="w-4 h-4 rounded-[1px] overflow-hidden border border-[#101214] bg-black block hover:scale-110 transition-transform shrink-0">
+              <img src={getMediaUrl(gameIcon)} alt="" className="w-full h-full object-cover" />
+            </a>
+            <div className="flex flex-col min-w-0 flex-1">
+              <div className="flex items-center gap-1.5 min-w-0">
+                <a href={gameHref} className="text-[9px] text-[#c6d4df] hover:text-[#66c0f4] transition-colors uppercase tracking-wider font-medium truncate">
+                  {baseTitle}
+                </a>
+                {isSubset && <><span className="text-[7px] font-bold uppercase tracking-[0.07em] px-1 py-[1px] rounded-[2px] border border-[rgba(229,177,67,0.3)] bg-[rgba(229,177,67,0.1)] text-[#c8a84b] shrink-0">Subset</span><span className="text-[8px] text-[#c8a84b] shrink-0 truncate">{subsetName}</span></>}
+                {!isSubset && renderTildeTags(tags)}
+              </div>
+              {consoleName && <span className="text-[8px] text-[#546270] truncate">{consoleName}</span>}
+            </div>
+          </div>
+        </>)}
+      </div>
+      {!collapsed && (
+        <div className="flex flex-col gap-1">
+          {achievements.map((ach, i) => (
+            <FeedAchRow key={`${ach.achievementId}-${i}`} ach={ach} />
+          ))}
+          {hideUser && achievements.length > 3 && (
+            <button onClick={() => setCollapsed(true)} className="w-full flex items-center justify-center gap-1 py-1 text-[9px] text-[#546270] hover:text-[#8f98a0] transition-colors outline-none">
+              <ChevronUp size={10} />
+              collapse
+            </button>
+          )}
         </div>
-      </div>
-      <div className="flex flex-col gap-1">
-        {achievements.map((ach, i) => (
-          <FeedAchRow key={`${ach.achievementId}-${i}`} ach={ach} />
-        ))}
-      </div>
+      )}
     </div>
   );
 };
@@ -615,35 +661,52 @@ const ActivityTab = ({ achievements, refTime, heatmapData, loadingMore, allLoade
     return [...ownRows, ...friendRows].sort((a, b) => b.ach.date.localeCompare(a.ach.date));
   }, [achievements, friendsActivity, ownUsername]);
 
-  // Group consecutive same-user+game unlocks within a 1-hour window into sessions
+  // Group all same-user+game unlocks within a 1-hour gap into sessions (non-consecutive safe)
   const feedGroups = useMemo(() => {
-    const result = [];
-    let i = 0;
-    while (i < mergedFeed.length) {
-      const { username, ach: firstAch, isOwn } = mergedFeed[i];
-      let j = i + 1;
-      while (j < mergedFeed.length) {
-        const { username: u, ach } = mergedFeed[j];
-        if (u !== username || ach.gameId !== firstAch.gameId) break;
-        if (new Date(firstAch.date) - new Date(ach.date) > 3600000) break;
-        j++;
+    // Bucket by (username, gameId)
+    const byKey = {};
+    mergedFeed.forEach(({ username, ach, isOwn }) => {
+      const key = `${username}::${ach.gameId}`;
+      if (!byKey[key]) byKey[key] = { username, isOwn, gameId: ach.gameId, gameTitle: ach.gameTitle, gameIcon: ach.gameIcon, consoleName: ach.consoleName, achs: [] };
+      byKey[key].achs.push(ach);
+    });
+
+    const sessions = [];
+    Object.values(byKey).forEach(({ username, isOwn, gameId, gameTitle, gameIcon, consoleName, achs }) => {
+      // Sort ascending to detect gaps between consecutive unlocks
+      const sorted = [...achs].sort((a, b) => a.date.localeCompare(b.date));
+      let start = 0;
+      for (let i = 1; i <= sorted.length; i++) {
+        if (i === sorted.length || new Date(sorted[i].date) - new Date(sorted[i - 1].date) > 3600000) {
+          const slice = sorted.slice(start, i);
+          sessions.push({
+            username, isOwn, gameId, gameTitle, gameIcon, consoleName,
+            achievements: [...slice].reverse(), // newest first for FeedSession
+            latestDate: slice[slice.length - 1].date,
+          });
+          start = i;
+        }
       }
-      const slice = mergedFeed.slice(i, j);
-      result.push({ username, isOwn, gameId: firstAch.gameId, gameTitle: firstAch.gameTitle, gameIcon: firstAch.gameIcon, consoleName: firstAch.consoleName, achievements: slice.map(r => r.ach), latestDate: firstAch.date });
-      i = j;
-    }
-    return result;
+    });
+
+    return sessions.sort((a, b) => b.latestDate.localeCompare(a.latestDate));
   }, [mergedFeed]);
 
-  // Group feed sessions by day for day-header layout (paginated)
+  // Group feed sessions by day → by user for day-header layout (paginated)
   const feedByDay = useMemo(() => {
     const byDay = {};
     feedGroups.slice(0, visibleSessionCount).forEach(item => {
       const day = toLocalDay(item.latestDate);
-      if (!byDay[day]) byDay[day] = [];
-      byDay[day].push(item);
+      if (!byDay[day]) byDay[day] = {};
+      if (!byDay[day][item.username]) byDay[day][item.username] = { username: item.username, isOwn: item.isOwn, sessions: [] };
+      byDay[day][item.username].sessions.push(item);
     });
-    return Object.entries(byDay).sort(([a], [b]) => b.localeCompare(a));
+    return Object.entries(byDay)
+      .sort(([a], [b]) => b.localeCompare(a))
+      .map(([day, userMap]) => [
+        day,
+        Object.values(userMap).sort((a, b) => b.sessions[0].latestDate.localeCompare(a.sessions[0].latestDate))
+      ]);
   }, [feedGroups, visibleSessionCount]);
 
   const [collapsedFeedDays, setCollapsedFeedDays] = useState(new Set());
@@ -653,12 +716,7 @@ const ActivityTab = ({ achievements, refTime, heatmapData, loadingMore, allLoade
     return next;
   });
 
-  const fmtTime = (str) => {
-    if (!str) return '';
-    const s = str.includes('T') || str.endsWith('Z') ? str : str.replace(' ', 'T') + 'Z';
-    const d = new Date(s);
-    return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
-  };
+  const fmtTime = toLocalTime;
   const fmtDay  = (str) => new Date(str + 'T00:00:00').toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
   const tzName  = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
@@ -704,25 +762,48 @@ const ActivityTab = ({ achievements, refTime, heatmapData, loadingMore, allLoade
 
           {/* ── Loading: shimmer until first data arrives, then inline progress ── */}
           {friendsActivityStatus === 'loading' && Object.keys(friendsActivity).length === 0 && (
-            <div className="flex flex-col gap-3">
-              {[...Array(3)].map((_, i) => (
-                <div key={i} className="mb-1">
-                  <div className="flex items-center gap-2 mb-1.5">
-                    <div className="shimmer w-5 h-5 rounded-[2px] shrink-0" />
-                    <div className="shimmer h-2.5 w-14 rounded shrink-0" />
-                    <div className="shimmer h-2 w-10 rounded shrink-0" />
-                    <div className="shimmer w-4 h-4 rounded-[1px] shrink-0" />
-                    <div className="shimmer h-2.5 flex-1 rounded" />
+            <div className="flex flex-col gap-0">
+              {[2, 1].map((userCount, di) => (
+                <div key={di} className="mb-4">
+                  {/* day header */}
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="w-2 h-2 rounded-full bg-[#2a475e] border border-[#2a475e] shrink-0" />
+                    <div className="shimmer h-2.5 w-20 rounded" />
+                    <div className="flex-1 h-px bg-[#2a475e] opacity-40" />
+                    <div className="shimmer h-2 w-16 rounded" />
                   </div>
-                  {[...Array(i === 1 ? 3 : 2)].map((_, j) => (
-                    <div key={j} className="flex items-center gap-2 p-2 rounded-[2px] border border-[#2a475e] bg-[#1b2838] mb-1">
-                      <div className="shimmer w-8 h-8 rounded-[2px] shrink-0" />
-                      <div className="flex-1 flex flex-col gap-1.5">
-                        <div className="shimmer h-2.5 rounded" style={{ width: `${55 + (i * 13 + j * 17) % 30}%` }} />
-                        <div className="shimmer h-2 rounded" style={{ width: `${35 + (i * 11 + j * 19) % 25}%` }} />
+                  {/* user groups */}
+                  <div className="ml-4 border-l border-[#2a475e] pl-3 flex flex-col gap-3">
+                    {[...Array(userCount)].map((_, ui) => (
+                      <div key={ui}>
+                        {/* user row */}
+                        <div className="flex items-center gap-2 mb-1.5">
+                          <div className="shimmer w-5 h-5 rounded-[2px] shrink-0" />
+                          <div className="shimmer h-2.5 rounded shrink-0" style={{ width: `${56 + (di * 17 + ui * 23) % 32}px` }} />
+                          <div className="shimmer h-2 w-24 rounded shrink-0" />
+                        </div>
+                        {/* sessions */}
+                        <div className="ml-7 border-l border-[#2a475e] pl-3 flex flex-col gap-2">
+                          {[...Array(ui === 0 && di === 0 ? 2 : 1)].map((_, si) => (
+                            <div key={si}>
+                              {/* session game row */}
+                              <div className="flex items-center gap-2 mb-1.5">
+                                <div className="shimmer w-4 h-4 rounded-[1px] shrink-0" />
+                                <div className="shimmer h-2 rounded flex-1" style={{ maxWidth: `${90 + (ui * 19 + si * 31) % 60}px` }} />
+                                <div className="shimmer h-2 w-10 rounded ml-auto shrink-0" />
+                              </div>
+                              {/* badge strip */}
+                              <div className="flex items-center gap-1.5 bg-[#1b2838] border border-[#2a475e] rounded-[2px] px-2 py-2">
+                                {[...Array(5)].map((_, bi) => (
+                                  <div key={bi} className="shimmer w-8 h-8 rounded-[2px] shrink-0" />
+                                ))}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
               ))}
             </div>
@@ -770,9 +851,9 @@ const ActivityTab = ({ achievements, refTime, heatmapData, loadingMore, allLoade
                 </div>
               ) : (
                 <div className="flex flex-col gap-0">
-                  {feedByDay.map(([day, items]) => {
+                  {feedByDay.map(([day, userGroups]) => {
                     const isFeedDayCollapsed = collapsedFeedDays.has(day);
-                    const achCount = items.reduce((s, item) => s + item.achievements.length, 0);
+                    const achCount = userGroups.reduce((s, ug) => s + ug.sessions.reduce((ss, sess) => ss + sess.achievements.length, 0), 0);
                     return (
                       <div key={day} className="mb-4">
                         <button onClick={() => toggleFeedDay(day)} className="w-full flex items-center gap-2 mb-2 group outline-none">
@@ -783,10 +864,30 @@ const ActivityTab = ({ achievements, refTime, heatmapData, loadingMore, allLoade
                           <ChevronDown size={11} className={`text-[#546270] transition-transform duration-200 shrink-0 ${isFeedDayCollapsed ? '' : 'rotate-180'}`} />
                         </button>
                         {!isFeedDayCollapsed && (
-                          <div className="ml-4 border-l border-[#2a475e] pl-3">
-                            {items.map(item => (
-                              <FeedSession key={`${item.username}-${item.gameId}-${item.latestDate}`} session={item} />
-                            ))}
+                          <div className="ml-4 border-l border-[#2a475e] pl-3 flex flex-col gap-3">
+                            {userGroups.map(({ username, isOwn, sessions }) => {
+                              const userAchCount = sessions.reduce((s, sess) => s + sess.achievements.length, 0);
+                              return (
+                                <div key={username}>
+                                  <div className="flex items-center gap-2 mb-1.5">
+                                    <a href={`../profile/?u=${username}`} className="shrink-0">
+                                      <img src={`${MEDIA_URL}/UserPic/${username}.png`} alt={username} className="w-5 h-5 rounded-[2px] object-cover" />
+                                    </a>
+                                    <a href={`../profile/?u=${username}`} className="text-[11px] font-medium hover:underline truncate" style={{ color: isOwn ? '#57cbde' : '#e5b143' }}>
+                                      {username}
+                                    </a>
+                                    <span className="text-[9px] text-[#546270] shrink-0">
+                                      {sessions.length > 1 ? `${sessions.length} sessions · ` : ''}{userAchCount} achievement{userAchCount !== 1 ? 's' : ''}
+                                    </span>
+                                  </div>
+                                  <div className="ml-7 border-l border-[#2a475e] pl-3 flex flex-col gap-2">
+                                    {sessions.map(session => (
+                                      <FeedSession key={`${session.gameId}-${session.latestDate}`} session={session} hideUser={true} />
+                                    ))}
+                                  </div>
+                                </div>
+                              );
+                            })}
                           </div>
                         )}
                       </div>

@@ -4,7 +4,9 @@
 
 ### Profile
 
-- Activity tab (Mine and Friends) now displays all times and day groupings in the local machine timezone — previously showed raw UTC strings
+- Activity tab (Mine and Friends) now displays all times and day groupings in the local machine timezone — previously showed raw UTC strings; fixes both the session header time range and individual achievement timestamps in the friends feed
+- Redesigned friends feed layout: within each day, activity is grouped by user (avatar + username + achievement count header, sessions nested below); sessions with more than 3 achievements collapse to a badge strip preview (up to 8 icons, matching the achievement card style, click to expand); a "collapse" button appears at the bottom of expanded lists for easy re-collapsing; sessions with 3 or fewer show expanded by default; users ordered by most recent session within the day
+- Fixed friends feed sessions breaking when another user's unlock interleaved between two unlocks from the same user in the same game — sessions now group all same-user+game unlocks within a 1-hour gap regardless of other users' activity in between
 - Added timezone label (IANA name, e.g. `Asia/Jakarta`) to the right of the Mine/Friends toggle, always visible
 - Heatmap day buckets and timeline day headers now correctly reflect local dates, so achievements near midnight no longer appear under the wrong day
 
