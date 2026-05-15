@@ -458,12 +458,17 @@ const FeedSession = ({ session, hideUser = false }) => {
             <a href={gameHref} className="w-4 h-4 rounded-[1px] overflow-hidden border border-[#101214] bg-black block hover:scale-110 transition-transform shrink-0">
               <img src={getMediaUrl(gameIcon)} alt="" className="w-full h-full object-cover" />
             </a>
-            <a href={gameHref} className="text-[9px] text-[#c6d4df] hover:text-[#66c0f4] transition-colors uppercase tracking-wider font-medium truncate">
-              {baseTitle}
-            </a>
-            {isSubset && <><span className="text-[7px] font-bold uppercase tracking-[0.07em] px-1 py-[1px] rounded-[2px] border border-[rgba(229,177,67,0.3)] bg-[rgba(229,177,67,0.1)] text-[#c8a84b] shrink-0">Subset</span><span className="text-[8px] text-[#c8a84b] shrink-0 truncate">{subsetName}</span></>}
-            {!isSubset && renderTildeTags(tags)}
-            {consoleName && <span className="text-[8px] text-[#546270] shrink-0">· {consoleName}</span>}
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-1.5 min-w-0">
+                <a href={gameHref} className="text-[9px] text-[#c6d4df] hover:text-[#66c0f4] transition-colors uppercase tracking-wider font-medium truncate">
+                  {baseTitle}
+                </a>
+                {isSubset && <><span className="text-[7px] font-bold uppercase tracking-[0.07em] px-1 py-[1px] rounded-[2px] border border-[rgba(229,177,67,0.3)] bg-[rgba(229,177,67,0.1)] text-[#c8a84b] shrink-0">Subset</span><span className="text-[8px] text-[#c8a84b] shrink-0 truncate">{subsetName}</span></>}
+                {!isSubset && renderTildeTags(tags)}
+                {consoleName && <span className="hidden md:inline text-[8px] text-[#546270] shrink-0">· {consoleName}</span>}
+              </div>
+              {consoleName && <span className="md:hidden text-[8px] text-[#546270] truncate block leading-tight mt-[1px]">{consoleName}</span>}
+            </div>
             <span className="text-[8px] text-[#546270] shrink-0 ml-auto">{fmtT(startTime)}{startTime !== endTime ? `–${fmtT(endTime)}` : ''}</span>
           </div>
           {collapsed && achievements.length > 0 && (
@@ -524,7 +529,7 @@ const FeedSession = ({ session, hideUser = false }) => {
         </>)}
       </div>
       {!collapsed && (
-        <div className="flex flex-col gap-1">
+        <div className={`flex flex-col gap-1 ${hideUser ? 'mt-1.5' : ''}`}>
           {achievements.map((ach, i) => (
             <FeedAchRow key={`${ach.achievementId}-${i}`} ach={ach} />
           ))}
@@ -1845,6 +1850,8 @@ export default function App() {
   const [backlogStatusFilter, setBacklogStatusFilter] = useState('all');
   const [backlogGrouping, setBacklogGrouping] = useState('none');
   const [collapsedGroups, setCollapsedGroups] = useState(new Set());
+  const [backlogPage, setBacklogPage] = useState(1);
+  const [backlogPageSize, setBacklogPageSize] = useState(50);
   const [selectedGame, setSelectedGame] = useState(null);
   const [seriesData, setSeriesData] = useState([]);
 
@@ -2578,6 +2585,33 @@ export default function App() {
                 });
               }
 
+              // ── Pagination ──────────────────────────────────────────
+              let pagedFiltered = filtered;
+              let pagedGroups = groups;
+              let totalPages = 1;
+
+              if (backlogGrouping === 'none') {
+                totalPages = Math.max(1, Math.ceil(filtered.length / backlogPageSize));
+                const safePage = Math.min(backlogPage, totalPages);
+                pagedFiltered = filtered.slice((safePage - 1) * backlogPageSize, safePage * backlogPageSize);
+              } else if (groups.length > 0) {
+                // snap to group boundary: accumulate until pageSize reached
+                const pages = [];
+                let start = 0, count = 0;
+                for (let i = 0; i < groups.length; i++) {
+                  count += groups[i].games.length;
+                  if (count >= backlogPageSize || i === groups.length - 1) {
+                    pages.push([start, i]);
+                    start = i + 1;
+                    count = 0;
+                  }
+                }
+                totalPages = Math.max(1, pages.length);
+                const safePage = Math.min(backlogPage, totalPages);
+                const [s, e] = pages[safePage - 1] || [0, groups.length - 1];
+                pagedGroups = groups.slice(s, e + 1);
+              }
+
               // Table columns — responsive via CSS classes, not inline styles
               const showConsole  = backlogGrouping === 'none';
               const colClass = showConsole ? 'wl-row-full' : 'wl-row-noconsole';
@@ -2635,7 +2669,7 @@ export default function App() {
                   <div className="flex flex-col gap-2 mb-2 md:flex-row md:flex-wrap md:items-center md:gap-2">
                     {/* Search */}
                     <div className="relative">
-                      <input type="text" placeholder="Search games…" value={backlogSearch} onChange={e => setBacklogSearch(e.target.value)}
+                      <input type="text" placeholder="Search games…" value={backlogSearch} onChange={e => { setBacklogSearch(e.target.value); setBacklogPage(1); }}
                         className="bg-[#101214] border border-[#323f4c] hover:border-[#546270] focus:border-[#66c0f4] outline-none text-[10px] text-[#c6d4df] placeholder-[#546270] px-2 py-[4px] rounded-[2px] w-full md:w-44 transition-colors" />
                       {backlogSearch && <button onClick={() => setBacklogSearch('')} className="absolute right-1.5 top-1/2 -translate-y-1/2 text-[#546270] hover:text-[#c6d4df] text-[10px]">×</button>}
                     </div>
@@ -2651,7 +2685,7 @@ export default function App() {
                         { value: 'inprogress', label: 'In Progress',     cls: 'bg-[#66c0f4] text-[#101214] border-[#66c0f4]' },
                         { value: 'mastered',   label: 'Mastered',        cls: 'bg-[#e5b143] text-[#101214] border-[#e5b143]' },
                       ].map(opt => (
-                        <button key={opt.value} onClick={() => setBacklogStatusFilter(opt.value)}
+                        <button key={opt.value} onClick={() => { setBacklogStatusFilter(opt.value); setBacklogPage(1); }}
                           className={`shrink-0 text-[9px] font-semibold uppercase tracking-wider px-2 py-[3px] rounded-[2px] border transition-colors ${backlogStatusFilter === opt.value ? opt.cls : 'bg-[#101214] text-[#8f98a0] border-[#323f4c] hover:text-[#c6d4df] hover:border-[#546270]'}`}>
                           {opt.label}
                         </button>
@@ -2667,7 +2701,7 @@ export default function App() {
                         { value: 'console', label: 'Console' },
                         { value: 'status',  label: 'Status'  },
                       ].map(opt => (
-                        <button key={opt.value} onClick={() => { setBacklogGrouping(opt.value); setCollapsedGroups(new Set()); }}
+                        <button key={opt.value} onClick={() => { setBacklogGrouping(opt.value); setCollapsedGroups(new Set()); setBacklogPage(1); }}
                           className={`shrink-0 text-[9px] font-semibold uppercase tracking-wider px-2 py-[3px] rounded-[2px] border transition-colors ${backlogGrouping === opt.value ? 'bg-[#1b2838] text-[#c6d4df] border-[#2a475e]' : 'bg-[#101214] text-[#546270] border-[#323f4c] hover:text-[#c6d4df] hover:border-[#546270]'}`}>
                           {opt.label}
                         </button>
@@ -2675,7 +2709,7 @@ export default function App() {
                     </div>
 
                     {(backlogSearch || backlogStatusFilter !== 'all') && (
-                      <button onClick={() => { setBacklogSearch(''); setBacklogStatusFilter('all'); }} className="md:ml-auto text-[9px] text-[#546270] hover:text-[#66c0f4] uppercase tracking-wider transition-colors self-start md:self-auto">Clear ×</button>
+                      <button onClick={() => { setBacklogSearch(''); setBacklogStatusFilter('all'); setBacklogPage(1); }} className="md:ml-auto text-[9px] text-[#546270] hover:text-[#66c0f4] uppercase tracking-wider transition-colors self-start md:self-auto">Clear ×</button>
                     )}
                   </div>
 
@@ -2706,9 +2740,9 @@ export default function App() {
                     {filtered.length === 0 ? (
                       <div className="text-center py-6 text-[#546270] text-[11px]">No games match the current filters.</div>
                     ) : backlogGrouping === 'none' ? (
-                      filtered.map(game => <GameRow key={game.id} game={game} />)
+                      pagedFiltered.map(game => GameRow({ game }))
                     ) : (
-                      groups.map(group => {
+                      pagedGroups.map(group => {
                         const isOpen = collapsedGroups.has(group.key)
                           ? !group.defaultOpen  // toggled: flip from default
                           : (group.defaultOpen ?? true); // not toggled: use default
@@ -2720,11 +2754,42 @@ export default function App() {
                               <span className="text-[9px] text-[#546270]">{group.games.length} game{group.games.length !== 1 ? 's' : ''}</span>
                               <ChevronDown size={11} className={`text-[#546270] transition-transform duration-200 shrink-0 ${isOpen ? 'rotate-180' : ''}`} />
                             </button>
-                            {isOpen && group.games.map(game => <GameRow key={game.id} game={game} />)}
+                            {isOpen && group.games.map(game => GameRow({ game }))}
                           </div>
                         );
                       })
                     )}
+                  </div>
+
+                  {/* Pagination footer */}
+                  <div className="flex items-center justify-between mt-3 px-1 gap-2 pb-16 md:pb-0">
+                    <button
+                      onClick={() => setBacklogPage(p => Math.max(1, p - 1))}
+                      disabled={backlogPage <= 1 || totalPages <= 1}
+                      className="text-[9px] font-semibold uppercase tracking-wider px-2.5 py-[4px] rounded-[2px] border border-[#323f4c] bg-[#101214] text-[#8f98a0] hover:text-[#c6d4df] hover:border-[#546270] transition-colors disabled:opacity-30 disabled:pointer-events-none">
+                      ← Prev
+                    </button>
+                    <div className="flex items-center gap-2 flex-wrap justify-center">
+                      <span className="text-[9px] text-[#546270]">
+                        Page <span className="text-[#c6d4df]">{Math.min(backlogPage, totalPages)}</span> of <span className="text-[#c6d4df]">{totalPages}</span>
+                      </span>
+                      <span className="text-[#2a475e] text-[10px] select-none hidden md:inline">|</span>
+                      <div className="flex items-center gap-1">
+                        <span className="text-[9px] text-[#546270] uppercase tracking-wider">Per page</span>
+                        {[50, 100, 150].map(n => (
+                          <button key={n} onClick={() => { setBacklogPageSize(n); setBacklogPage(1); }}
+                            className={`text-[9px] font-semibold uppercase tracking-wider px-2 py-[3px] rounded-[2px] border transition-colors ${backlogPageSize === n ? 'bg-[#1b2838] text-[#c6d4df] border-[#2a475e]' : 'bg-[#101214] text-[#546270] border-[#323f4c] hover:text-[#c6d4df] hover:border-[#546270]'}`}>
+                            {n}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => setBacklogPage(p => Math.min(totalPages, p + 1))}
+                      disabled={backlogPage >= totalPages || totalPages <= 1}
+                      className="text-[9px] font-semibold uppercase tracking-wider px-2.5 py-[4px] rounded-[2px] border border-[#323f4c] bg-[#101214] text-[#8f98a0] hover:text-[#c6d4df] hover:border-[#546270] transition-colors disabled:opacity-30 disabled:pointer-events-none">
+                      Next →
+                    </button>
                   </div>
                 </>
               );
