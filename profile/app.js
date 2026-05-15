@@ -14,6 +14,13 @@ import { Topbar, Footer } from '../assets/ui.js';
 const _visitedUser = new URLSearchParams(window.location.search).get('u');
 const compareParam = _visitedUser ? `&compare=${encodeURIComponent(_visitedUser)}` : '';
 
+const toLocalDay = (str) => {
+  if (!str) return '';
+  const s = str.includes('T') || str.endsWith('Z') ? str : str.replace(' ', 'T') + 'Z';
+  const d = new Date(s);
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+};
+
 // --- JSX Helpers ---
 const renderTildeTags = (tags) => {
   if (!tags || tags.length === 0) return null;
@@ -511,7 +518,7 @@ const ActivityTab = ({ achievements, refTime, heatmapData, loadingMore, allLoade
   const dayMap = useMemo(() => {
     const map = {};
     achievements.forEach(ach => {
-      const day = ach.date.substring(0, 10);
+      const day = toLocalDay(ach.date);
       if (!map[day]) map[day] = { count: 0, points: 0, achievements: [] };
       map[day].count++;
       map[day].points += ach.points || 0;
@@ -529,7 +536,7 @@ const ActivityTab = ({ achievements, refTime, heatmapData, loadingMore, allLoade
     for (let i = 364; i >= 0; i--) {
       const d = new Date(refDate);
       d.setDate(d.getDate() - i);
-      const key = d.toISOString().substring(0, 10);
+      const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
       arr.push({ key, date: d });
     }
     return arr;
@@ -573,7 +580,7 @@ const ActivityTab = ({ achievements, refTime, heatmapData, loadingMore, allLoade
     // Group by day
     const byDay = {};
     source.forEach(ach => {
-      const day = ach.date.substring(0, 10);
+      const day = toLocalDay(ach.date);
       if (!byDay[day]) byDay[day] = [];
       byDay[day].push(ach);
     });
@@ -632,7 +639,7 @@ const ActivityTab = ({ achievements, refTime, heatmapData, loadingMore, allLoade
   const feedByDay = useMemo(() => {
     const byDay = {};
     feedGroups.slice(0, visibleSessionCount).forEach(item => {
-      const day = item.latestDate.substring(0, 10);
+      const day = toLocalDay(item.latestDate);
       if (!byDay[day]) byDay[day] = [];
       byDay[day].push(item);
     });
@@ -646,8 +653,14 @@ const ActivityTab = ({ achievements, refTime, heatmapData, loadingMore, allLoade
     return next;
   });
 
-  const fmtTime = (str) => str ? str.substring(11, 16) : '';
+  const fmtTime = (str) => {
+    if (!str) return '';
+    const s = str.includes('T') || str.endsWith('Z') ? str : str.replace(' ', 'T') + 'Z';
+    const d = new Date(s);
+    return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+  };
   const fmtDay  = (str) => new Date(str + 'T00:00:00').toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+  const tzName  = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
   return (
     <div className="flex flex-col gap-6">
@@ -660,27 +673,30 @@ const ActivityTab = ({ achievements, refTime, heatmapData, loadingMore, allLoade
             {v}
           </button>
         ))}
-        {socialView === 'friends' && (
-          <div className="ml-auto flex items-center gap-1.5">
-            {(friendsActivityStatus === 'loading' || friendsActivityStatus === 'updating') && (
-              <div className="flex items-center gap-1.5">
-                <Loader2 size={11} className="text-[#66c0f4] animate-spin" />
-                {friendsFetchProgress && (
-                  <span className="text-[11px] text-[#66c0f4] font-medium tabular-nums">{friendsFetchProgress.done}/{friendsFetchProgress.total}</span>
-                )}
-              </div>
-            )}
-            {friendsActivityStatus === 'done' && (<>
-              <button onClick={onRefreshFriends}
-                className="text-[10px] font-semibold uppercase tracking-wider px-3 py-1 rounded-[2px] border border-[#1a5a8a] text-[#66c0f4] hover:bg-[#1a3a5c] transition-colors"
-              >Refresh</button>
-              <button onClick={onResetFriends}
-                className="text-[10px] font-semibold uppercase tracking-wider px-3 py-1 rounded-[2px] border border-[#6b2222] text-[#ff6b6b] hover:bg-[#3a1515] transition-colors"
-                title="Clear all cached data and re-fetch from scratch"
-              >Reset</button>
-            </>)}
-          </div>
-        )}
+        <div className="ml-auto flex items-center gap-2">
+          <span className="text-[9px] text-[#546270]">{tzName}</span>
+          {socialView === 'friends' && (
+            <div className="flex items-center gap-1.5">
+              {(friendsActivityStatus === 'loading' || friendsActivityStatus === 'updating') && (
+                <div className="flex items-center gap-1.5">
+                  <Loader2 size={11} className="text-[#66c0f4] animate-spin" />
+                  {friendsFetchProgress && (
+                    <span className="text-[11px] text-[#66c0f4] font-medium tabular-nums">{friendsFetchProgress.done}/{friendsFetchProgress.total}</span>
+                  )}
+                </div>
+              )}
+              {friendsActivityStatus === 'done' && (<>
+                <button onClick={onRefreshFriends}
+                  className="text-[10px] font-semibold uppercase tracking-wider px-3 py-1 rounded-[2px] border border-[#1a5a8a] text-[#66c0f4] hover:bg-[#1a3a5c] transition-colors"
+                >Refresh</button>
+                <button onClick={onResetFriends}
+                  className="text-[10px] font-semibold uppercase tracking-wider px-3 py-1 rounded-[2px] border border-[#6b2222] text-[#ff6b6b] hover:bg-[#3a1515] transition-colors"
+                  title="Clear all cached data and re-fetch from scratch"
+                >Reset</button>
+              </>)}
+            </div>
+          )}
+        </div>
       </div>
 
       {socialView === 'friends' ? (
@@ -1951,7 +1967,7 @@ export default function App() {
   const heatmapData = useMemo(() => {
     const map = {};
     achievementChunks.filter(c => c !== null).flat().forEach(ach => {
-      const day = (ach.date || '').substring(0, 10);
+      const day = toLocalDay(ach.date || '');
       if (!day) return;
       if (!map[day]) map[day] = { count: 0, points: 0 };
       map[day].count++;

@@ -1,5 +1,13 @@
 # Changelog
 
+## v26.05.15
+
+### Profile
+
+- Activity tab (Mine and Friends) now displays all times and day groupings in the local machine timezone — previously showed raw UTC strings
+- Added timezone label (IANA name, e.g. `Asia/Jakarta`) to the right of the Mine/Friends toggle, always visible
+- Heatmap day buckets and timeline day headers now correctly reflect local dates, so achievements near midnight no longer appear under the wrong day
+
 ## v26.05.13
 
 ### Profile
