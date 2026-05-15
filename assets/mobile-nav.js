@@ -19,6 +19,7 @@
   const ICON_PURGE    = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>`;
   const ICON_DEBUG    = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="6" width="8" height="14" rx="4"/><path d="m19 7-3 2"/><path d="m5 7 3 2"/><path d="M19 12h-4"/><path d="M5 12h4"/><path d="m19 17-3-2"/><path d="m5 17 3-2"/></svg>`;
   const ICON_LOGOUT   = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>`;
+  const ICON_SEARCH   = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>`;
 
   // ── Nav tab definitions ────────────────────────────────────────────────────
   const tabs = [
@@ -323,6 +324,7 @@
 
     // Navigation links
     sheet.appendChild(makeRow('a', BASE + '/console/',   ICON_GAMEPAD,  '#e5b143', '#202d39', 'Consoles',  null));
+    sheet.appendChild(makeRow('a', BASE + '/search/',    ICON_SEARCH,   '#66c0f4', '#202d39', 'Search',    'Search games across all consoles'));
     sheet.appendChild(makeRow('a', BASE + '/changelog/', ICON_FILETEXT, '#57cbde', '#202d39', 'Changelog', null));
 
     sheet.appendChild(divider());

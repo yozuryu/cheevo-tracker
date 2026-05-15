@@ -1,0 +1,8 @@
+{
+  "name": "cheevo-tracker-scripts",
+  "private": true,
+  "description": "Dev scripts — not part of the app",
+  "dependencies": {
+    "puppeteer": "^22.0.0"
+  }
+}

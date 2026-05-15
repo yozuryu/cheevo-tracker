@@ -168,7 +168,13 @@ function ConsoleListView({ onSelect }) {
             <span className="text-[13px] text-white tracking-wide uppercase font-medium">Consoles</span>
             {consoles && <span className="text-[10px] text-[#546270]"><span className="text-[#66c0f4]">{consoles.length}</span> systems</span>}
           </div>
-          <div className="flex items-center gap-1.5 ml-auto">
+          <div className="flex items-center gap-3 ml-auto">
+            <a href="../search/"
+              className="flex items-center gap-1.5 text-[9px] font-semibold uppercase tracking-wider text-[#546270] hover:text-[#66c0f4] transition-colors">
+              <Search size={11} />
+              Search
+            </a>
+            <span className="text-[#2a475e] text-[10px] select-none">|</span>
             <span className="text-[9px] text-[#546270] uppercase tracking-wider">Group</span>
             {[
               { value: 'publisher', label: 'Publisher' },

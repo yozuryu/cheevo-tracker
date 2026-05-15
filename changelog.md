@@ -13,6 +13,10 @@
 - Added timezone label (IANA name, e.g. `Asia/Jakarta`) to the right of the Mine/Friends toggle, always visible
 - Heatmap day buckets and timeline day headers now correctly reflect local dates, so achievements near midnight no longer appear under the wrong day
 - Added pagination to the Backlog tab: page size selector (50 / 100 / 150 items), Prev / Page X of Y / Next navigation, and page reset on any filter or grouping change; grouped mode snaps to group boundaries so no group is split across pages
+- Added global game search (`/search/`) — indexes all console game lists into a permanent local store (`ra_allgames`); search is live-filtered across all indexed games with 50-result pages (Prev / Page X of Y / Next); includes a progress bar fetch with 1 req/s rate limiting, cancel support, and a Refresh All button; data persists until manually refreshed or cleared via the menu
+- Console page gains a Search button in the header linking to the search page
+- Per-console pages automatically update the search index whenever their 24 h cache expires and a live re-fetch occurs
+- Search link added to the mobile menu sheet
 - Fixed backlog rows blinking on scroll — `GameRow` was defined inside the render path, causing React to unmount/remount every row on each render; fixed by calling it as a plain function instead of a JSX component
 - Moved page size selector from the filter bar to the pagination footer; added bottom padding on mobile so the Next button no longer overlaps the back-to-top floating button
 

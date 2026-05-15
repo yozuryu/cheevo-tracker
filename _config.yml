@@ -1,4 +1,5 @@
 exclude:
+  - scripts/
   - CLAUDE.md
   - TODO.md
   - package.json

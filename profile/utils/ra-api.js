@@ -46,6 +46,44 @@ function cacheSet(key, data) {
   try { sessionStorage.setItem(key, JSON.stringify({ ts: Date.now(), data })); } catch {}
 }
 
+// ── All-games permanent store (cross-console search index) ───────────────────
+
+const ALL_GAMES_KEY = 'ra_allgames';
+
+export function getAllGamesStore() {
+  try { return JSON.parse(localStorage.getItem(ALL_GAMES_KEY)) || null; }
+  catch { return null; }
+}
+
+function setAllGamesStore(store) {
+  try { localStorage.setItem(ALL_GAMES_KEY, JSON.stringify(store)); } catch {}
+}
+
+export function updateAllGamesForConsole(consoleId, consoleName, games) {
+  const store = getAllGamesStore() || { version: 1, games: [], consolesFetched: {}, lastFullFetch: null };
+  store.games = store.games.filter(g => g.consoleId !== consoleId);
+  store.games.push(...games.map(g => ({
+    id:              g.id,
+    title:           g.title,
+    imageIcon:       g.imageIcon,
+    numAchievements: g.numAchievements,
+    points:          g.points,
+    consoleId:       g.consoleId || consoleId,
+    consoleName:     g.consoleName || consoleName,
+  })));
+  store.consolesFetched[String(consoleId)] = Date.now();
+  setAllGamesStore(store);
+}
+
+export function markAllGamesFullFetch() {
+  const store = getAllGamesStore();
+  if (store) { store.lastFullFetch = Date.now(); setAllGamesStore(store); }
+}
+
+export function clearAllGamesStore() {
+  localStorage.removeItem(ALL_GAMES_KEY);
+}
+
 // ── Local cache (custom TTL, persists across sessions) ────────────────────────
 
 const LOCAL_CACHE_TTL_24H = 24 * 60 * 60 * 1000;
@@ -1287,10 +1325,12 @@ export async function fetchConsoles(username, apiKey) {
  * Fetches the full game list for a console, sorted alphabetically.
  * Cached under key ra_consolegames_{consoleId}.
  */
-export async function fetchConsoleGames(username, apiKey, consoleId) {
+export async function fetchConsoleGames(username, apiKey, consoleId, forceRefresh = false) {
   const cacheKey = `ra_consolegames_${consoleId}`;
-  const cached = lcacheGet(cacheKey);
-  if (cached) return cached;
+  if (!forceRefresh) {
+    const cached = lcacheGet(cacheKey);
+    if (cached) return cached;
+  }
 
   // API_GetGameList returns a plain array (no Results/Total wrapper), so paginate manually.
   const PAGE = 500;
@@ -1314,6 +1354,7 @@ export async function fetchConsoleGames(username, apiKey, consoleId) {
       return a.title.localeCompare(b.title);
     });
   lcacheSet(cacheKey, result);
+  updateAllGamesForConsole(consoleId, result[0]?.consoleName || '', result);
   return result;
 }
 
