@@ -1,5 +1,111 @@
 # Todo
 
+## IndexedDB Migration
+
+Replace the scattered `localStorage` API cache with a single, normalized IndexedDB named **`cheevo_tracker`**. The existing `cheevo_search` IDB is renamed as part of this migration — all code that opens it switches to `cheevo_tracker`. `deleteDatabase('cheevo_search')` is called once on first open of `cheevo_tracker` to clean up the old DB.
+
+---
+
+### Schema — `cheevo_tracker` v1
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│  consoles          keyPath: id                                       │
+│  ─────────────                                                       │
+│  id          number   PK                                            │
+│  name        string                                                  │
+│  fetchedAt   number   ms timestamp — replaces meta.consolesFetched  │
+└─────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────┐
+│  games             keyPath: id                                       │
+│  ──────                                                              │
+│  id              number   PK                                        │
+│  title           string                                              │
+│  imageIcon       string                                              │
+│  numAchievements number                                              │
+│  points          number                                              │
+│  consoleId       number   FK → consoles.id                          │
+│                                                                      │
+│  indexes:  consoleId (non-unique)                                   │
+│                                                                      │
+│  Note: consoleName removed — always join from consoles.name         │
+└─────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────┐
+│  progress          keyPath: [username, gameId]  (compound)          │
+│  ────────                                                            │
+│  username    string   PK part 1                                     │
+│  gameId      number   PK part 2   FK → games.id                    │
+│  ts          number   ms timestamp                                   │
+│  numAchieved number                                                  │
+│  pctWon      number                                                  │
+│  hardcoreMode boolean                                                │
+│  mostRecentAchievementDate  string | null                           │
+│                                                                      │
+│  indexes:  username (non-unique) — fetch all games for a user       │
+│                                                                      │
+│  Replaces: ra_chunk_{username}_{chunkIndex} — no more chunking,     │
+│  one row per game. Title/icon always resolved from games store.     │
+└─────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────┐
+│  friend_activity   keyPath: username                                 │
+│  ───────────────                                                     │
+│  username    string   PK                                            │
+│  ts          number   ms timestamp                                   │
+│  achievements  array                                                 │
+│    └ { achievementId, gameId, date, type, points, badgeName,        │
+│        title (achievement name, NOT game title) }                   │
+│                                                                      │
+│  Note: gameId stored, NOT gameTitle/gameIcon — resolve from games.  │
+│  Replaces: ra_fa_{username}                                         │
+└─────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────┐
+│  backlog           keyPath: username                                 │
+│  ───────                                                             │
+│  username    string   PK                                            │
+│  ts          number   ms timestamp                                   │
+│  items       array                                                   │
+│    └ { gameId, addedAt }                                            │
+│                                                                      │
+│  Note: no title/icon stored — resolve from games store on render.   │
+│  Replaces: ra_backlog_{username}                                    │
+└─────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────┐
+│  meta              (inline key-value, no keyPath)                   │
+│  ────                                                                │
+│  'lastFullFetch'  → number (ms timestamp of last full index run)   │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+### What this eliminates
+
+| Removed from localStorage | Replaced by |
+|---|---|
+| `ra_consolegames_{id}` | `games` + `consoles` stores (consoleId index + `fetchedAt`) |
+| `ra_chunk_{user}_{n}` | `progress` store (one row per game, compound key) |
+| `ra_fa_{user}` | `friend_activity` store |
+| `ra_backlog_{user}` | `backlog` store |
+
+`consoleName` is no longer stored redundantly in `games` — every render that needs the name does a `get()` on `consoles` by `consoleId`. The `consolesFetched` meta object is replaced by the `fetchedAt` field directly on each `consoles` row.
+
+---
+
+### Implementation order
+
+1. **Open & migrate** — rename DB to `cheevo_tracker`, call `deleteDatabase('cheevo_search')` on first open; create all stores in `onupgradeneeded`
+2. **`consoles` + `games`** — update `updateAllGamesForConsole` and `fetchConsoleGames`; drop `consoleName` from game rows; redirect `ra_consolegames_*` reads to IDB
+3. **`friend_activity`** — migrate `ra_fa_*`; update `allFriendsCached`, `fetchFriendsActivity`, and the stale-mark/clear loops in `profile/app.js`
+4. **`progress`** — migrate `ra_chunk_*`; replace chunk index loop with single-store reads filtered by `username` index
+5. **`backlog`** — migrate `ra_backlog_*`; simplest migration, single record per user
+
+---
+
 ## Console Completion %
 
 Show library completion stats per console on the console page — what % of that console's total game count the user has played at least one achievement in, and what % they've mastered.

@@ -46,42 +46,96 @@ function cacheSet(key, data) {
   try { sessionStorage.setItem(key, JSON.stringify({ ts: Date.now(), data })); } catch {}
 }
 
-// ── All-games permanent store (cross-console search index) ───────────────────
+// ── Search index (IndexedDB — no quota limit) ─────────────────────────────────
 
-const ALL_GAMES_KEY = 'ra_allgames';
+const IDB_NAME    = 'cheevo_search';
+const IDB_VERSION = 1;
+let   _searchDB   = null;
 
-export function getAllGamesStore() {
-  try { return JSON.parse(localStorage.getItem(ALL_GAMES_KEY)) || null; }
-  catch { return null; }
+function openSearchDB() {
+  if (_searchDB) return Promise.resolve(_searchDB);
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(IDB_NAME, IDB_VERSION);
+    req.onupgradeneeded = e => {
+      const db = e.target.result;
+      if (!db.objectStoreNames.contains('games')) {
+        const gs = db.createObjectStore('games', { keyPath: 'id' });
+        gs.createIndex('consoleId', 'consoleId', { unique: false });
+      }
+      if (!db.objectStoreNames.contains('meta')) db.createObjectStore('meta');
+    };
+    req.onsuccess = e => { _searchDB = e.target.result; resolve(_searchDB); };
+    req.onerror   = e => reject(e.target.error);
+  });
 }
 
-function setAllGamesStore(store) {
-  try { localStorage.setItem(ALL_GAMES_KEY, JSON.stringify(store)); } catch {}
+export async function getAllGamesFromDB() {
+  const db = await openSearchDB();
+  return new Promise((resolve, reject) => {
+    const tx     = db.transaction(['games', 'meta'], 'readonly');
+    const allReq = tx.objectStore('games').getAll();
+    const cfReq  = tx.objectStore('meta').get('consolesFetched');
+    const ffReq  = tx.objectStore('meta').get('lastFullFetch');
+    tx.oncomplete = () => resolve({
+      games:           allReq.result || [],
+      consolesFetched: cfReq.result  || {},
+      lastFullFetch:   ffReq.result  || null,
+    });
+    tx.onerror = e => reject(e.target.error);
+  });
 }
 
-export function updateAllGamesForConsole(consoleId, consoleName, games) {
-  const store = getAllGamesStore() || { version: 1, games: [], consolesFetched: {}, lastFullFetch: null };
-  store.games = store.games.filter(g => g.consoleId !== consoleId);
-  store.games.push(...games.map(g => ({
-    id:              g.id,
-    title:           g.title,
-    imageIcon:       g.imageIcon,
-    numAchievements: g.numAchievements,
-    points:          g.points,
-    consoleId:       g.consoleId || consoleId,
-    consoleName:     g.consoleName || consoleName,
-  })));
-  store.consolesFetched[String(consoleId)] = Date.now();
-  setAllGamesStore(store);
+export async function updateAllGamesForConsole(consoleId, consoleName, games) {
+  const db = await openSearchDB();
+  return new Promise((resolve, reject) => {
+    const tx        = db.transaction(['games', 'meta'], 'readwrite');
+    const gameStore = tx.objectStore('games');
+
+    // Delete existing records for this console then insert the fresh set
+    gameStore.index('consoleId').openKeyCursor(IDBKeyRange.only(consoleId)).onsuccess = e => {
+      const cursor = e.target.result;
+      if (cursor) { gameStore.delete(cursor.primaryKey); cursor.continue(); }
+      else {
+        games.forEach(g => gameStore.put({
+          id:              g.id,
+          title:           g.title,
+          imageIcon:       g.imageIcon,
+          numAchievements: g.numAchievements,
+          points:          g.points,
+          consoleId:       g.consoleId  || consoleId,
+          consoleName:     g.consoleName || consoleName,
+        }));
+        tx.objectStore('meta').get('consolesFetched').onsuccess = e2 => {
+          const cf = e2.target.result || {};
+          cf[String(consoleId)] = Date.now();
+          tx.objectStore('meta').put(cf, 'consolesFetched');
+        };
+      }
+    };
+
+    tx.oncomplete = () => resolve();
+    tx.onerror    = e => reject(e.target.error);
+  });
 }
 
-export function markAllGamesFullFetch() {
-  const store = getAllGamesStore();
-  if (store) { store.lastFullFetch = Date.now(); setAllGamesStore(store); }
+export async function markAllGamesFullFetch() {
+  const db = await openSearchDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction('meta', 'readwrite');
+    tx.objectStore('meta').put(Date.now(), 'lastFullFetch');
+    tx.oncomplete = () => resolve();
+    tx.onerror    = e => reject(e.target.error);
+  });
 }
 
-export function clearAllGamesStore() {
-  localStorage.removeItem(ALL_GAMES_KEY);
+export async function clearAllGamesStore() {
+  if (_searchDB) { _searchDB.close(); _searchDB = null; }
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.deleteDatabase(IDB_NAME);
+    req.onsuccess = () => resolve();
+    req.onblocked = () => resolve();
+    req.onerror   = e => reject(e.target.error);
+  });
 }
 
 // ── Local cache (custom TTL, persists across sessions) ────────────────────────
@@ -1354,7 +1408,7 @@ export async function fetchConsoleGames(username, apiKey, consoleId, forceRefres
       return a.title.localeCompare(b.title);
     });
   lcacheSet(cacheKey, result);
-  updateAllGamesForConsole(consoleId, result[0]?.consoleName || '', result);
+  await updateAllGamesForConsole(consoleId, result[0]?.consoleName || '', result);
   return result;
 }
 

@@ -334,6 +334,7 @@
     refreshRow.addEventListener('click', () => {
       sessionStorage.clear();
       Object.keys(localStorage).filter(k => k.startsWith('ra_')).forEach(k => localStorage.removeItem(k));
+      if (window.indexedDB) indexedDB.deleteDatabase('cheevo_search');
       location.reload();
     });
     sheet.appendChild(refreshRow);
@@ -343,6 +344,7 @@
     purgeRow.addEventListener('click', async () => {
       sessionStorage.clear();
       Object.keys(localStorage).filter(k => k.startsWith('ra_')).forEach(k => localStorage.removeItem(k));
+      if (window.indexedDB) indexedDB.deleteDatabase('cheevo_search');
       if ('caches' in window) {
         const keys = await caches.keys();
         await Promise.all(keys.map(k => caches.delete(k)));

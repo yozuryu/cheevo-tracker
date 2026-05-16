@@ -1,14 +1,14 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { createRoot } from 'react-dom/client';
 import {
-  Search, X, RefreshCw, Database, Loader2, Gamepad2, ChevronRight,
+  Search, X, RefreshCw, Database, Loader2, Gamepad2, ChevronRight, ChevronDown,
 } from 'lucide-react';
 import { parseTitle, getMediaUrl } from '../profile/utils/helpers.js';
 import { TILDE_TAG_COLORS } from '../profile/utils/constants.js';
 import {
   getCredentials, clearCredentials,
   fetchConsoles, fetchConsoleGames,
-  getAllGamesStore, markAllGamesFullFetch,
+  getAllGamesFromDB, markAllGamesFullFetch,
 } from '../profile/utils/ra-api.js';
 import { Topbar, Footer } from '../assets/ui.js';
 
@@ -32,35 +32,88 @@ function relativeTime(ts) {
 
 function SearchApp() {
   const creds = getCredentials();
-  const [store, setStore]           = useState(() => getAllGamesStore());
-  const [query, setQuery]           = useState('');
-  const [fetchStatus, setFetchStatus] = useState('idle'); // 'idle' | 'fetching' | 'error'
-  const [progress, setProgress]     = useState(null);    // { done, total, current }
-  const [page, setPage]             = useState(1);
-  const PAGE_SIZE = 50;
-  const cancelRef = useRef(false);
-  const inputRef  = useRef(null);
 
+  const [store, setStore]                   = useState(null);
+  const [storeLoading, setStoreLoading]     = useState(true);
+  const [query, setQuery]                   = useState('');
+  const [achFilter, setAchFilter]           = useState('all');   // 'all' | 'with' | 'without'
+  const [consoleFilter, setConsoleFilter]   = useState(new Set()); // empty = all consoles
+  const [showConsolePanel, setShowConsolePanel] = useState(false);
+  const [consoleSearch, setConsoleSearch]   = useState('');
+  const [fetchStatus, setFetchStatus]       = useState('idle');  // 'idle' | 'fetching' | 'error'
+  const [progress, setProgress]             = useState(null);
+  const [page, setPage]                     = useState(1);
+  const PAGE_SIZE = 50;
+
+  const cancelRef        = useRef(false);
+  const inputRef         = useRef(null);
+  const consolePanelRef  = useRef(null);
+  const consoleSearchRef = useRef(null);
+
+  // Load index from IDB on mount
   useEffect(() => {
     if (!creds) { handleAuthError(); return; }
-    inputRef.current?.focus();
+    getAllGamesFromDB()
+      .then(data => { setStore(data.games.length ? data : null); setStoreLoading(false); })
+      .catch(() => setStoreLoading(false));
   }, []);
 
-  // Reset to page 1 whenever query changes
-  useEffect(() => { setPage(1); }, [query]);
+  // Reset to page 1 when any filter/query changes
+  useEffect(() => { setPage(1); }, [query, achFilter, consoleFilter]);
+
+  // Close console dropdown on outside click; auto-focus search when opening
+  useEffect(() => {
+    if (!showConsolePanel) { setConsoleSearch(''); return; }
+    setTimeout(() => consoleSearchRef.current?.focus(), 0);
+    const handler = e => {
+      if (consolePanelRef.current && !consolePanelRef.current.contains(e.target))
+        setShowConsolePanel(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [showConsolePanel]);
+
+  // Derived: sorted list of consoles present in the index
+  const availableConsoles = useMemo(() => {
+    if (!store?.games?.length) return [];
+    const map = {};
+    store.games.forEach(g => { if (!map[g.consoleId]) map[g.consoleId] = g.consoleName; });
+    return Object.entries(map)
+      .map(([id, name]) => ({ id: Number(id), name }))
+      .sort((a, b) => a.name.localeCompare(b.name));
+  }, [store]);
+
+  const filteredConsoles = useMemo(() => {
+    if (!consoleSearch.trim()) return availableConsoles;
+    const q = consoleSearch.toLowerCase();
+    return availableConsoles.filter(c => c.name.toLowerCase().includes(q));
+  }, [availableConsoles, consoleSearch]);
 
   const { items: results, total: resultTotal, totalPages } = useMemo(() => {
     if (!store?.games?.length || !query.trim()) return { items: null, total: 0, totalPages: 1 };
     const q = query.toLowerCase();
-    const all = store.games.filter(g => g.title.toLowerCase().includes(q));
+    let all = store.games.filter(g => g.title.toLowerCase().includes(q));
+    if (achFilter === 'with')    all = all.filter(g => g.numAchievements > 0);
+    if (achFilter === 'without') all = all.filter(g => g.numAchievements === 0);
+    if (consoleFilter.size > 0)  all = all.filter(g => consoleFilter.has(g.consoleId));
     const tp = Math.max(1, Math.ceil(all.length / PAGE_SIZE));
-    const safePage = Math.min(page, tp);
-    return { items: all.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE), total: all.length, totalPages: tp };
-  }, [store, query, page]);
+    const sp = Math.min(page, tp);
+    return { items: all.slice((sp - 1) * PAGE_SIZE, sp * PAGE_SIZE), total: all.length, totalPages: tp };
+  }, [store, query, page, achFilter, consoleFilter]);
 
   const indexedConsoles = store ? Object.keys(store.consolesFetched || {}).length : 0;
   const totalGames      = store?.games?.length || 0;
   const pct = progress?.total > 0 ? Math.round(progress.done / progress.total * 100) : 0;
+  const hasSomeData = store && totalGames > 0;
+  const hasActiveFilters = achFilter !== 'all' || consoleFilter.size > 0;
+
+  function toggleConsole(id) {
+    setConsoleFilter(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  }
 
   async function startFetch(forceRefresh) {
     if (!creds) { handleAuthError(); return; }
@@ -77,27 +130,27 @@ function SearchApp() {
         const c = consoles[i];
         setProgress({ done: i, total: consoles.length, current: c.name });
         await fetchConsoleGames(creds.username, creds.apiKey, c.id, forceRefresh);
-        setStore(getAllGamesStore());
         if (i < consoles.length - 1) await sleep(1000);
       }
 
-      markAllGamesFullFetch();
-      setStore(getAllGamesStore());
+      await markAllGamesFullFetch();
+      const data = await getAllGamesFromDB();
+      setStore(data.games.length ? data : null);
       setFetchStatus('idle');
       setProgress(null);
+      inputRef.current?.focus();
     } catch (e) {
       if (e?.message === 'AUTH_ERROR') handleAuthError();
       else setFetchStatus('error');
     }
   }
 
-  const hasSomeData = store && totalGames > 0;
-
   return (
     <div className="min-h-screen bg-[#171a21] flex flex-col">
       <Topbar crumbs={[{ label: 'Cheevo Tracker', href: '../profile/' }, { label: 'Search' }]} />
 
       <main className="flex-1 max-w-4xl mx-auto w-full px-4 md:px-8 pt-8 pb-16 md:pt-5 md:pb-5">
+
         {/* Header */}
         <div className="flex items-center gap-3 mb-4">
           <div className="flex items-center gap-2">
@@ -114,7 +167,7 @@ function SearchApp() {
         </div>
 
         {/* Search input */}
-        <div className="relative mb-4">
+        <div className="relative mb-3">
           <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#546270]" />
           <input
             ref={inputRef}
@@ -133,7 +186,83 @@ function SearchApp() {
           )}
         </div>
 
-        {/* Status / fetch controls */}
+        {/* Filters */}
+        {hasSomeData && fetchStatus !== 'fetching' && (
+          <div className="flex flex-wrap items-center gap-2 mb-3">
+            {/* Achievement filter */}
+            <div className="flex items-center gap-1.5">
+              <span className="text-[9px] text-[#546270] uppercase tracking-wider shrink-0">Cheevos</span>
+              {[
+                { value: 'all',     label: 'All'     },
+                { value: 'with',    label: 'With'    },
+                { value: 'without', label: 'Without' },
+              ].map(opt => (
+                <button key={opt.value} type="button" onClick={() => setAchFilter(opt.value)}
+                  className={`text-[9px] font-semibold uppercase tracking-wider px-2 py-[3px] rounded-[2px] border transition-colors ${
+                    achFilter === opt.value
+                      ? 'bg-[#1b2838] text-[#c6d4df] border-[#2a475e]'
+                      : 'bg-[#101214] text-[#546270] border-[#323f4c] hover:text-[#c6d4df] hover:border-[#546270]'
+                  }`}>{opt.label}</button>
+              ))}
+            </div>
+
+            {/* Console multi-select */}
+            <div className="relative" ref={consolePanelRef}>
+              <button type="button" onClick={() => setShowConsolePanel(v => !v)}
+                className={`flex items-center gap-1 text-[9px] font-semibold uppercase tracking-wider px-2 py-[3px] rounded-[2px] border transition-colors ${
+                  consoleFilter.size > 0
+                    ? 'bg-[#1b2838] text-[#66c0f4] border-[#66c0f4]'
+                    : 'bg-[#101214] text-[#546270] border-[#323f4c] hover:text-[#c6d4df] hover:border-[#546270]'
+                }`}>
+                Console{consoleFilter.size > 0 ? ` (${consoleFilter.size})` : ''}
+                <ChevronDown size={10} className={`transition-transform duration-150 ${showConsolePanel ? 'rotate-180' : ''}`} />
+              </button>
+              {showConsolePanel && (
+                <div className="absolute top-full left-0 mt-1 w-56 bg-[#1b2838] border border-[#2a475e] rounded-[3px] z-20 shadow-xl overflow-hidden">
+                  <div className="px-2 py-1.5 border-b border-[#2a475e] flex items-center gap-1.5">
+                    <Search size={10} className="text-[#546270] shrink-0" />
+                    <input
+                      ref={consoleSearchRef}
+                      type="text"
+                      value={consoleSearch}
+                      onChange={e => setConsoleSearch(e.target.value)}
+                      placeholder="Filter consoles…"
+                      className="flex-1 bg-transparent outline-none text-[10px] text-[#c6d4df] placeholder-[#546270] min-w-0"
+                    />
+                    {consoleFilter.size > 0 && (
+                      <button type="button" onClick={() => setConsoleFilter(new Set())}
+                        className="text-[9px] text-[#66c0f4] hover:text-white transition-colors uppercase tracking-wider shrink-0">
+                        Clear
+                      </button>
+                    )}
+                  </div>
+                  <div className="max-h-56 overflow-y-auto">
+                    {filteredConsoles.length === 0 && (
+                      <div className="px-3 py-3 text-[9px] text-[#546270] text-center">No match</div>
+                    )}
+                    {filteredConsoles.map(c => (
+                      <label key={c.id} className="flex items-center gap-2 px-3 py-[5px] hover:bg-[#202d39] cursor-pointer">
+                        <input type="checkbox" checked={consoleFilter.has(c.id)}
+                          onChange={() => toggleConsole(c.id)}
+                          className="accent-[#66c0f4] w-3 h-3 shrink-0" />
+                        <span className="text-[10px] text-[#c6d4df] truncate">{c.name}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {hasActiveFilters && (
+              <button type="button" onClick={() => { setAchFilter('all'); setConsoleFilter(new Set()); }}
+                className="text-[9px] text-[#546270] hover:text-[#66c0f4] uppercase tracking-wider transition-colors">
+                Clear filters ×
+              </button>
+            )}
+          </div>
+        )}
+
+        {/* Fetch status / index stats */}
         {fetchStatus === 'fetching' ? (
           <div className="mb-4 p-3 bg-[#1b2838] border border-[#2a475e] rounded-[3px]">
             <div className="flex items-center justify-between mb-2">
@@ -153,8 +282,7 @@ function SearchApp() {
             </div>
             {progress?.total > 0 && (
               <div className="h-[3px] bg-[#131a22] rounded-full overflow-hidden">
-                <div className="h-full bg-[#66c0f4] rounded-full transition-all duration-300"
-                  style={{ width: `${pct}%` }} />
+                <div className="h-full bg-[#66c0f4] rounded-full transition-all duration-300" style={{ width: `${pct}%` }} />
               </div>
             )}
           </div>
@@ -162,9 +290,12 @@ function SearchApp() {
           <div className="mb-4 p-3 bg-[#1b2838] border border-[#8b4049] rounded-[3px] flex items-center justify-between gap-2">
             <span className="text-[11px] text-[#e55b5b]">Fetch failed — check your connection and try again.</span>
             <button type="button" onClick={() => setFetchStatus('idle')}
-              className="text-[#546270] hover:text-[#c6d4df] transition-colors shrink-0">
-              <X size={13} />
-            </button>
+              className="text-[#546270] hover:text-[#c6d4df] transition-colors shrink-0"><X size={13} /></button>
+          </div>
+        ) : storeLoading ? (
+          <div className="mb-4 flex items-center gap-2 px-1">
+            <Loader2 size={12} className="text-[#546270] animate-spin" />
+            <span className="text-[10px] text-[#546270]">Loading index…</span>
           </div>
         ) : hasSomeData ? (
           <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mb-4 px-1">
@@ -210,13 +341,13 @@ function SearchApp() {
         {results !== null ? (
           results.length === 0 ? (
             <div className="text-[11px] text-[#546270] py-8 text-center">
-              No games matching "{query}"
+              No games match your search{hasActiveFilters ? ' and filters' : ''}.
             </div>
           ) : (
             <>
               <p className="text-[10px] text-[#546270] mb-2 px-1">
                 <span className="text-[#c6d4df]">{resultTotal.toLocaleString()}</span> result{resultTotal !== 1 ? 's' : ''}
-                {totalPages > 1 && <span className="text-[#546270]"> — page {Math.min(page, totalPages)} of {totalPages}</span>}
+                {totalPages > 1 && <span> — page <span className="text-[#c6d4df]">{Math.min(page, totalPages)}</span> of <span className="text-[#c6d4df]">{totalPages}</span></span>}
               </p>
               <div className="flex flex-col gap-[2px]">
                 {results.map(g => {
@@ -253,14 +384,19 @@ function SearchApp() {
                         )}
                         <div className="flex items-center gap-1.5 mt-0.5">
                           <span className="text-[10px] text-[#66c0f4]">{g.consoleName}</span>
-                          {g.numAchievements > 0 && (
+                          {g.numAchievements > 0 ? (
                             <>
                               <span className="text-[#2a475e] text-[9px]">·</span>
                               <span className="text-[9px] text-[#546270]">
-                                <span className="text-[#8f98a0]">{g.numAchievements}</span> ach
+                                <span className="text-[#8f98a0]">{g.numAchievements}</span> cheevos
                                 <span className="text-[#2a475e] mx-1">·</span>
                                 <span className="text-[#e5b143]">{(g.points || 0).toLocaleString()}</span> pts
                               </span>
+                            </>
+                          ) : (
+                            <>
+                              <span className="text-[#2a475e] text-[9px]">·</span>
+                              <span className="text-[9px] text-[#323f4c]">No achievements</span>
                             </>
                           )}
                         </div>

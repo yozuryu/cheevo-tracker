@@ -197,6 +197,7 @@ function MenuDropdown({ onClose }) {
     sessionStorage.clear();
     const lsKeys = Object.keys(localStorage).filter(k => k.startsWith('ra_'));
     lsKeys.forEach(k => localStorage.removeItem(k));
+    if (window.indexedDB) indexedDB.deleteDatabase('cheevo_search');
     if ('caches' in window) {
       const keys = await caches.keys();
       await Promise.all(keys.map(k => caches.delete(k)));

@@ -1,5 +1,15 @@
 # Changelog
 
+## v26.05.16
+
+### Search
+
+- Migrated search index from `localStorage` to IndexedDB (`cheevo_search`) — removes the 5 MB browser quota limit entirely; all games (with and without achievements) are now indexed without risk of storage errors
+- Added achievement filter to search: All / With Achievements / Without Achievements
+- Added console multi-select filter — drop-down panel with checkboxes derived from the indexed game list; shows count of selected consoles in the button label; closes on outside click
+- Games with zero achievements are labelled "No achievements" in search results
+- "Refresh Data" and "Purge Cache" in the mobile menu now also clear the IndexedDB search index so the next fetch starts fresh
+
 ## v26.05.15
 
 ### Profile
