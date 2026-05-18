@@ -96,13 +96,105 @@ Replace the scattered `localStorage` API cache with a single, normalized Indexed
 
 ---
 
-### Implementation order
+### Implementation checklist
 
-1. **Open & migrate** — rename DB to `cheevo_tracker`, call `deleteDatabase('cheevo_search')` on first open; create all stores in `onupgradeneeded`
-2. **`consoles` + `games`** — update `updateAllGamesForConsole` and `fetchConsoleGames`; drop `consoleName` from game rows; redirect `ra_consolegames_*` reads to IDB
-3. **`friend_activity`** — migrate `ra_fa_*`; update `allFriendsCached`, `fetchFriendsActivity`, and the stale-mark/clear loops in `profile/app.js`
-4. **`progress`** — migrate `ra_chunk_*`; replace chunk index loop with single-store reads filtered by `username` index
-5. **`backlog`** — migrate `ra_backlog_*`; simplest migration, single record per user
+Priority: backlog and friends list first — users explicitly manage these on RA, so they know when something changed and expect a manual refresh option. Both get a 24 h stale time and an explicit **Refresh** button (same pattern as the search page's "Refresh All"). Everything else follows.
+
+---
+
+#### Phase 0 — Foundation
+
+- [x] Create `openDB()` in `ra-api.js` replacing `openSearchDB()`
+  - Opens `cheevo_tracker` v1 with all stores created in `onupgradeneeded`
+  - On first open, calls `indexedDB.deleteDatabase('cheevo_search')` to clean up old DB
+  - Stores to create: `consoles` (keyPath: `id`), `games` (keyPath: `id`, index: `consoleId`), `progress` (keyPath: `['username','gameId']`, index: `username`), `friend_activity` (keyPath: `username`), `backlog` (keyPath: `username`), `meta` (no keyPath)
+- [x] Export a single `db()` helper that returns the open connection (lazy singleton, same pattern as current `_searchDB`)
+- [x] Update "Purge Cache" and "Refresh Data" in `mobile-nav.js` and `assets/ui.js` to call `indexedDB.deleteDatabase('cheevo_tracker')` instead of `'cheevo_search'`
+
+---
+
+#### Phase 1 — Backlog ← start here
+
+**Stale time: 24 h. Explicit refresh button in the Backlog tab header.**
+
+Refresh button UX (matches search page style):
+- Small `RotateCcw` icon + "Refresh" label, top-right of the Backlog tab header
+- Shows "Synced X ago" secondary text next to the button using the `ts` from IDB
+- While refreshing: button spins, list stays visible (no blank state)
+- After refresh: `ts` updates, list re-renders with fresh data
+
+- [x] Add `getBacklog(username)` to `ra-api.js` — reads `backlog` store; returns `{ ts, items }` or null
+- [x] Add `setBacklog(username, items)` to `ra-api.js` — writes `{ username, ts: Date.now(), items }` to `backlog` store
+- [x] Add `clearBacklog(username)` to `ra-api.js` — deletes record from `backlog` store
+- [x] Update `fetchBacklog` in `ra-api.js` — on cache hit (< 24 h), return IDB data; on miss/stale, fetch from API, write to IDB, return fresh data
+- [x] Update `profile/app.js` — on backlog tab mount, load from IDB first (instant render), then check staleness
+- [x] Add Refresh button to Backlog tab header in `profile/app.js` — calls `fetchBacklog(force=true)`, shows spinner on button while loading
+- [x] Add "Synced X ago" label next to Refresh button, derived from `ts`
+- [x] Remove `ra_backlog_*` localStorage reads/writes from `ra-api.js` and `profile/app.js`
+
+---
+
+#### Phase 2 — Friends list ← start here (parallel with Phase 1)
+
+**Stale time: 24 h for the following/follower list. Explicit refresh button in the Social tab header.**
+
+Friends list (`ra_social_*`) is separate from friend activity (`ra_fa_*`). Migrate the list first; activity fetch depends on the list.
+
+Refresh button UX (same as backlog):
+- `RotateCcw` + "Refresh" in Social tab header, "Synced X ago" secondary label
+- Refreshes both the following list and triggers a re-fetch of all friend activity
+
+- [x] Add `getSocialData(username)` to `ra-api.js` — reads `friend_list` store (or reuse `backlog`-style pattern); returns `{ ts, following, followers }` or null
+  - Store name: add `friend_list` store to `cheevo_tracker` schema in Phase 0 (`keyPath: 'username'`, fields: `{ username, ts, following, followers }`)
+- [x] Add `setSocialData(username, data)` to `ra-api.js` — writes to `friend_list` store
+- [x] Update `fetchSocialData` in `ra-api.js` — 24 h stale time, IDB-backed
+- [x] Migrate `ra_fa_*` to `friend_activity` IDB store
+  - [x] Update `lcacheGet`/`lcacheSet` calls for `ra_fa_*` to IDB `get`/`put` on `friend_activity`
+  - [x] Update `allFriendsCached` — replace `localStorage.getItem(ra_fa_*)` per-user loop with a single IDB `getAll()` → build Set → check every username
+  - [x] Update stale-mark loop in `profile/app.js` (currently iterates `localStorage.keys().filter(ra_fa_*)` to set `ts: 0`) — replace with IDB `openCursor` on `friend_activity`, update `ts` field
+  - [x] Update force-clear loop in `profile/app.js` (currently removes all `ra_fa_*` keys) — replace with IDB `clear()` on `friend_activity` store
+- [x] Add Refresh button to Social tab header in `profile/app.js`
+- [x] Add "Synced X ago" label from `friend_list` store `ts`
+- [x] Remove `ra_social_*` and `ra_fa_*` localStorage reads/writes
+
+---
+
+#### Phase 3 — Console games + search page polish (eliminates duplication)
+
+No new store needed — redirect reads to the existing `consoles` + `games` stores from Phase 0.
+
+- [ ] Update `fetchConsoleGames` in `ra-api.js`
+  - Cache hit: check `consoles.get(consoleId).fetchedAt` < 24 h → read `games` store filtered by `consoleId` index → return
+  - Cache miss/stale: fetch from API → write to `consoles` (upsert with `fetchedAt: Date.now()`) + `games` (same as current `updateAllGamesForConsole`) → return fresh data
+- [ ] Drop `consoleName` field from `games` store writes; all callers that need the name do `consoles.get(consoleId).name`
+- [ ] Update `search/app.js` to resolve console name via `consoles` store when rendering results
+- [ ] Remove `ra_consolegames_*` localStorage reads/writes from `ra-api.js`
+- [ ] Update "Refresh Data" handlers to zero out `consoles.fetchedAt` for all rows (so next `fetchConsoleGames` call re-fetches from API), instead of deleting `ra_consolegames_*` keys
+- [ ] Add "Synced X ago" label to search page header — read `store.lastFullFetch` (already loaded from `meta` store via `getAllGamesFromDB`), display using `timeAgo()` next to the existing "Refresh All" button; hidden when no index exists yet
+
+---
+
+#### Phase 4 — Progress chunks (largest quota risk)
+
+- [ ] Update `fetchUserProgress` (or equivalent chunk loader) in `ra-api.js`
+  - Cache hit: read `progress` store filtered by `username` index → return all rows
+  - Cache miss/stale: fetch all pages from API → `put` one row per game into `progress` store → return
+  - Stale time: keep existing 5-minute TTL (progress is checked frequently)
+- [ ] Remove chunk-index loop — no more `ra_chunk_{username}_{n}` discovery or iteration
+- [ ] Update all callers that currently reassemble chunks into a flat array — they now receive a flat array directly from the `progress` store query
+- [ ] Add delete-by-username helper: `clearProgress(username)` using `username` index + `openKeyCursor` delete loop
+- [ ] Update force-refresh path in `profile/app.js` to call `clearProgress` then re-fetch
+- [ ] Remove `ra_chunk_*` localStorage reads/writes from `ra-api.js`
+
+---
+
+#### Phase 5 — Cleanup
+
+- [ ] Remove `openSearchDB`, `getAllGamesFromDB`, `updateAllGamesForConsole`, `markAllGamesFullFetch`, `clearAllGamesStore` exports — replaced by `openDB` + store-specific helpers
+- [ ] Verify no `ra_fa_`, `ra_chunk_`, `ra_consolegames_`, `ra_backlog_`, `ra_social_` keys remain in any read/write path
+- [ ] Update `search/app.js` imports to use new export names
+- [ ] Test Purge Cache wipes `cheevo_tracker` IDB and all `ra_*` localStorage keys cleanly
+- [ ] Update changelog
 
 ---
 

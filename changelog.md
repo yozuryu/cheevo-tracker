@@ -1,5 +1,26 @@
 # Changelog
 
+## v26.05.18
+
+### Structure
+
+- Bumped `CACHE_NAME` in `sw.js` to force service worker to evict stale precached assets (fixes module export errors after IDB migration)
+- Migrated all persistent caches from `localStorage` / `cheevo_search` IndexedDB to a unified `cheevo_tracker` IndexedDB with dedicated object stores: `consoles`, `games`, `progress`, `friend_activity`, `friend_list`, `backlog`, `meta`
+- Old `cheevo_search` database is deleted automatically on first open of the new DB
+- `fetchBacklog` now reads from / writes to the `backlog` IDB store (24 h TTL); added `getBacklog`, `setBacklog`, `clearBacklog` exports
+- `fetchSocial` now reads from / writes to the `friend_list` IDB store (24 h TTL); added `getSocialData`, `setSocialData` exports
+- `fetchFriendsActivity` now reads/writes `friend_activity` IDB store instead of `localStorage`; `allFriendsCached` is now async
+- Added `staleFriendActivity` and `clearAllFriendActivity` IDB helpers (used by soft/hard refresh)
+- "Refresh Data" and "Purge Cache" in both the desktop menu and mobile sheet now clear `cheevo_tracker` instead of the old `cheevo_search` DB
+
+### Profile
+
+- Backlog tab shows IDB-cached data instantly on open; added Refresh button with spinner and "Synced Xm ago" timestamp
+- Social tab shows IDB-cached data instantly on open; added Refresh button with spinner and "Synced Xm ago" timestamp
+- `refreshFriendsActivity` (soft refresh) now marks IDB entries stale instead of writing to `localStorage`
+- `resetFriendsActivity` (hard reset) now clears the `friend_activity` IDB store
+- Activity tab friends toolbar: Refresh and Reset buttons unified to icon+text style (matching Backlog/Social headers); Reset uses `RotateCcw` icon with muted red hover; added "Synced X ago" timestamp; timezone label moved below the toggle row
+
 ## v26.05.16
 
 ### Search

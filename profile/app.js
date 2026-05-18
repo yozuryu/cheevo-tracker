@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { createRoot } from 'react-dom/client';
-import { Gamepad2, Activity, BarChart2, Award, Star, ChevronDown, ChevronUp, AlertCircle, Trophy, Crown, Lock, Unlock, AlertTriangle, Flame, Feather, Medal, ShieldOff, CircleDashed, X, Clock, Layers, Users, Loader2 } from 'lucide-react';
+import { Gamepad2, Activity, BarChart2, Award, Star, ChevronDown, ChevronUp, AlertCircle, Trophy, Crown, Lock, Unlock, AlertTriangle, Flame, Feather, Medal, ShieldOff, CircleDashed, X, Clock, Layers, Users, Loader2, RefreshCw, RotateCcw } from 'lucide-react';
 import { MEDIA_URL, SITE_URL, TILDE_TAG_COLORS } from './utils/constants.js';
 import { getMediaUrl, parseTitle, formatTimeAgo } from './utils/helpers.js';
 import { transformData } from './utils/transform.js';
@@ -8,6 +8,9 @@ import {
   getCredentials, clearCredentials,
   fetchProfile, fetchAchievementsChunk, fetchBacklog, fetchGameDetails,
   fetchSocial, fetchFriendsActivity, allFriendsCached, getUserCompletionProgress,
+  getBacklog,
+  getSocialData,
+  staleFriendActivity, clearAllFriendActivity,
 } from './utils/ra-api.js';
 import { Topbar, Footer } from '../assets/ui.js';
 
@@ -28,6 +31,18 @@ const toLocalTime = (str) => {
 };
 
 // --- JSX Helpers ---
+const timeAgo = (ts) => {
+  if (!ts) return '';
+  const diffMs = Date.now() - ts;
+  const diffMins = Math.floor(diffMs / 60000);
+  if (diffMins < 1)  return 'just now';
+  if (diffMins < 60) return `${diffMins}m ago`;
+  const diffHrs = Math.floor(diffMins / 60);
+  if (diffHrs < 24)  return `${diffHrs}h ago`;
+  const diffDays = Math.floor(diffHrs / 24);
+  return `${diffDays}d ago`;
+};
+
 const renderTildeTags = (tags) => {
   if (!tags || tags.length === 0) return null;
   return tags.map(tag => {
@@ -547,7 +562,7 @@ const FeedSession = ({ session, hideUser = false }) => {
 
 // ── ActivityTab Component ──────────────────────────────────────────────────
 
-const ActivityTab = ({ achievements, refTime, heatmapData, loadingMore, allLoaded, socialView, setSocialView, friendsActivityStatus, setFriendsActivityStatus, friendsActivity, friendsFetchProgress, failedFriends, onRefreshFriends, onResetFriends, ownUsername }) => {
+const ActivityTab = ({ achievements, refTime, heatmapData, loadingMore, allLoaded, socialView, setSocialView, friendsActivityStatus, setFriendsActivityStatus, friendsActivity, friendsFetchProgress, failedFriends, onRefreshFriends, onResetFriends, friendsActivityTs, ownUsername }) => {
   const [selectedDay, setSelectedDay] = useState(null);
   const [collapsedDays, setCollapsedDays] = useState(new Set());
   const [visibleSessionCount, setVisibleSessionCount] = useState(100);
@@ -729,17 +744,16 @@ const ActivityTab = ({ achievements, refTime, heatmapData, loadingMore, allLoade
     <div className="flex flex-col gap-6">
 
       {/* ── Mine / Friends toggle ── */}
-      <div className="flex items-center gap-1.5">
-        {['mine', 'friends'].map(v => (
-          <button key={v} onClick={() => setSocialView(v)}
-            className={`text-[11px] px-3 py-1 rounded-[2px] border font-medium transition-colors uppercase tracking-wider ${socialView === v ? 'bg-[#1b2838] text-[#c6d4df] border-[#2a475e]' : 'bg-[#101214] text-[#546270] border-[#323f4c] hover:text-[#c6d4df]'}`}>
-            {v}
-          </button>
-        ))}
-        <div className="ml-auto flex items-center gap-2">
-          <span className="text-[9px] text-[#546270]">{tzName}</span>
+      <div className="flex flex-col gap-1">
+        <div className="flex items-center gap-1.5">
+          {['mine', 'friends'].map(v => (
+            <button key={v} onClick={() => setSocialView(v)}
+              className={`text-[11px] px-3 py-1 rounded-[2px] border font-medium transition-colors uppercase tracking-wider ${socialView === v ? 'bg-[#1b2838] text-[#c6d4df] border-[#2a475e]' : 'bg-[#101214] text-[#546270] border-[#323f4c] hover:text-[#c6d4df]'}`}>
+              {v}
+            </button>
+          ))}
           {socialView === 'friends' && (
-            <div className="flex items-center gap-1.5">
+            <div className="ml-auto flex items-center gap-3">
               {(friendsActivityStatus === 'loading' || friendsActivityStatus === 'updating') && (
                 <div className="flex items-center gap-1.5">
                   <Loader2 size={11} className="text-[#66c0f4] animate-spin" />
@@ -749,16 +763,26 @@ const ActivityTab = ({ achievements, refTime, heatmapData, loadingMore, allLoade
                 </div>
               )}
               {friendsActivityStatus === 'done' && (<>
+                {friendsActivityTs && (
+                  <span className="text-[9px] text-[#546270]">Synced {timeAgo(friendsActivityTs)}</span>
+                )}
                 <button onClick={onRefreshFriends}
-                  className="text-[10px] font-semibold uppercase tracking-wider px-3 py-1 rounded-[2px] border border-[#1a5a8a] text-[#66c0f4] hover:bg-[#1a3a5c] transition-colors"
-                >Refresh</button>
+                  className="flex items-center gap-1.5 text-[9px] font-semibold uppercase tracking-wider text-[#546270] hover:text-[#66c0f4] transition-colors">
+                  <RefreshCw size={11} />
+                  Refresh
+                </button>
                 <button onClick={onResetFriends}
-                  className="text-[10px] font-semibold uppercase tracking-wider px-3 py-1 rounded-[2px] border border-[#6b2222] text-[#ff6b6b] hover:bg-[#3a1515] transition-colors"
-                  title="Clear all cached data and re-fetch from scratch"
-                >Reset</button>
+                  className="flex items-center gap-1.5 text-[9px] font-semibold uppercase tracking-wider text-[#546270] hover:text-[#e06b6b] transition-colors"
+                  title="Clear all cached data and re-fetch from scratch">
+                  <RotateCcw size={11} />
+                  Reset
+                </button>
               </>)}
             </div>
           )}
+        </div>
+        <div className="flex justify-end">
+          <span className="text-[9px] text-[#546270] opacity-60">{tzName}</span>
         </div>
       </div>
 
@@ -1807,8 +1831,12 @@ export default function App() {
   const [profileData,   setProfileData]   = useState(null);
   const [backlogData,       setBacklogData]       = useState(null);
   const [backlogLoadingMore, setBacklogLoadingMore] = useState(false);
+  const [backlogTs,         setBacklogTs]         = useState(null);
+  const [backlogRefreshing, setBacklogRefreshing] = useState(false);
   const [socialData,    setSocialData]    = useState(null);
   const [socialError,   setSocialError]   = useState(false);
+  const [socialTs,        setSocialTs]        = useState(null);
+  const [socialRefreshing, setSocialRefreshing] = useState(false);
   const [compareUser,   setCompareUser]   = useState(null);
   const [compareData,   setCompareData]   = useState(null);
   const [compareLoading, setCompareLoading] = useState(false);
@@ -1863,6 +1891,7 @@ export default function App() {
   const [friendsActivity,       setFriendsActivity]       = useState({});       // { [username]: achievement[] }
   const [friendsFetchProgress,  setFriendsFetchProgress]  = useState(null);     // { done, total } | null
   const [failedFriends,         setFailedFriends]         = useState([]);        // usernames that failed to load
+  const [friendsActivityTs,     setFriendsActivityTs]     = useState(null);
   const friendsFetchingRef = useRef(false);                                      // prevents re-entry during async fetch
 
   // ── Auth helpers ─────────────────────────────────────────
@@ -1871,27 +1900,54 @@ export default function App() {
     window.location.replace('../');
   };
 
-  const refreshFriendsActivity = () => {
-    // Soft refresh: mark all cached entries as stale (ts=0) so incremental updates
-    // fire immediately, but keep existing data so the feed stays visible.
-    Object.keys(localStorage).filter(k => k.startsWith('ra_fa_')).forEach(k => {
-      try {
-        const { data } = JSON.parse(localStorage.getItem(k));
-        localStorage.setItem(k, JSON.stringify({ ts: 0, data }));
-      } catch {}
-    });
+  const refreshFriendsActivity = async () => {
+    const cached = socialData ?? await getSocialData(getCredentials()?.username);
+    const list = cached?.following?.results ?? [];
+    await Promise.all(list.map(({ user }) => staleFriendActivity(user)));
     setFailedFriends([]);
     setFriendsFetchProgress(null);
     setFriendsActivityStatus('updating');
   };
 
-  const resetFriendsActivity = () => {
-    // Hard reset: clear all cache and re-fetch from scratch.
-    Object.keys(localStorage).filter(k => k.startsWith('ra_fa_')).forEach(k => localStorage.removeItem(k));
+  const resetFriendsActivity = async () => {
+    await clearAllFriendActivity();
     setFriendsActivity({});
     setFriendsFetchProgress(null);
     setFailedFriends([]);
+    setFriendsActivityTs(null);
     setFriendsActivityStatus('idle');
+  };
+
+  const refreshBacklog = async () => {
+    const creds = getCredentials();
+    if (!creds) { handleAuthError(); return; }
+    setBacklogRefreshing(true);
+    try {
+      const data = await fetchBacklog(creds.username, creds.apiKey, null, true);
+      setBacklogData(data);
+      const rec = await getBacklog(creds.username);
+      if (rec) setBacklogTs(rec.ts);
+    } catch (err) {
+      if (err.message === 'AUTH_ERROR') handleAuthError();
+    } finally {
+      setBacklogRefreshing(false);
+    }
+  };
+
+  const refreshSocial = async () => {
+    const creds = getCredentials();
+    if (!creds) { handleAuthError(); return; }
+    setSocialRefreshing(true);
+    try {
+      const data = await fetchSocial(creds.username, creds.apiKey, true);
+      setSocialData(data);
+      const rec = await getSocialData(creds.username);
+      if (rec) setSocialTs(rec.ts);
+    } catch (err) {
+      if (err.message === 'AUTH_ERROR') handleAuthError();
+    } finally {
+      setSocialRefreshing(false);
+    }
   };
 
   // ── Compare progress ──────────────────────────────────────
@@ -1995,16 +2051,33 @@ export default function App() {
 
   // ── Load backlog when Backlog tab opens ──
   useEffect(() => {
-    if (isVisitorMode || activeTab !== 'backlog' || backlogData !== null) return;
+    if (isVisitorMode || activeTab !== 'backlog') return;
     const creds = getCredentials();
     if (!creds) { handleAuthError(); return; }
-    setBacklogLoadingMore(true);
-    fetchBacklog(creds.username, creds.apiKey, partial => setBacklogData(partial))
-      .then(data => { setBacklogData(data); setBacklogLoadingMore(false); })
-      .catch(err => {
-        if (err.message === 'AUTH_ERROR') handleAuthError();
-        else { setBacklogData({ total: 0, results: [] }); setBacklogLoadingMore(false); }
-      });
+    if (backlogData !== null) return;
+
+    (async () => {
+      setBacklogLoadingMore(true);
+      // Show IDB data instantly if available
+      const cached = await getBacklog(creds.username);
+      if (cached) {
+        setBacklogData({ total: cached.total, results: cached.results });
+        setBacklogTs(cached.ts);
+        setBacklogLoadingMore(false);
+        return; // fresh enough — don't re-fetch until user explicitly refreshes
+      }
+      // No cache — fetch from API
+      fetchBacklog(creds.username, creds.apiKey, partial => setBacklogData(partial))
+        .then(data => {
+          setBacklogData(data);
+          setBacklogLoadingMore(false);
+          getBacklog(creds.username).then(rec => { if (rec) setBacklogTs(rec.ts); });
+        })
+        .catch(err => {
+          if (err.message === 'AUTH_ERROR') handleAuthError();
+          else { setBacklogData({ total: 0, results: [] }); setBacklogLoadingMore(false); }
+        });
+    })();
   }, [activeTab]);
 
   // ── Fetch friends activity when Friends view opens ──
@@ -2019,7 +2092,8 @@ export default function App() {
         const social = socialData ?? await fetchSocial(u, k);
         const followingList = social.following.results;
         if (followingList.length === 0) { setFriendsActivityStatus('done'); return; }
-        if (!allFriendsCached(followingList)) setFriendsActivityStatus('loading');
+        const cached = await allFriendsCached(followingList);
+        if (!cached) setFriendsActivityStatus('loading');
         else setFriendsActivityStatus('updating');
         await fetchFriendsActivity(u, k, followingList, {
           onProgress: (done, total) => setFriendsFetchProgress({ done, total }),
@@ -2029,6 +2103,7 @@ export default function App() {
             setFailedFriends(prev => [...prev, friendUser]),
         });
         setFriendsActivityStatus('done');
+        setFriendsActivityTs(Date.now());
       } catch (e) {
         if (e.message === 'AUTH_ERROR') { handleAuthError(); return; }
         setFriendsActivityStatus('error');
@@ -2043,12 +2118,24 @@ export default function App() {
     if (isVisitorMode || activeTab !== 'social' || socialData !== null || socialError) return;
     const creds = getCredentials();
     if (!creds) { handleAuthError(); return; }
-    fetchSocial(creds.username, creds.apiKey)
-      .then(data => { setSocialData(data); setSocialError(false); })
-      .catch(err => {
-        if (err.message === 'AUTH_ERROR') handleAuthError();
-        else setSocialError(true);
-      });
+    (async () => {
+      const cached = await getSocialData(creds.username);
+      if (cached) {
+        setSocialData({ following: cached.following, followers: cached.followers });
+        setSocialTs(cached.ts);
+        return;
+      }
+      fetchSocial(creds.username, creds.apiKey)
+        .then(data => {
+          setSocialData(data);
+          getSocialData(creds.username).then(rec => { if (rec) setSocialTs(rec.ts); });
+          setSocialError(false);
+        })
+        .catch(err => {
+          if (err.message === 'AUTH_ERROR') handleAuthError();
+          else setSocialError(true);
+        });
+    })();
   }, [activeTab, socialError]);
 
   // ── Load all chunks when Activity tab opens ──
@@ -2502,7 +2589,25 @@ export default function App() {
 
         <div className="flex flex-col gap-3">
           {activeTab === 'social' ? (
-            <SocialTab socialData={socialData} socialError={socialError} onRetry={() => setSocialError(false)} onCompare={openCompare} />
+            <div>
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <span className="w-[3px] h-[14px] bg-[#66c0f4] rounded-[1px] shrink-0" />
+                  <span className="text-[13px] text-white tracking-wide uppercase font-medium">Social</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  {socialTs && (
+                    <span className="text-[9px] text-[#546270]">Synced {timeAgo(socialTs)}</span>
+                  )}
+                  <button type="button" onClick={refreshSocial} disabled={socialRefreshing}
+                    className="flex items-center gap-1.5 text-[9px] font-semibold uppercase tracking-wider text-[#546270] hover:text-[#66c0f4] transition-colors disabled:opacity-40">
+                    <RefreshCw size={11} className={socialRefreshing ? 'animate-spin' : ''} />
+                    Refresh
+                  </button>
+                </div>
+              </div>
+              <SocialTab socialData={socialData} socialError={socialError} onRetry={() => setSocialError(false)} onCompare={openCompare} />
+            </div>
           ) : activeTab === 'series' ? (
             <SeriesProgressTab seriesData={seriesData} gamesData={gamesData} backlogData={backlogData} />
           ) : activeTab === 'activity' ? (
@@ -2523,6 +2628,7 @@ export default function App() {
                   failedFriends={failedFriends}
                   onRefreshFriends={refreshFriendsActivity}
                   onResetFriends={resetFriendsActivity}
+                  friendsActivityTs={friendsActivityTs}
                   ownUsername={PROFILE_DATA.username}
                 />
           ) : activeTab === 'backlog' ? (
@@ -2665,6 +2771,24 @@ export default function App() {
 
               return (
                 <>
+                  {/* ── Header row ── */}
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-2">
+                      <span className="w-[3px] h-[14px] bg-[#66c0f4] rounded-[1px] shrink-0" />
+                      <span className="text-[13px] text-white tracking-wide uppercase font-medium">Backlog</span>
+                      <span className="text-[10px] text-[#546270]">{BACKLOG.games.length.toLocaleString()} games</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      {backlogTs && (
+                        <span className="text-[9px] text-[#546270]">Synced {timeAgo(backlogTs)}</span>
+                      )}
+                      <button type="button" onClick={refreshBacklog} disabled={backlogRefreshing}
+                        className="flex items-center gap-1.5 text-[9px] font-semibold uppercase tracking-wider text-[#546270] hover:text-[#66c0f4] transition-colors disabled:opacity-40">
+                        <RefreshCw size={11} className={backlogRefreshing ? 'animate-spin' : ''} />
+                        Refresh
+                      </button>
+                    </div>
+                  </div>
                   {/* ── Filter + Group bar ── */}
                   <div className="flex flex-col gap-2 mb-2 md:flex-row md:flex-wrap md:items-center md:gap-2">
                     {/* Search */}

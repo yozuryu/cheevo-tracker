@@ -46,52 +46,122 @@ function cacheSet(key, data) {
   try { sessionStorage.setItem(key, JSON.stringify({ ts: Date.now(), data })); } catch {}
 }
 
-// ── Search index (IndexedDB — no quota limit) ─────────────────────────────────
+// ── IndexedDB (cheevo_tracker) ────────────────────────────────────────────────
 
-const IDB_NAME    = 'cheevo_search';
-const IDB_VERSION = 1;
-let   _searchDB   = null;
+const DB_NAME    = 'cheevo_tracker';
+const DB_VERSION = 1;
+let   _db        = null;
 
-function openSearchDB() {
-  if (_searchDB) return Promise.resolve(_searchDB);
+function openDB() {
+  if (_db) return Promise.resolve(_db);
   return new Promise((resolve, reject) => {
-    const req = indexedDB.open(IDB_NAME, IDB_VERSION);
+    const req = indexedDB.open(DB_NAME, DB_VERSION);
     req.onupgradeneeded = e => {
       const db = e.target.result;
+      if (!db.objectStoreNames.contains('consoles'))
+        db.createObjectStore('consoles', { keyPath: 'id' });
       if (!db.objectStoreNames.contains('games')) {
         const gs = db.createObjectStore('games', { keyPath: 'id' });
         gs.createIndex('consoleId', 'consoleId', { unique: false });
       }
-      if (!db.objectStoreNames.contains('meta')) db.createObjectStore('meta');
+      if (!db.objectStoreNames.contains('progress')) {
+        const ps = db.createObjectStore('progress', { keyPath: ['username', 'gameId'] });
+        ps.createIndex('username', 'username', { unique: false });
+      }
+      if (!db.objectStoreNames.contains('friend_activity'))
+        db.createObjectStore('friend_activity', { keyPath: 'username' });
+      if (!db.objectStoreNames.contains('friend_list'))
+        db.createObjectStore('friend_list', { keyPath: 'username' });
+      if (!db.objectStoreNames.contains('backlog'))
+        db.createObjectStore('backlog', { keyPath: 'username' });
+      if (!db.objectStoreNames.contains('meta'))
+        db.createObjectStore('meta');
     };
-    req.onsuccess = e => { _searchDB = e.target.result; resolve(_searchDB); };
-    req.onerror   = e => reject(e.target.error);
+    req.onsuccess = e => {
+      _db = e.target.result;
+      indexedDB.deleteDatabase('cheevo_search'); // clean up old DB
+      resolve(_db);
+    };
+    req.onerror = e => reject(e.target.error);
   });
 }
 
+function idbGet(storeName, key) {
+  return openDB().then(db => new Promise((resolve, reject) => {
+    const req = db.transaction(storeName, 'readonly').objectStore(storeName).get(key);
+    req.onsuccess = () => resolve(req.result ?? null);
+    req.onerror   = e => reject(e.target.error);
+  }));
+}
+
+function idbPut(storeName, value) {
+  return openDB().then(db => new Promise((resolve, reject) => {
+    const tx = db.transaction(storeName, 'readwrite');
+    tx.objectStore(storeName).put(value);
+    tx.oncomplete = () => resolve();
+    tx.onerror    = e => reject(e.target.error);
+  }));
+}
+
+function idbDelete(storeName, key) {
+  return openDB().then(db => new Promise((resolve, reject) => {
+    const tx = db.transaction(storeName, 'readwrite');
+    tx.objectStore(storeName).delete(key);
+    tx.oncomplete = () => resolve();
+    tx.onerror    = e => reject(e.target.error);
+  }));
+}
+
+function idbGetAll(storeName) {
+  return openDB().then(db => new Promise((resolve, reject) => {
+    const req = db.transaction(storeName, 'readonly').objectStore(storeName).getAll();
+    req.onsuccess = () => resolve(req.result ?? []);
+    req.onerror   = e => reject(e.target.error);
+  }));
+}
+
+function idbClear(storeName) {
+  return openDB().then(db => new Promise((resolve, reject) => {
+    const tx  = db.transaction(storeName, 'readwrite');
+    tx.objectStore(storeName).clear();
+    tx.oncomplete = () => resolve();
+    tx.onerror    = e => reject(e.target.error);
+  }));
+}
+
 export async function getAllGamesFromDB() {
-  const db = await openSearchDB();
+  const db = await openDB();
   return new Promise((resolve, reject) => {
     const tx     = db.transaction(['games', 'meta'], 'readonly');
     const allReq = tx.objectStore('games').getAll();
-    const cfReq  = tx.objectStore('meta').get('consolesFetched');
     const ffReq  = tx.objectStore('meta').get('lastFullFetch');
-    tx.oncomplete = () => resolve({
-      games:           allReq.result || [],
-      consolesFetched: cfReq.result  || {},
-      lastFullFetch:   ffReq.result  || null,
-    });
+    // Build consolesFetched from the consoles store (read separately after tx)
+    tx.oncomplete = () => {
+      openDB().then(db2 => {
+        const tx2 = db2.transaction('consoles', 'readonly');
+        const cfReq = tx2.objectStore('consoles').getAll();
+        tx2.oncomplete = () => {
+          const consolesFetched = {};
+          (cfReq.result || []).forEach(c => { consolesFetched[String(c.id)] = c.fetchedAt || 0; });
+          resolve({
+            games:           allReq.result || [],
+            consolesFetched,
+            lastFullFetch:   ffReq.result  || null,
+          });
+        };
+        tx2.onerror = e => reject(e.target.error);
+      });
+    };
     tx.onerror = e => reject(e.target.error);
   });
 }
 
 export async function updateAllGamesForConsole(consoleId, consoleName, games) {
-  const db = await openSearchDB();
+  const db = await openDB();
   return new Promise((resolve, reject) => {
-    const tx        = db.transaction(['games', 'meta'], 'readwrite');
+    const tx        = db.transaction(['games', 'consoles'], 'readwrite');
     const gameStore = tx.objectStore('games');
 
-    // Delete existing records for this console then insert the fresh set
     gameStore.index('consoleId').openKeyCursor(IDBKeyRange.only(consoleId)).onsuccess = e => {
       const cursor = e.target.result;
       if (cursor) { gameStore.delete(cursor.primaryKey); cursor.continue(); }
@@ -103,13 +173,12 @@ export async function updateAllGamesForConsole(consoleId, consoleName, games) {
           numAchievements: g.numAchievements,
           points:          g.points,
           consoleId:       g.consoleId  || consoleId,
-          consoleName:     g.consoleName || consoleName,
         }));
-        tx.objectStore('meta').get('consolesFetched').onsuccess = e2 => {
-          const cf = e2.target.result || {};
-          cf[String(consoleId)] = Date.now();
-          tx.objectStore('meta').put(cf, 'consolesFetched');
-        };
+        tx.objectStore('consoles').put({
+          id:        consoleId,
+          name:      consoleName || (games[0]?.consoleName ?? ''),
+          fetchedAt: Date.now(),
+        });
       }
     };
 
@@ -119,7 +188,7 @@ export async function updateAllGamesForConsole(consoleId, consoleName, games) {
 }
 
 export async function markAllGamesFullFetch() {
-  const db = await openSearchDB();
+  const db = await openDB();
   return new Promise((resolve, reject) => {
     const tx = db.transaction('meta', 'readwrite');
     tx.objectStore('meta').put(Date.now(), 'lastFullFetch');
@@ -129,9 +198,9 @@ export async function markAllGamesFullFetch() {
 }
 
 export async function clearAllGamesStore() {
-  if (_searchDB) { _searchDB.close(); _searchDB = null; }
+  if (_db) { _db.close(); _db = null; }
   return new Promise((resolve, reject) => {
-    const req = indexedDB.deleteDatabase(IDB_NAME);
+    const req = indexedDB.deleteDatabase(DB_NAME);
     req.onsuccess = () => resolve();
     req.onblocked = () => resolve();
     req.onerror   = e => reject(e.target.error);
@@ -1321,14 +1390,31 @@ export async function fetchAchievementsChunk(username, apiKey, chunkIndex) {
   return result;
 }
 
+export async function getBacklog(username) {
+  return idbGet('backlog', username); // returns { username, ts, total, results } or null
+}
+
+export async function setBacklog(username, total, results) {
+  return idbPut('backlog', { username, ts: Date.now(), total, results });
+}
+
+export async function clearBacklog(username) {
+  return idbDelete('backlog', username);
+}
+
+const BACKLOG_TTL = 24 * 60 * 60 * 1000;
+
 /**
- * Fetches the user's want-to-play list (all pages, 100/page).
- * Cached for 5 minutes under key ra_backlog_{username}.
+ * Fetches the user's want-to-play list (all pages, 500/page).
+ * IDB-backed with 24h stale time.
  */
-export async function fetchBacklog(username, apiKey, onPartial) {
-  const cacheKey = `ra_backlog_${username}`;
-  const cached = cacheGet(cacheKey);
-  if (cached) return cached;
+export async function fetchBacklog(username, apiKey, onPartial, forceRefresh = false) {
+  if (!forceRefresh) {
+    const cached = await getBacklog(username);
+    if (cached && (Date.now() - cached.ts) < BACKLOG_TTL) {
+      return { total: cached.total, results: cached.results };
+    }
+  }
 
   const mapGame = g => ({
     id:                    g.ID,
@@ -1353,9 +1439,8 @@ export async function fetchBacklog(username, apiKey, onPartial) {
     offset += 500;
     await sleep(1000);
   }
-  const result = { total, results: allResults };
-  cacheSet(cacheKey, result);
-  return result;
+  await setBacklog(username, total, allResults);
+  return { total, results: allResults };
 }
 
 /**
@@ -1463,20 +1548,33 @@ export async function fetchGameDetails(username, apiKey, gameId) {
   return result;
 }
 
+export async function getSocialData(username) {
+  return idbGet('friend_list', username); // returns { username, ts, following, followers } or null
+}
+
+export async function setSocialData(username, data) {
+  return idbPut('friend_list', { username, ts: Date.now(), ...data });
+}
+
+const SOCIAL_TTL = 24 * 60 * 60 * 1000;
+
 /**
  * Fetches both following and followers lists.
- * Cache-first: returns localStorage cache if available (1h TTL); fetches from API otherwise.
+ * IDB-backed with 24h stale time.
  */
-export async function fetchSocial(username, apiKey) {
-  const cacheKey = `ra_social_${username}`;
-  const cached = lcacheGet(cacheKey, 60 * 60 * 1000);
-  if (cached) return cached;
+export async function fetchSocial(username, apiKey, forceRefresh = false) {
+  if (!forceRefresh) {
+    const cached = await getSocialData(username);
+    if (cached && (Date.now() - cached.ts) < SOCIAL_TTL) {
+      return { following: cached.following, followers: cached.followers };
+    }
+  }
 
   const following = await getUsersIFollow(username, apiKey);
   await sleep(500);
   const followers = await getUsersFollowingMe(username, apiKey);
   const result = { following, followers };
-  lcacheSet(cacheKey, result);
+  await setSocialData(username, result);
   return result;
 }
 
@@ -1500,12 +1598,11 @@ export async function fetchFriendsActivity(username, apiKey, followingList, { on
   const TTL_1H     = 60 * 60 * 1000;
   const now        = Math.floor(Date.now() / 1000);
   const WINDOW_SEC = 10 * 24 * 60 * 60;
-  const MAX_SEC    = 3 * WINDOW_SEC;        // 30-day total window
-  const CUTOFF_SEC = now - MAX_SEC;         // trim anything older than 30 days
+  const MAX_SEC    = 3 * WINDOW_SEC;
+  const CUTOFF_SEC = now - MAX_SEC;
   const total      = followingList.length;
   let done = 0;
 
-  // Fetch an array of {f,t} windows and return a merged, deduplicated achievement list.
   async function fetchWindows(friendUser, windows) {
     const seen = new Set();
     const result = [];
@@ -1524,7 +1621,6 @@ export async function fetchFriendsActivity(username, apiKey, followingList, { on
     return result;
   }
 
-  // 3 × 10-day windows covering the full 30-day range.
   function fullWindows() {
     return [0, 1, 2].map(c => ({
       f: now - (3 - c) * WINDOW_SEC,
@@ -1532,8 +1628,6 @@ export async function fetchFriendsActivity(username, apiKey, followingList, { on
     }));
   }
 
-  // 1–3 windows covering sinceTs→now in ≤10-day chunks, newest anchor.
-  // Returns null when delta > 30 days (caller should do a full fetch instead).
   function incrementalWindows(sinceTs) {
     if (now - sinceTs > MAX_SEC) return null;
     const windows = [];
@@ -1548,52 +1642,46 @@ export async function fetchFriendsActivity(username, apiKey, followingList, { on
 
   for (let i = 0; i < total; i++) {
     const { user: friendUser } = followingList[i];
-    const cacheKey = `ra_fa_${friendUser}`;
-    const rawJson  = localStorage.getItem(cacheKey);
-    let madeApiCall = false;
+    const cached     = await idbGet('friend_activity', friendUser);
+    let madeApiCall  = false;
 
-    if (rawJson) {
-      const { ts, data } = JSON.parse(rawJson);
+    if (cached) {
+      const { ts, data } = cached;
       const fresh = (Date.now() - ts) <= TTL_1H;
 
-      // Always serve existing data immediately (stale or fresh).
       onUser?.(friendUser, data);
       onProgress?.(++done, total);
 
       if (!fresh) {
         madeApiCall = true;
-        const sinceTs = Math.floor(ts / 1000);
+        const sinceTs    = Math.floor(ts / 1000);
         const incWindows = incrementalWindows(sinceTs);
         try {
           const windows = incWindows ?? fullWindows();
-          const delta = await fetchWindows(friendUser, windows);
+          const delta   = await fetchWindows(friendUser, windows);
           if (incWindows) {
-            // Incremental: prepend new achievements, trim old ones, deduplicate.
             const deltaKeys = new Set(delta.map(a => `${a.achievementId}|${a.date}`));
-            const kept = data.filter(a =>
+            const kept      = data.filter(a =>
               new Date(a.date).getTime() / 1000 >= CUTOFF_SEC && !deltaKeys.has(`${a.achievementId}|${a.date}`)
             );
             const merged = [...delta, ...kept];
-            lcacheSet(cacheKey, merged);
+            await idbPut('friend_activity', { username: friendUser, ts: Date.now(), data: merged });
             if (delta.length > 0) onUser?.(friendUser, merged);
-            else lcacheSet(cacheKey, kept); // just refresh the timestamp
+            else await idbPut('friend_activity', { username: friendUser, ts: Date.now(), data: kept });
           } else {
-            // Full refresh: replace entirely.
-            lcacheSet(cacheKey, delta);
+            await idbPut('friend_activity', { username: friendUser, ts: Date.now(), data: delta });
             onUser?.(friendUser, delta);
           }
         } catch (e) {
           if (e.message === 'AUTH_ERROR') throw e;
           console.warn(`[friends activity] incremental update failed for ${friendUser}:`, e.message);
-          // Stale data already served — silently keep it.
         }
       }
     } else {
-      // No cache: full 3 × 10-day fetch.
       madeApiCall = true;
       try {
         const allAchs = await fetchWindows(friendUser, fullWindows());
-        lcacheSet(cacheKey, allAchs);
+        await idbPut('friend_activity', { username: friendUser, ts: Date.now(), data: allAchs });
         onUser?.(friendUser, allAchs);
       } catch (e) {
         if (e.message === 'AUTH_ERROR') throw e;
@@ -1608,11 +1696,23 @@ export async function fetchFriendsActivity(username, apiKey, followingList, { on
 }
 
 /**
- * Returns true if every user in followingList has any ra_fa_* cache entry (fresh or stale).
+ * Returns true if every user in followingList has an IDB friend_activity entry (fresh or stale).
  * Stale entries will be updated incrementally — existing data is served immediately.
  */
-export function allFriendsCached(followingList) {
-  return followingList.every(({ user }) => localStorage.getItem(`ra_fa_${user}`) !== null);
+export async function allFriendsCached(followingList) {
+  const entries = await Promise.all(
+    followingList.map(({ user }) => idbGet('friend_activity', user))
+  );
+  return entries.every(v => v !== null);
+}
+
+export async function staleFriendActivity(username) {
+  const entry = await idbGet('friend_activity', username);
+  if (entry) await idbPut('friend_activity', { ...entry, ts: 0 });
+}
+
+export async function clearAllFriendActivity() {
+  return idbClear('friend_activity');
 }
 
 /**
