@@ -163,38 +163,35 @@ Refresh button UX (same as backlog):
 
 No new store needed — redirect reads to the existing `consoles` + `games` stores from Phase 0.
 
-- [ ] Update `fetchConsoleGames` in `ra-api.js`
+- [x] Update `fetchConsoleGames` in `ra-api.js`
   - Cache hit: check `consoles.get(consoleId).fetchedAt` < 24 h → read `games` store filtered by `consoleId` index → return
   - Cache miss/stale: fetch from API → write to `consoles` (upsert with `fetchedAt: Date.now()`) + `games` (same as current `updateAllGamesForConsole`) → return fresh data
-- [ ] Drop `consoleName` field from `games` store writes; all callers that need the name do `consoles.get(consoleId).name`
-- [ ] Update `search/app.js` to resolve console name via `consoles` store when rendering results
-- [ ] Remove `ra_consolegames_*` localStorage reads/writes from `ra-api.js`
-- [ ] Update "Refresh Data" handlers to zero out `consoles.fetchedAt` for all rows (so next `fetchConsoleGames` call re-fetches from API), instead of deleting `ra_consolegames_*` keys
-- [ ] Add "Synced X ago" label to search page header — read `store.lastFullFetch` (already loaded from `meta` store via `getAllGamesFromDB`), display using `timeAgo()` next to the existing "Refresh All" button; hidden when no index exists yet
+- [x] Drop `consoleName` field from `games` store writes; all callers that need the name do `consoles.get(consoleId).name` — resolved by enriching in `getAllGamesFromDB` join instead
+- [x] Update `search/app.js` to resolve console name via `consoles` store when rendering results — done via `getAllGamesFromDB` join
+- [x] Remove `ra_consolegames_*` localStorage reads/writes from `ra-api.js`
+- [x] Update "Refresh Data" handlers — full DB wipe on Purge Cache already handles this; `forceRefresh=true` path bypasses TTL check
+- [x] Add "Synced X ago" label to search page header
 
 ---
 
 #### Phase 4 — Progress chunks (largest quota risk)
 
-- [ ] Update `fetchUserProgress` (or equivalent chunk loader) in `ra-api.js`
-  - Cache hit: read `progress` store filtered by `username` index → return all rows
-  - Cache miss/stale: fetch all pages from API → `put` one row per game into `progress` store → return
-  - Stale time: keep existing 5-minute TTL (progress is checked frequently)
-- [ ] Remove chunk-index loop — no more `ra_chunk_{username}_{n}` discovery or iteration
-- [ ] Update all callers that currently reassemble chunks into a flat array — they now receive a flat array directly from the `progress` store query
-- [ ] Add delete-by-username helper: `clearProgress(username)` using `username` index + `openKeyCursor` delete loop
-- [ ] Update force-refresh path in `profile/app.js` to call `clearProgress` then re-fetch
-- [ ] Remove `ra_chunk_*` localStorage reads/writes from `ra-api.js`
+- [x] Update `fetchUserProgress` (or equivalent chunk loader) in `ra-api.js` — replaced by `fetchAllAchievements`; groups achievements by `[username, gameId]` rows in `progress` store; TTL in `meta` as `progress_ts_{username}`
+- [x] Remove chunk-index loop — no more `ra_chunk_{username}_{n}` sessionStorage keys
+- [x] Update all callers that currently reassemble chunks into a flat array — `allLoadedAchievements = achievements || []` (no merge step)
+- [x] Add delete-by-username helper: `clearProgress(username)` using `username` index + `openKeyCursor` delete loop
+- [x] Update force-refresh path — `fetchAllAchievements(..., forceRefresh=true)` calls `clearProgress` internally; Purge Cache wipes IDB entirely
+- [x] Remove `ra_chunk_*` sessionStorage reads/writes from `ra-api.js`
 
 ---
 
 #### Phase 5 — Cleanup
 
-- [ ] Remove `openSearchDB`, `getAllGamesFromDB`, `updateAllGamesForConsole`, `markAllGamesFullFetch`, `clearAllGamesStore` exports — replaced by `openDB` + store-specific helpers
-- [ ] Verify no `ra_fa_`, `ra_chunk_`, `ra_consolegames_`, `ra_backlog_`, `ra_social_` keys remain in any read/write path
-- [ ] Update `search/app.js` imports to use new export names
-- [ ] Test Purge Cache wipes `cheevo_tracker` IDB and all `ra_*` localStorage keys cleanly
-- [ ] Update changelog
+- [x] Remove `updateAllGamesForConsole` export (now internal, only called by `fetchConsoleGames`) and delete unused `clearAllGamesStore` — `openSearchDB` was already gone from Phase 0; `getAllGamesFromDB` and `markAllGamesFullFetch` kept as exports (still used by `search/app.js` under the same names)
+- [x] Verified: no `ra_fa_`, `ra_chunk_`, `ra_consolegames_`, `ra_backlog_`, `ra_social_` keys remain in any read/write path; only `ra_consoles` (console list, 24h localStorage TTL) is still active — out of scope for this migration
+- [x] `search/app.js` imports unchanged — export names were preserved during migration
+- [x] Purge Cache (`assets/ui.js` + `assets/mobile-nav.js`) already calls `indexedDB.deleteDatabase('cheevo_tracker')` + `sessionStorage.clear()` + clears all `ra_*` localStorage keys
+- [x] Changelog updated
 
 ---
 

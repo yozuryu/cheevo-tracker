@@ -6,7 +6,7 @@ import { getMediaUrl, parseTitle, formatTimeAgo } from './utils/helpers.js';
 import { transformData } from './utils/transform.js';
 import {
   getCredentials, clearCredentials,
-  fetchProfile, fetchAchievementsChunk, fetchBacklog, fetchGameDetails,
+  fetchProfile, fetchAllAchievements, clearProgress, fetchBacklog, fetchGameDetails,
   fetchSocial, fetchFriendsActivity, allFriendsCached, getUserCompletionProgress,
   getBacklog,
   getSocialData,
@@ -1845,9 +1845,8 @@ export default function App() {
   const [gamesData,     setGamesData]     = useState({ detailedGameProgress: {} });
   const [loadingGameDetailId, setLoadingGameDetailId] = useState(null);
 
-  const TOTAL_ACH_CHUNKS = 2;
-  const [achievementChunks,    setAchievementChunks]    = useState(() => Array(TOTAL_ACH_CHUNKS).fill(null));
-  const [loadingChunkIndices,  setLoadingChunkIndices]  = useState(new Set());
+  const [achievements,           setAchievements]           = useState(null);
+  const [achievementsLoadingMore, setAchievementsLoadingMore] = useState(false);
 
   const [loadingProfile, setLoadingProfile] = useState(true);
   const [error, setError] = useState(null);
@@ -1996,20 +1995,19 @@ export default function App() {
     }
   };
 
-  // ── Load a single achievement chunk from RA API ─────────────
-  const loadChunk = (idx) => {
+  // ── Load all achievement chunks (IDB-backed, streams chunk 0 via onPartial) ─
+  const loadAchievements = () => {
     const creds = getCredentials();
     if (!creds) { handleAuthError(); return; }
-    setLoadingChunkIndices(prev => new Set([...prev, idx]));
-    fetchAchievementsChunk(creds.username, creds.apiKey, idx)
-      .then(achs => {
-        setAchievementChunks(prev => { const n = [...prev]; n[idx] = achs; return n; });
-        setLoadingChunkIndices(prev => { const n = new Set(prev); n.delete(idx); return n; });
-      })
+    setAchievementsLoadingMore(true);
+    fetchAllAchievements(creds.username, creds.apiKey, {
+      onPartial: (partial) => setAchievements(partial),
+    })
+      .then(all => { setAchievements(all); setAchievementsLoadingMore(false); })
       .catch(err => {
         if (err.message === 'AUTH_ERROR') { handleAuthError(); return; }
-        setAchievementChunks(prev => { const n = [...prev]; n[idx] = []; return n; });
-        setLoadingChunkIndices(prev => { const n = new Set(prev); n.delete(idx); return n; });
+        setAchievements([]);
+        setAchievementsLoadingMore(false);
       });
   };
 
@@ -2037,9 +2035,8 @@ export default function App() {
     const creds = getCredentials();
     if (!creds) { handleAuthError(); return; }
     fetchProfile(creds.username, creds.apiKey, targetUser || undefined)
-      .then(({ profileData: pd, firstChunkAchievements }) => {
+      .then(({ profileData: pd }) => {
         setProfileData(pd);
-        setAchievementChunks(prev => { const n = [...prev]; n[0] = firstChunkAchievements; return n; });
         setLoadingProfile(false);
       })
       .catch(err => {
@@ -2138,30 +2135,18 @@ export default function App() {
     })();
   }, [activeTab, socialError]);
 
-  // ── Load all chunks when Activity tab opens ──
+  // ── Load achievements when Activity tab opens ──
   useEffect(() => {
     if (isVisitorMode || activeTab !== 'activity') return;
-    achievementChunks.forEach((chunk, idx) => {
-      if (chunk === null && !loadingChunkIndices.has(idx)) {
-        setTimeout(() => loadChunk(idx), idx * 1000);
-      }
-    });
+    if (achievements === null && !achievementsLoadingMore) loadAchievements();
   }, [activeTab]);
 
-  // ── Merge loaded achievement chunks (newest first) ────────
-  const allLoadedAchievements = useMemo(() => {
-    return achievementChunks
-      .filter(c => c !== null)
-      .flat()
-      .sort((a, b) => new Date(b.date) - new Date(a.date));
-  }, [achievementChunks]);
+  const allLoadedAchievements = achievements || [];
 
-  const loadedChunkCount = achievementChunks.filter(c => c !== null).length;
-
-  // ── Compute heatmap from loaded achievement chunks ────────
+  // ── Compute heatmap from loaded achievements ──────────────
   const heatmapData = useMemo(() => {
     const map = {};
-    achievementChunks.filter(c => c !== null).flat().forEach(ach => {
+    allLoadedAchievements.forEach(ach => {
       const day = toLocalDay(ach.date || '');
       if (!day) return;
       if (!map[day]) map[day] = { count: 0, points: 0 };
@@ -2169,7 +2154,7 @@ export default function App() {
       map[day].points += ach.points || 0;
     });
     return map;
-  }, [achievementChunks]);
+  }, [achievements]);
 
   // ── Merge profile + backlog + games into the shape transformData expects ──
   const rawData = useMemo(() => {
@@ -2611,14 +2596,14 @@ export default function App() {
           ) : activeTab === 'series' ? (
             <SeriesProgressTab seriesData={seriesData} gamesData={gamesData} backlogData={backlogData} />
           ) : activeTab === 'activity' ? (
-            loadedChunkCount === 0 && loadingChunkIndices.size > 0
+            achievements === null && achievementsLoadingMore
               ? <ActivitySkeleton />
               : <ActivityTab
                   achievements={allLoadedAchievements}
                   refTime={rawData?.metadata?.extractionTimestamp}
                   heatmapData={heatmapData}
-                  loadingMore={loadingChunkIndices.size > 0}
-                  allLoaded={loadedChunkCount === TOTAL_ACH_CHUNKS}
+                  loadingMore={achievementsLoadingMore}
+                  allLoaded={achievements !== null && !achievementsLoadingMore}
                   socialView={socialView}
                   setSocialView={setSocialViewUrl}
                   friendsActivityStatus={friendsActivityStatus}

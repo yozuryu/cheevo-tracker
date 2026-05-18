@@ -1,6 +1,30 @@
 # Changelog
 
-## v26.05.18
+## v26.05.19 — IDB Migration Phases 4 & 5: Achievement Chunks + Cleanup
+
+### Structure
+
+- `fetchAchievementsChunk` replaced by `fetchAllAchievements` (exported) + internal `fetchChunk` — achievement unlock history now cached in the `progress` IDB store (keyPath `[username, gameId]`, `username` index) with a 5-min TTL stored in `meta` as `progress_ts_{username}`
+- Added `clearProgress(username)` export — deletes all progress rows for a user via index cursor
+- Added `idbMetaPut(key, value)` internal helper for the out-of-line-key `meta` store
+- Added `CHUNK_TTL = 5 min` constant
+- `ra_chunk_{username}_{n}` sessionStorage keys eliminated
+
+### Profile
+
+- Activity tab state collapsed from a 2-element chunk array + `loadingChunkIndices` Set to a single `achievements` array + `achievementsLoadingMore` boolean
+- `loadAchievements()` replaces `loadChunk(idx)` — calls `fetchAllAchievements` with `onPartial` callback so chunk 0 still renders progressively while chunk 1 fetches in the background
+- `allLoadedAchievements` is now a direct reference to `achievements` (no flat/merge step)
+- Heatmap and ActivitySkeleton / `loadingMore` / `allLoaded` props updated to use the new state shape
+- `fetchProfile` result handler no longer seeds `achievementChunks[0]` — activity tab manages its own load lifecycle
+
+### Cleanup (Phase 5)
+
+- `updateAllGamesForConsole` de-exported (internal helper, only called by `fetchConsoleGames`)
+- `clearAllGamesStore` deleted — no callers; Purge Cache already calls `indexedDB.deleteDatabase('cheevo_tracker')` directly
+- Verified: no `ra_fa_`, `ra_chunk_`, `ra_consolegames_`, `ra_backlog_`, or `ra_social_` keys remain in any read/write path; `ra_consoles` (console list, 24h localStorage TTL) is the only remaining `lcache` usage and is out of scope
+
+## v26.05.18 — IDB Migration (Backlog, Friends, Search) + Sync Timestamps
 
 ### Structure
 
@@ -21,7 +45,14 @@
 - `resetFriendsActivity` (hard reset) now clears the `friend_activity` IDB store
 - Activity tab friends toolbar: Refresh and Reset buttons unified to icon+text style (matching Backlog/Social headers); Reset uses `RotateCcw` icon with muted red hover; added "Synced X ago" timestamp; timezone label moved below the toggle row
 
-## v26.05.16
+### Search
+
+- `fetchConsoleGames` now reads from / writes to the `consoles` + `games` IDB stores (24 h TTL on `consoles.fetchedAt`); removed `ra_consolegames_*` localStorage cache
+- `getAllGamesFromDB` rewritten as a single three-store transaction (`games`, `consoles`, `meta`); games are now enriched with `consoleName` from the `consoles` store, fixing the missing console name column in search results
+- Added `idbGetAllByIndex` helper for index-filtered IDB reads
+- Search page header now shows "Synced X ago" next to the Refresh All button, sourced from `lastFullFetch`; removed the duplicate timestamp from the stats line below
+
+## v26.05.16 — Search: IndexedDB Index, Achievement Filter + Console Multi-Select
 
 ### Search
 
@@ -31,7 +62,7 @@
 - Games with zero achievements are labelled "No achievements" in search results
 - "Refresh Data" and "Purge Cache" in the mobile menu now also clear the IndexedDB search index so the next fetch starts fresh
 
-## v26.05.15
+## v26.05.15 — Activity Timezone, Friends Feed Redesign, Backlog Pagination + Global Search
 
 ### Profile
 
@@ -51,7 +82,7 @@
 - Fixed backlog rows blinking on scroll — `GameRow` was defined inside the render path, causing React to unmount/remount every row on each render; fixed by calling it as a plain function instead of a JSX component
 - Moved page size selector from the filter bar to the pagination footer; added bottom padding on mobile so the Next button no longer overlaps the back-to-top floating button
 
-## v26.05.13
+## v26.05.13 — Profile Subset Title Rendering Fixes
 
 ### Profile
 

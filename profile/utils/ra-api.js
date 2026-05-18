@@ -3,11 +3,11 @@
  *
  * Two layers:
  *   1. Raw endpoint wrappers (one per RA API endpoint) — pure fetch + camelCase map, no cache.
- *   2. App-level composites (fetchProfile, fetchAchievementsChunk, fetchBacklog,
- *      fetchGameDetails, validateCredentials) — compose raw calls, add sessionStorage cache.
+ *   2. App-level composites (fetchProfile, fetchAllAchievements, fetchBacklog,
+ *      fetchGameDetails, validateCredentials) — compose raw calls, add IDB / sessionStorage cache.
  *
  * Auth:  credentials are stored in localStorage as { username, apiKey }.
- * Cache: sessionStorage, 5-minute TTL, key per function + username [+ gameId / chunkIndex].
+ * Cache: IDB (achievements, backlog, social, console games) + sessionStorage 5-min TTL (profile, game details).
  * Rate:  same-endpoint paginated loops sleep 1 s between pages.
  *
  * Docs: https://api-docs.retroachievements.org/
@@ -129,34 +129,49 @@ function idbClear(storeName) {
   }));
 }
 
+function idbGetAllByIndex(storeName, indexName, value) {
+  return openDB().then(db => new Promise((resolve, reject) => {
+    const req = db.transaction(storeName, 'readonly')
+      .objectStore(storeName).index(indexName).getAll(IDBKeyRange.only(value));
+    req.onsuccess = () => resolve(req.result ?? []);
+    req.onerror   = e => reject(e.target.error);
+  }));
+}
+
+function idbMetaPut(key, value) {
+  return openDB().then(db => new Promise((resolve, reject) => {
+    const tx = db.transaction('meta', 'readwrite');
+    tx.objectStore('meta').put(value, key);
+    tx.oncomplete = () => resolve();
+    tx.onerror    = e => reject(e.target.error);
+  }));
+}
+
 export async function getAllGamesFromDB() {
   const db = await openDB();
   return new Promise((resolve, reject) => {
-    const tx     = db.transaction(['games', 'meta'], 'readonly');
-    const allReq = tx.objectStore('games').getAll();
-    const ffReq  = tx.objectStore('meta').get('lastFullFetch');
-    // Build consolesFetched from the consoles store (read separately after tx)
+    const tx          = db.transaction(['games', 'consoles', 'meta'], 'readonly');
+    const gamesReq    = tx.objectStore('games').getAll();
+    const consolesReq = tx.objectStore('consoles').getAll();
+    const ffReq       = tx.objectStore('meta').get('lastFullFetch');
     tx.oncomplete = () => {
-      openDB().then(db2 => {
-        const tx2 = db2.transaction('consoles', 'readonly');
-        const cfReq = tx2.objectStore('consoles').getAll();
-        tx2.oncomplete = () => {
-          const consolesFetched = {};
-          (cfReq.result || []).forEach(c => { consolesFetched[String(c.id)] = c.fetchedAt || 0; });
-          resolve({
-            games:           allReq.result || [],
-            consolesFetched,
-            lastFullFetch:   ffReq.result  || null,
-          });
-        };
-        tx2.onerror = e => reject(e.target.error);
+      const consoleMap     = {};
+      const consolesFetched = {};
+      (consolesReq.result || []).forEach(c => {
+        consoleMap[c.id]              = c.name;
+        consolesFetched[String(c.id)] = c.fetchedAt || 0;
       });
+      const games = (gamesReq.result || []).map(g => ({
+        ...g,
+        consoleName: consoleMap[g.consoleId] || '',
+      }));
+      resolve({ games, consolesFetched, lastFullFetch: ffReq.result || null });
     };
     tx.onerror = e => reject(e.target.error);
   });
 }
 
-export async function updateAllGamesForConsole(consoleId, consoleName, games) {
+async function updateAllGamesForConsole(consoleId, consoleName, games) {
   const db = await openDB();
   return new Promise((resolve, reject) => {
     const tx        = db.transaction(['games', 'consoles'], 'readwrite');
@@ -194,16 +209,6 @@ export async function markAllGamesFullFetch() {
     tx.objectStore('meta').put(Date.now(), 'lastFullFetch');
     tx.oncomplete = () => resolve();
     tx.onerror    = e => reject(e.target.error);
-  });
-}
-
-export async function clearAllGamesStore() {
-  if (_db) { _db.close(); _db = null; }
-  return new Promise((resolve, reject) => {
-    const req = indexedDB.deleteDatabase(DB_NAME);
-    req.onsuccess = () => resolve();
-    req.onblocked = () => resolve();
-    req.onerror   = e => reject(e.target.error);
   });
 }
 
@@ -1369,25 +1374,71 @@ export async function fetchProfile(username, apiKey, targetUser) {
   return result;
 }
 
-/**
- * Fetches a 6-month achievement chunk by index (0 = most recent, 1 = 6–12 months ago).
- * Cached for 5 minutes under key ra_chunk_{username}_{chunkIndex}.
- */
-export async function fetchAchievementsChunk(username, apiKey, chunkIndex) {
-  const cacheKey = `ra_chunk_${username}_${chunkIndex}`;
-  const cached = cacheGet(cacheKey);
-  if (cached) return cached;
-
+async function fetchChunk(username, apiKey, chunkIndex) {
   const nowTs     = Math.floor(Date.now() / 1000);
   const chunkSize = 182 * 24 * 60 * 60;
   const toTs      = nowTs - chunkIndex * chunkSize;
   const fromTs    = toTs - chunkSize;
-
   const raw = await withRetry(() => raFetch('API_GetAchievementsEarnedBetween.php', username, apiKey,
     { u: username, f: fromTs, t: toTs }));
-  const result = (Array.isArray(raw) ? raw : []).map(mapAchievementUnlock);
-  cacheSet(cacheKey, result);
-  return result;
+  return (Array.isArray(raw) ? raw : []).map(mapAchievementUnlock);
+}
+
+export async function clearProgress(username) {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx    = db.transaction('progress', 'readwrite');
+    const store = tx.objectStore('progress');
+    store.index('username').openKeyCursor(IDBKeyRange.only(username)).onsuccess = e => {
+      const cursor = e.target.result;
+      if (cursor) { store.delete(cursor.primaryKey); cursor.continue(); }
+    };
+    tx.oncomplete = () => resolve();
+    tx.onerror    = e => reject(e.target.error);
+  });
+}
+
+/**
+ * Fetches both 6-month achievement chunks (last 12 months total), IDB-backed with a 5-min TTL.
+ * onPartial fires after chunk 0 arrives for progressive rendering during cache misses.
+ */
+export async function fetchAllAchievements(username, apiKey, { onPartial } = {}, forceRefresh = false) {
+  const sortByDate = (a, b) => new Date(b.date) - new Date(a.date);
+
+  if (!forceRefresh) {
+    const cachedTs = await idbGet('meta', `progress_ts_${username}`);
+    if (cachedTs && (Date.now() - cachedTs) < CHUNK_TTL) {
+      const rows = await idbGetAllByIndex('progress', 'username', username);
+      return rows.flatMap(r => r.achievements).sort(sortByDate);
+    }
+  }
+
+  await clearProgress(username);
+
+  const chunk0 = await fetchChunk(username, apiKey, 0);
+  if (onPartial) onPartial([...chunk0].sort(sortByDate));
+
+  await sleep(1000);
+  const chunk1 = await fetchChunk(username, apiKey, 1);
+
+  const all = [...chunk0, ...chunk1];
+  const db  = await openDB();
+  await new Promise((resolve, reject) => {
+    const tx    = db.transaction('progress', 'readwrite');
+    const store = tx.objectStore('progress');
+    const byGame = {};
+    all.forEach(ach => {
+      if (!byGame[ach.gameId]) byGame[ach.gameId] = [];
+      byGame[ach.gameId].push(ach);
+    });
+    Object.entries(byGame).forEach(([gameId, achs]) =>
+      store.put({ username, gameId: Number(gameId), achievements: achs }));
+    tx.oncomplete = () => resolve();
+    tx.onerror    = e => reject(e.target.error);
+  });
+  await idbMetaPut(`progress_ts_${username}`, Date.now());
+
+  return all.sort(sortByDate);
 }
 
 export async function getBacklog(username) {
@@ -1402,7 +1453,9 @@ export async function clearBacklog(username) {
   return idbDelete('backlog', username);
 }
 
-const BACKLOG_TTL = 24 * 60 * 60 * 1000;
+const BACKLOG_TTL  = 24 * 60 * 60 * 1000;
+const CONSOLE_TTL  = 24 * 60 * 60 * 1000;
+const CHUNK_TTL    =  5 * 60 * 1000;
 
 /**
  * Fetches the user's want-to-play list (all pages, 500/page).
@@ -1462,13 +1515,14 @@ export async function fetchConsoles(username, apiKey) {
 
 /**
  * Fetches the full game list for a console, sorted alphabetically.
- * Cached under key ra_consolegames_{consoleId}.
+ * IDB-backed: cache hit if consoles.fetchedAt < CONSOLE_TTL.
  */
 export async function fetchConsoleGames(username, apiKey, consoleId, forceRefresh = false) {
-  const cacheKey = `ra_consolegames_${consoleId}`;
   if (!forceRefresh) {
-    const cached = lcacheGet(cacheKey);
-    if (cached) return cached;
+    const row = await idbGet('consoles', consoleId);
+    if (row?.fetchedAt && (Date.now() - row.fetchedAt) < CONSOLE_TTL) {
+      return idbGetAllByIndex('games', 'consoleId', consoleId);
+    }
   }
 
   // API_GetGameList returns a plain array (no Results/Total wrapper), so paginate manually.
@@ -1492,7 +1546,6 @@ export async function fetchConsoleGames(username, apiKey, consoleId, forceRefres
       if (aTagged !== bTagged) return aTagged - bTagged;
       return a.title.localeCompare(b.title);
     });
-  lcacheSet(cacheKey, result);
   await updateAllGamesForConsole(consoleId, result[0]?.consoleName || '', result);
   return result;
 }

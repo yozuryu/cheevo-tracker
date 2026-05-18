@@ -158,11 +158,16 @@ function SearchApp() {
             <span className="text-[13px] text-white tracking-wide uppercase font-medium">Search Games</span>
           </div>
           {hasSomeData && fetchStatus !== 'fetching' && (
-            <button type="button" onClick={() => startFetch(true)}
-              className="ml-auto flex items-center gap-1.5 text-[9px] font-semibold uppercase tracking-wider text-[#546270] hover:text-[#66c0f4] transition-colors">
-              <RefreshCw size={11} />
-              Refresh All
-            </button>
+            <div className="ml-auto flex items-center gap-3">
+              {store.lastFullFetch && (
+                <span className="text-[9px] text-[#546270]">Synced {relativeTime(store.lastFullFetch)}</span>
+              )}
+              <button type="button" onClick={() => startFetch(true)}
+                className="flex items-center gap-1.5 text-[9px] font-semibold uppercase tracking-wider text-[#546270] hover:text-[#66c0f4] transition-colors">
+                <RefreshCw size={11} />
+                Refresh All
+              </button>
+            </div>
           )}
         </div>
 
@@ -304,12 +309,7 @@ function SearchApp() {
               <span className="mx-1.5 text-[#2a475e]">·</span>
               <span className="text-[#8f98a0]">{indexedConsoles}</span> consoles indexed
             </span>
-            {store.lastFullFetch ? (
-              <span className="text-[10px] text-[#546270]">
-                <span className="text-[#2a475e] mr-1.5">·</span>
-                last updated {relativeTime(store.lastFullFetch)}
-              </span>
-            ) : (
+            {!store.lastFullFetch && (
               <>
                 <span className="text-[#2a475e]">·</span>
                 <button type="button" onClick={() => startFetch(false)}
