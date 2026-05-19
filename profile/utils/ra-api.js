@@ -1635,20 +1635,28 @@ export async function fetchSocial(username, apiKey, forceRefresh = false) {
  * Reads cached friend_activity from IDB for the given usernames.
  * Returns a Map<username, { gameId, gameTitle, gameIcon, lastTs }> — only entries with data.
  */
+const toIso = (s) =>
+  typeof s === 'string' && !s.includes('T') && !s.endsWith('Z') ? s.replace(' ', 'T') + 'Z' : s;
+
 export async function getFriendActivityMap(usernames) {
+  const TTL_24H = 24 * 60 * 60 * 1000;
   const entries = await Promise.all(usernames.map(u => idbGet('friend_activity', u)));
   const map = new Map();
   entries.forEach((entry, i) => {
     if (!entry?.data?.length) return;
-    const ach = entry.data[0];
-    const raw = ach.date;
-    const iso = typeof raw === 'string' && !raw.includes('T') && !raw.endsWith('Z')
-      ? raw.replace(' ', 'T') + 'Z' : raw;
+    // Scan all achievements to find the most recent — array order is not guaranteed newest-first
+    let bestAch = null;
+    let bestTs  = -Infinity;
+    for (const ach of entry.data) {
+      const ts = new Date(toIso(ach.date)).getTime();
+      if (ts > bestTs) { bestTs = ts; bestAch = ach; }
+    }
+    if (!bestAch || Date.now() - bestTs > TTL_24H) return;
     map.set(usernames[i], {
-      gameId:    ach.gameId,
-      gameTitle: ach.gameTitle,
-      gameIcon:  ach.gameIcon,
-      lastTs:    new Date(iso).getTime(),
+      gameId:    bestAch.gameId,
+      gameTitle: bestAch.gameTitle,
+      gameIcon:  bestAch.gameIcon,
+      lastTs:    bestTs,
     });
   });
   return map;

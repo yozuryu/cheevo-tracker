@@ -1740,10 +1740,10 @@ const SocialUserRow = ({ user, isMutual, onCompare, lastPlayed }) => (
             <img src={getMediaUrl(lastPlayed.gameIcon)} alt=""
               className="w-3 h-3 rounded-[1px] shrink-0 object-cover bg-[#131a22]" />
           )}
-          <span className="text-[9px] text-[#546270] truncate">
-            {lastPlayed.gameTitle}
+          <span className="text-[9px] truncate">
+            <span className="text-[#66c0f4]">{lastPlayed.gameTitle}</span>
             <span className="text-[#3d4e5a] mx-0.5">·</span>
-            {timeAgo(lastPlayed.lastTs)}
+            <span className="text-[#546270]">{timeAgo(lastPlayed.lastTs)}</span>
           </span>
         </a>
       )}

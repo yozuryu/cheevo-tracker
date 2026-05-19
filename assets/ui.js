@@ -186,18 +186,31 @@ function MenuDropdown({ onClose }) {
     return () => document.removeEventListener('mousedown', handleClick);
   }, [onClose]);
 
-  function handleRefresh() {
+  async function handleRefresh() {
     sessionStorage.clear();
-    const lsKeys = Object.keys(localStorage).filter(k => k.startsWith('ra_'));
-    lsKeys.forEach(k => localStorage.removeItem(k));
+    Object.keys(localStorage).filter(k => k.startsWith('ra_')).forEach(k => localStorage.removeItem(k));
+    // Clear only ephemeral IDB stores — keep consoles + games (expensive catalog data)
+    if (window.indexedDB) {
+      await new Promise(resolve => {
+        const req = indexedDB.open('cheevo_tracker');
+        req.onsuccess = e => {
+          const db = e.target.result;
+          const toClean = ['progress', 'friend_activity', 'backlog', 'friend_list', 'meta']
+            .filter(s => db.objectStoreNames.contains(s));
+          if (!toClean.length) { db.close(); resolve(); return; }
+          const tx = db.transaction(toClean, 'readwrite');
+          toClean.forEach(s => tx.objectStore(s).clear());
+          tx.oncomplete = () => { db.close(); resolve(); };
+          tx.onerror    = () => { db.close(); resolve(); };
+        };
+        req.onerror = () => resolve();
+      });
+    }
     location.reload();
   }
 
   async function handlePurgeCache() {
-    sessionStorage.clear();
-    const lsKeys = Object.keys(localStorage).filter(k => k.startsWith('ra_'));
-    lsKeys.forEach(k => localStorage.removeItem(k));
-    if (window.indexedDB) indexedDB.deleteDatabase('cheevo_tracker');
+    // Clear only SW asset cache — IDB data (including game catalog) is untouched
     if ('caches' in window) {
       const keys = await caches.keys();
       await Promise.all(keys.map(k => caches.delete(k)));

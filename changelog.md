@@ -1,11 +1,16 @@
 # Changelog
 
-## v26.05.19 — Social Last Played + IDB Migration Phases 4 & 5 + Bug Fixes
+## v26.05.19 — Separated Cache Actions + Social Last Played + IDB Migration + Bug Fixes
+
+### Structure
+
+- **"Refresh Data"** now selectively clears only ephemeral IDB stores (`progress`, `friend_activity`, `backlog`, `friend_list`, `meta`) + sessionStorage + `ra_*` localStorage — `consoles` and `games` stores are preserved, so the full game catalog doesn't need to be re-downloaded after each refresh
+- **"Purge Cache"** now clears only the service worker asset cache (JS, HTML, icons) — IDB is completely untouched; use this after a deployment to get fresh app files without losing game data
 
 ### RetroAchievements
 
 - Fixed `fetchFriendsActivity` Phase 2: `friendUser` was referenced from the wrong (outer) scope inside the cached-batch `forEach`, causing callbacks to fire with `undefined` as the user argument — now correctly destructured from `followingList[i]` per iteration
-- Added `getFriendActivityMap(usernames)` to `ra-api.js` — batch IDB reads from `friend_activity` store, returns `Map<username, { gameId, gameTitle, gameIcon, lastTs }>`
+- Added `getFriendActivityMap(usernames)` to `ra-api.js` — batch IDB reads from `friend_activity` store; scans all achievements per user to find the true most-recent entry (array order not guaranteed), applies 24h cutoff, returns `Map<username, { gameId, gameTitle, gameIcon, lastTs }>`
 
 ### Profile
 

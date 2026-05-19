@@ -330,21 +330,35 @@
     sheet.appendChild(divider());
 
     // Refresh Data
-    const refreshRow = makeRow('button', null, ICON_REFRESH, '#66c0f4', '#202d39', 'Refresh Data', 'Clear cached API data and reload');
-    refreshRow.addEventListener('click', () => {
+    const refreshRow = makeRow('button', null, ICON_REFRESH, '#66c0f4', '#202d39', 'Refresh Data', 'Clear profile & activity cache, keep game catalog');
+    refreshRow.addEventListener('click', async () => {
       sessionStorage.clear();
       Object.keys(localStorage).filter(k => k.startsWith('ra_')).forEach(k => localStorage.removeItem(k));
-      if (window.indexedDB) indexedDB.deleteDatabase('cheevo_tracker');
+      // Clear only ephemeral IDB stores — keep consoles + games (expensive catalog data)
+      if (window.indexedDB) {
+        await new Promise(resolve => {
+          const req = indexedDB.open('cheevo_tracker');
+          req.onsuccess = e => {
+            const db = e.target.result;
+            const toClean = ['progress', 'friend_activity', 'backlog', 'friend_list', 'meta']
+              .filter(s => db.objectStoreNames.contains(s));
+            if (!toClean.length) { db.close(); resolve(); return; }
+            const tx = db.transaction(toClean, 'readwrite');
+            toClean.forEach(s => tx.objectStore(s).clear());
+            tx.oncomplete = () => { db.close(); resolve(); };
+            tx.onerror    = () => { db.close(); resolve(); };
+          };
+          req.onerror = () => resolve();
+        });
+      }
       location.reload();
     });
     sheet.appendChild(refreshRow);
 
     // Purge Cache
-    const purgeRow = makeRow('button', null, ICON_PURGE, '#8f98a0', '#202d39', 'Purge Cache', 'Delete all PWA asset caches and reload');
+    const purgeRow = makeRow('button', null, ICON_PURGE, '#8f98a0', '#202d39', 'Purge Cache', 'Force fresh app download, keep all data');
     purgeRow.addEventListener('click', async () => {
-      sessionStorage.clear();
-      Object.keys(localStorage).filter(k => k.startsWith('ra_')).forEach(k => localStorage.removeItem(k));
-      if (window.indexedDB) indexedDB.deleteDatabase('cheevo_tracker');
+      // Clear only SW asset cache — IDB data (including game catalog) is untouched
       if ('caches' in window) {
         const keys = await caches.keys();
         await Promise.all(keys.map(k => caches.delete(k)));
