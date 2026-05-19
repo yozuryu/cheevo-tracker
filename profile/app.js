@@ -11,6 +11,7 @@ import {
   getBacklog,
   getSocialData,
   staleFriendActivity, clearAllFriendActivity,
+  getFriendActivityMap,
 } from './utils/ra-api.js';
 import { Topbar, Footer } from '../assets/ui.js';
 
@@ -1715,7 +1716,7 @@ const CompareModal = ({ otherUser, myGames, compareData, loading, error, onClose
   );
 };
 
-const SocialUserRow = ({ user, isMutual, onCompare }) => (
+const SocialUserRow = ({ user, isMutual, onCompare, lastPlayed }) => (
   <div className="flex items-center gap-2.5 px-2.5 py-2 bg-[#1b2838] hover:bg-[#202d39] rounded-[2px] transition-colors">
     <img
       src={user.userPic ? getMediaUrl(user.userPic) : `${MEDIA_URL}/UserPic/${user.user}.png`}
@@ -1731,6 +1732,21 @@ const SocialUserRow = ({ user, isMutual, onCompare }) => (
       {isMutual && (
         <span className="text-[7px] font-bold uppercase tracking-[0.07em] px-1 py-[1px] rounded-[2px] border border-[rgba(102,192,244,0.3)] bg-[rgba(102,192,244,0.08)] text-[#66c0f4] w-fit">Mutual</span>
       )}
+      {lastPlayed && (
+        <a href={`../game/?id=${lastPlayed.gameId}`}
+          className="flex items-center gap-1 mt-[2px] w-fit max-w-full hover:opacity-75 transition-opacity"
+          onClick={e => e.stopPropagation()}>
+          {lastPlayed.gameIcon && (
+            <img src={getMediaUrl(lastPlayed.gameIcon)} alt=""
+              className="w-3 h-3 rounded-[1px] shrink-0 object-cover bg-[#131a22]" />
+          )}
+          <span className="text-[9px] text-[#546270] truncate">
+            {lastPlayed.gameTitle}
+            <span className="text-[#3d4e5a] mx-0.5">·</span>
+            {timeAgo(lastPlayed.lastTs)}
+          </span>
+        </a>
+      )}
     </div>
     {user.points != null && (
       <span className="text-[10px] text-[#e5b143] shrink-0">{user.points.toLocaleString()} pts</span>
@@ -1745,6 +1761,17 @@ const SocialUserRow = ({ user, isMutual, onCompare }) => (
 
 const SocialTab = ({ socialData, socialError, onRetry, onCompare }) => {
   const [sortBy, setSortBy] = useState('az');
+  const [activityMap, setActivityMap] = useState(new Map());
+
+  useEffect(() => {
+    if (!socialData) return;
+    const usernames = [
+      ...(socialData.following?.results || []),
+      ...(socialData.followers?.results || []),
+    ].map(u => u.user);
+    if (usernames.length === 0) return;
+    getFriendActivityMap(usernames).then(setActivityMap);
+  }, [socialData]);
 
   const sortUsers = (users) => {
     const s = [...users];
@@ -1815,7 +1842,7 @@ const SocialTab = ({ socialData, socialError, onRetry, onCompare }) => {
             <div className="text-[11px] text-[#546270] py-3">None yet.</div>
           ) : (
             <div className="flex flex-col gap-[2px]">
-              {sortUsers(users).map(u => <SocialUserRow key={u.user} user={u} isMutual={isMutual(u)} onCompare={onCompare} />)}
+              {sortUsers(users).map(u => <SocialUserRow key={u.user} user={u} isMutual={isMutual(u)} onCompare={onCompare} lastPlayed={activityMap.get(u.user)} />)}
             </div>
           )}
         </div>

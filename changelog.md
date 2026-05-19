@@ -1,6 +1,18 @@
 # Changelog
 
-## v26.05.19 — IDB Migration Phases 4 & 5: Achievement Chunks + Cleanup
+## v26.05.19 — Social Last Played + IDB Migration Phases 4 & 5 + Bug Fixes
+
+### RetroAchievements
+
+- Fixed `fetchFriendsActivity` Phase 2: `friendUser` was referenced from the wrong (outer) scope inside the cached-batch `forEach`, causing callbacks to fire with `undefined` as the user argument — now correctly destructured from `followingList[i]` per iteration
+- Added `getFriendActivityMap(usernames)` to `ra-api.js` — batch IDB reads from `friend_activity` store, returns `Map<username, { gameId, gameTitle, gameIcon, lastTs }>`
+
+### Profile
+
+- Social tab now shows "last played" info on each user row: game icon + title + time ago (e.g. `[icon] Sonic 3 · 2h ago`), resolved from cached `friend_activity` IDB data — zero API calls, gracefully absent if activity hasn't been fetched yet
+- Tapping the last-played line navigates to the game page
+
+
 
 ### Structure
 

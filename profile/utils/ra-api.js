@@ -1632,6 +1632,29 @@ export async function fetchSocial(username, apiKey, forceRefresh = false) {
 }
 
 /**
+ * Reads cached friend_activity from IDB for the given usernames.
+ * Returns a Map<username, { gameId, gameTitle, gameIcon, lastTs }> — only entries with data.
+ */
+export async function getFriendActivityMap(usernames) {
+  const entries = await Promise.all(usernames.map(u => idbGet('friend_activity', u)));
+  const map = new Map();
+  entries.forEach((entry, i) => {
+    if (!entry?.data?.length) return;
+    const ach = entry.data[0];
+    const raw = ach.date;
+    const iso = typeof raw === 'string' && !raw.includes('T') && !raw.endsWith('Z')
+      ? raw.replace(' ', 'T') + 'Z' : raw;
+    map.set(usernames[i], {
+      gameId:    ach.gameId,
+      gameTitle: ach.gameTitle,
+      gameIcon:  ach.gameIcon,
+      lastTs:    new Date(iso).getTime(),
+    });
+  });
+  return map;
+}
+
+/**
  * Fetches 30-day achievement activity for each user in followingList.
  * Cache strategy:
  *   - No cache        → full fetch: 3 × 10-day windows
@@ -1693,58 +1716,68 @@ export async function fetchFriendsActivity(username, apiKey, followingList, { on
     return windows;
   }
 
-  for (let i = 0; i < total; i++) {
-    const { user: friendUser } = followingList[i];
-    const cached     = await idbGet('friend_activity', friendUser);
-    let madeApiCall  = false;
+  // Phase 1 — parallel IDB reads so all cached data surfaces at once
+  const cachedAll = await Promise.all(
+    followingList.map(({ user }) => idbGet('friend_activity', user))
+  );
 
+  // Phase 2 — fire all onUser callbacks for cached entries before any API call
+  cachedAll.forEach((cached, i) => {
     if (cached) {
-      const { ts, data } = cached;
-      const fresh = (Date.now() - ts) <= TTL_1H;
-
-      onUser?.(friendUser, data);
+      const { user: friendUser } = followingList[i];
+      onUser?.(friendUser, cached.data);
       onProgress?.(++done, total);
+    }
+  });
 
-      if (!fresh) {
-        madeApiCall = true;
+  // Phase 3 — build work queue: stale cached + never-fetched, in original order
+  const needsFetch = cachedAll
+    .map((cached, i) => ({ friendUser: followingList[i].user, cached }))
+    .filter(({ cached }) => !cached || (Date.now() - cached.ts) > TTL_1H);
+
+  // Phase 4 — sequential API fetches (rate-limited)
+  for (let j = 0; j < needsFetch.length; j++) {
+    const { friendUser, cached } = needsFetch[j];
+
+    try {
+      if (cached) {
+        // Stale — incremental update
+        const { ts, data } = cached;
         const sinceTs    = Math.floor(ts / 1000);
         const incWindows = incrementalWindows(sinceTs);
-        try {
-          const windows = incWindows ?? fullWindows();
-          const delta   = await fetchWindows(friendUser, windows);
-          if (incWindows) {
-            const deltaKeys = new Set(delta.map(a => `${a.achievementId}|${a.date}`));
-            const kept      = data.filter(a =>
-              new Date(a.date).getTime() / 1000 >= CUTOFF_SEC && !deltaKeys.has(`${a.achievementId}|${a.date}`)
-            );
+        const windows    = incWindows ?? fullWindows();
+        const delta      = await fetchWindows(friendUser, windows);
+
+        if (incWindows) {
+          const deltaKeys = new Set(delta.map(a => `${a.achievementId}|${a.date}`));
+          const kept      = data.filter(a =>
+            new Date(a.date).getTime() / 1000 >= CUTOFF_SEC && !deltaKeys.has(`${a.achievementId}|${a.date}`)
+          );
+          if (delta.length > 0) {
             const merged = [...delta, ...kept];
             await idbPut('friend_activity', { username: friendUser, ts: Date.now(), data: merged });
-            if (delta.length > 0) onUser?.(friendUser, merged);
-            else await idbPut('friend_activity', { username: friendUser, ts: Date.now(), data: kept });
+            onUser?.(friendUser, merged);
           } else {
-            await idbPut('friend_activity', { username: friendUser, ts: Date.now(), data: delta });
-            onUser?.(friendUser, delta);
+            await idbPut('friend_activity', { username: friendUser, ts: Date.now(), data: kept });
           }
-        } catch (e) {
-          if (e.message === 'AUTH_ERROR') throw e;
-          console.warn(`[friends activity] incremental update failed for ${friendUser}:`, e.message);
+        } else {
+          await idbPut('friend_activity', { username: friendUser, ts: Date.now(), data: delta });
+          onUser?.(friendUser, delta);
         }
-      }
-    } else {
-      madeApiCall = true;
-      try {
+      } else {
+        // Never fetched — full load
         const allAchs = await fetchWindows(friendUser, fullWindows());
         await idbPut('friend_activity', { username: friendUser, ts: Date.now(), data: allAchs });
         onUser?.(friendUser, allAchs);
-      } catch (e) {
-        if (e.message === 'AUTH_ERROR') throw e;
-        console.warn(`[friends activity] fetch failed for ${friendUser}:`, e.message);
-        onError?.(friendUser, e.message);
+        onProgress?.(++done, total);
       }
-      onProgress?.(++done, total);
+    } catch (e) {
+      if (e.message === 'AUTH_ERROR') throw e;
+      console.warn(`[friends activity] fetch failed for ${friendUser}:`, e.message);
+      if (!cached) { onError?.(friendUser, e.message); onProgress?.(++done, total); }
     }
 
-    if (madeApiCall && i < total - 1) await sleep(1000);
+    if (j < needsFetch.length - 1) await sleep(1000);
   }
 }
 

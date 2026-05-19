@@ -195,6 +195,115 @@ No new store needed — redirect reads to the existing `consoles` + `games` stor
 
 ---
 
+## IDB-Powered Features
+
+Features that work entirely (or near-entirely) from local IDB data — no heavy API usage.
+
+---
+
+### Backlog × Progress Enrichment
+
+Enrich the backlog tab with real progress data from the `progress` IDB store. Currently each backlog row is blind to how far along you are.
+
+**Data join:** `backlog.results[].gameId` × `progress` store filtered by `[username, gameId]` → count earned achievements. `games` store gives `numAchievements` total for the progress bar denominator.
+
+**Display additions per row:**
+- Progress bar: earned / total achievements (gold at 100%)
+- Status chip: `Not started` (gray) / `In Progress` (blue, >0 but <100%) / `Mastered` (gold, 100%)
+- Sort option: by progress % (ascending = easiest to finish, descending = most invested)
+- Filter: "Started only" toggle to focus on in-progress games
+
+**Note on "Beaten":** RA's beaten status requires knowing which achievements are Win Condition type — not stored in the current `progress` rows (only events, not types). Omit beaten until achievement type data is added to the progress store.
+
+---
+
+### Progress Markers on Game Lists
+
+Show a small colored indicator on any game the user has touched, in both the search page and console game list page.
+
+**Data:** `idbGetAllByIndex('progress', 'username', username)` → build a `Set<gameId>` of started games and a `Map<gameId, { earned, total }>` for mastery check. Cross-reference with the displayed game list.
+
+**Marker design:**
+- Thin left-border accent on the game row (same style as achievement card stripes)
+- `#1a4a70` (dim blue) = started, some progress
+- `#e5b143` (gold) = mastered (earned === numAchievements)
+- No marker = untouched
+
+**Pages:**
+- `search/app.js` — load user progress map once on mount alongside `getAllGamesFromDB`; apply to result rows
+- `console/app.js` — load progress map once on mount; apply to game list rows
+
+**Cost:** single IDB read at page load, zero API calls.
+
+---
+
+### ~~Social List — Last Played~~ ✓ Done
+
+Add "last played" info to each user row in the Social tab (Following / Followers lists).
+
+**Data:** `friend_activity` IDB store, keyed by username. Each record has `achievements[]` sorted newest-first. `achievements[0]` gives the most recent game title and date.
+
+**Display:** below the username in the social row, add a small line:
+```
+[game icon]  Game Title  ·  2h ago
+```
+Only shown if `friend_activity` record exists for that user (graceful fallback to nothing if activity hasn't been fetched yet). Tapping/clicking navigates to the game page.
+
+**Cost:** IDB reads for each followed user's `friend_activity` record — all already cached from the Activity tab load.
+
+---
+
+### Unlock Statistics — Day / Week / Month
+
+Personal analytics computed entirely from the `progress` IDB store. No API calls.
+
+**Metrics (all computable from achievement `date` fields):**
+- Points and achievement count per day (last 30 days) — bar chart or table
+- Points and achievement count per week (last 12 weeks)
+- Points and achievement count per month (last 12 months)
+- Current unlock streak (consecutive days with ≥1 unlock)
+- Best streak (all-time from available data)
+- Most active day of the week (Mon–Sun average)
+- Average unlocks per active day
+
+**Placement:** new "Stats" sub-section within the Activity tab (beneath the heatmap), or a dedicated Stats tab. Stats tab preferred if the activity tab is already dense.
+
+**Cost:** single `idbGetAllByIndex('progress', 'username', username)` → flatten → compute in-memory.
+
+---
+
+### Backlog Health Summary
+
+A compact stats strip at the top of the Backlog tab showing the breakdown across all backlog games.
+
+**Metrics:**
+- Total backlog games
+- Not started (0 achievements earned)
+- In progress (>0 but <100% achievements)
+- Mastered (100% achievements)
+- Total achievements remaining across all backlog games (sum of `numAchievements - earned` per game)
+
+**Data:** `backlog` × `progress` × `games` — all in IDB, same join as Backlog × Progress Enrichment above.
+
+**Display:** horizontal stat chips in the backlog header row, same style as the existing "X games" count label.
+
+---
+
+### Friends Weekly Leaderboard
+
+Rank your followed users by achievements earned or points gained in the last 7 days, computed from cached `friend_activity` data.
+
+**Data:** `friend_activity` store → per user, filter `achievements` where `date >= 7 days ago` → sum points and count.
+
+**Display:** compact ranked list in the Activity tab Friends view (above the feed, or as a toggle), showing:
+- Rank, avatar, username
+- Achievements this week + points this week
+- Your own row included (from `progress` store)
+
+**Cost:** zero API calls — all data already in IDB from the friends feed load.
+
+---
+
 ## Console Completion %
 
 Show library completion stats per console on the console page — what % of that console's total game count the user has played at least one achievement in, and what % they've mastered.
