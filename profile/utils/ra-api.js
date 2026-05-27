@@ -1730,11 +1730,13 @@ export async function fetchFriendsActivity(username, apiKey, followingList, { on
   );
 
   // Phase 2 — fire all onUser callbacks for cached entries before any API call
+  // Only count fresh entries as done; stale entries are counted in Phase 4 after their API update
   cachedAll.forEach((cached, i) => {
     if (cached) {
       const { user: friendUser } = followingList[i];
       onUser?.(friendUser, cached.data);
-      onProgress?.(++done, total);
+      const isFresh = (Date.now() - cached.ts) <= TTL_1H;
+      if (isFresh) onProgress?.(++done, total);
     }
   });
 
@@ -1772,6 +1774,7 @@ export async function fetchFriendsActivity(username, apiKey, followingList, { on
           await idbPut('friend_activity', { username: friendUser, ts: Date.now(), data: delta });
           onUser?.(friendUser, delta);
         }
+        onProgress?.(++done, total);
       } else {
         // Never fetched — full load
         const allAchs = await fetchWindows(friendUser, fullWindows());
@@ -1782,7 +1785,8 @@ export async function fetchFriendsActivity(username, apiKey, followingList, { on
     } catch (e) {
       if (e.message === 'AUTH_ERROR') throw e;
       console.warn(`[friends activity] fetch failed for ${friendUser}:`, e.message);
-      if (!cached) { onError?.(friendUser, e.message); onProgress?.(++done, total); }
+      if (!cached) onError?.(friendUser, e.message);
+      onProgress?.(++done, total);
     }
 
     if (j < needsFetch.length - 1) await sleep(1000);

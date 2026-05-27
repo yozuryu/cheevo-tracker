@@ -1,5 +1,11 @@
 # Changelog
 
+## v26.05.27 — Bug Fix: Stale Friend Activity Progress Counter
+
+### RetroAchievements
+
+- Fixed stale friend activity refresh showing progress stuck at 26/26 from the start: Phase 2 of `fetchFriendsActivity` now only counts fresh entries as done; stale entries are counted in Phase 4 after their API update completes, so the counter accurately advances as each background fetch finishes
+
 ## v26.05.19 — Separated Cache Actions + Social Last Played + IDB Migration + Bug Fixes
 
 ### Structure
