@@ -11,7 +11,6 @@ import {
   getBacklog,
   getSocialData,
   staleFriendActivity, clearAllFriendActivity,
-  getFriendActivityMap,
   getSocialProfileMap, fetchAndCacheSocialProfiles,
   getSocialProfilesSyncTs, setSocialProfilesSyncTs, PROFILE_SYNC_TTL,
 } from './utils/ra-api.js';
@@ -1489,7 +1488,7 @@ function SeriesProgressTab({ seriesData, gamesData, backlogData }) {
 
 // ── Social Tab ────────────────────────────────────────────────────────────────
 
-const CompareModal = ({ otherUser, myGames, compareData, loading, error, onClose }) => {
+const CompareModal = ({ otherUser, myGames, compareData, loading, error, onClose, profileMap = new Map() }) => {
   const [sortBy, setSortBy] = useState('diff');
 
   useEffect(() => {
@@ -1557,7 +1556,7 @@ const CompareModal = ({ otherUser, myGames, compareData, loading, error, onClose
 
         <div className="flex items-center gap-3 px-4 py-3 border-b border-[#2a475e] shrink-0">
           <img
-            src={`${MEDIA_URL}/UserPic/${otherUser}.png`}
+            src={profileMap.get(otherUser)?.userPic ? getMediaUrl(profileMap.get(otherUser).userPic) : `${MEDIA_URL}/UserPic/${otherUser}.png`}
             alt={otherUser}
             className="w-8 h-8 rounded-full border border-[#101214] bg-[#131a22] object-cover shrink-0"
             onError={e => { e.currentTarget.style.visibility = 'hidden'; }}
@@ -1718,16 +1717,23 @@ const CompareModal = ({ otherUser, myGames, compareData, loading, error, onClose
   );
 };
 
-const SocialUserRow = ({ user, isMutual, onCompare, lastPlayed, cachedProfile }) => {
+const SocialUserRow = ({ user, isMutual, onCompare, cachedProfile }) => {
   const userPic = cachedProfile?.userPic || user.userPic;
+  const lastPlayed = cachedProfile?.lastPlayed ?? null;
+  const isRecentlyActive = lastPlayed?.lastPlayedTs && (Date.now() - lastPlayed.lastPlayedTs) < 60 * 60 * 1000;
   return (
   <div className="flex items-center gap-2.5 px-2.5 py-2 bg-[#1b2838] hover:bg-[#202d39] rounded-[2px] transition-colors">
-    <img
-      src={userPic ? getMediaUrl(userPic) : `${MEDIA_URL}/UserPic/${user.user}.png`}
-      alt={user.user}
-      className="w-7 h-7 rounded-full border border-[#101214] shrink-0 object-cover bg-[#131a22]"
-      onError={e => { e.currentTarget.style.visibility = 'hidden'; }}
-    />
+    <div className="relative shrink-0">
+      <img
+        src={userPic ? getMediaUrl(userPic) : `${MEDIA_URL}/UserPic/${user.user}.png`}
+        alt={user.user}
+        className="w-7 h-7 rounded-full border border-[#101214] object-cover bg-[#131a22]"
+        onError={e => { e.currentTarget.style.visibility = 'hidden'; }}
+      />
+      {isRecentlyActive && (
+        <span className="absolute bottom-0 right-0 w-2 h-2 rounded-full bg-[#4caf50] border border-[#1b2838]" />
+      )}
+    </div>
     <div className="flex flex-col min-w-0 flex-1">
       <div className="flex items-center gap-1 min-w-0">
         <a href={`../profile/?u=${user.user}`}
@@ -1745,23 +1751,39 @@ const SocialUserRow = ({ user, isMutual, onCompare, lastPlayed, cachedProfile })
           </div>
         )}
       </div>
-      {lastPlayed && (() => {
-        const { baseTitle, subsetName, isSubset, tags } = parseTitle(lastPlayed.gameTitle);
-        return (
-          <a href={`../game/?id=${lastPlayed.gameId}`}
-            className="flex items-center gap-1 mt-[2px] w-fit max-w-full hover:opacity-75 transition-opacity"
-            onClick={e => e.stopPropagation()}>
-            {lastPlayed.gameIcon && (
-              <img src={getMediaUrl(lastPlayed.gameIcon)} alt=""
-                className="w-3 h-3 rounded-[1px] shrink-0 object-cover bg-[#131a22]" />
-            )}
-            <span className="text-[9px] text-[#66c0f4] truncate">{baseTitle}</span>
-            {isSubset && <><span className="text-[7px] font-bold uppercase tracking-[0.07em] px-1 py-[1px] rounded-[2px] border border-[rgba(229,177,67,0.3)] bg-[rgba(229,177,67,0.1)] text-[#c8a84b] shrink-0">Subset</span>{subsetName && <span className="text-[9px] text-[#c8a84b] shrink-0 truncate">{subsetName}</span>}</>}
-            {tags.length > 0 && renderTildeTags(tags)}
-            <span className="text-[#3d4e5a] mx-0.5 shrink-0">·</span>
-            <span className="text-[9px] text-[#546270] shrink-0">{timeAgo(lastPlayed.lastTs)}</span>
-          </a>
-        );
+      {(() => {
+        const richPresence = cachedProfile?.richPresenceMsg;
+        const hasRichPresence = richPresence && richPresence !== 'Idle' && richPresence !== 'Unknown';
+        if (lastPlayed) {
+          const { baseTitle, subsetName, isSubset, tags } = parseTitle(lastPlayed.gameTitle);
+          return (
+            <div className="flex flex-col mt-[2px]">
+              <a href={`../game/?id=${lastPlayed.gameId}`}
+                className="block w-fit max-w-full hover:opacity-75 transition-opacity"
+                onClick={e => e.stopPropagation()}>
+                <div className="flex items-center gap-1 min-w-0">
+                  {lastPlayed.gameIcon && (
+                    <img src={getMediaUrl(lastPlayed.gameIcon)} alt=""
+                      className="w-3 h-3 rounded-[1px] shrink-0 object-cover bg-[#131a22]" />
+                  )}
+                  <span className="text-[9px] text-[#66c0f4] truncate min-w-0">{baseTitle}</span>
+                  <span className="text-[#3d4e5a] mx-0.5 shrink-0">·</span>
+                  <span className="text-[9px] text-[#546270] shrink-0">{timeAgo(lastPlayed.lastPlayedTs)}</span>
+                </div>
+                {(isSubset || tags.length > 0) && (
+                  <div className="flex items-center gap-1 mt-[1px]">
+                    {isSubset && <><span className="text-[7px] font-bold uppercase tracking-[0.07em] px-1 py-[1px] rounded-[2px] border border-[rgba(229,177,67,0.3)] bg-[rgba(229,177,67,0.1)] text-[#c8a84b] shrink-0">Subset</span>{subsetName && <span className="text-[9px] text-[#c8a84b] shrink-0">{subsetName}</span>}</>}
+                    {tags.length > 0 && renderTildeTags(tags)}
+                  </div>
+                )}
+              </a>
+              {hasRichPresence && (
+                <span className="text-[9px] text-[#546270] truncate">{richPresence}</span>
+              )}
+            </div>
+          );
+        }
+        return null;
       })()}
     </div>
     {user.points != null && (
@@ -1779,17 +1801,6 @@ const SocialUserRow = ({ user, isMutual, onCompare, lastPlayed, cachedProfile })
 const SocialTab = ({ socialData, socialError, onRetry, onCompare, profileMap = new Map() }) => {
   const [sortBy, setSortBy] = useState('az');
   const [subTab, setSubTab] = useState('following');
-  const [activityMap, setActivityMap] = useState(new Map());
-
-  useEffect(() => {
-    if (!socialData) return;
-    const usernames = [
-      ...(socialData.following?.results || []),
-      ...(socialData.followers?.results || []),
-    ].map(u => u.user);
-    if (usernames.length === 0) return;
-    getFriendActivityMap(usernames).then(setActivityMap);
-  }, [socialData]);
 
   const sortUsers = (users) => {
     const s = [...users];
@@ -1875,7 +1886,7 @@ const SocialTab = ({ socialData, socialError, onRetry, onCompare, profileMap = n
         <div className="text-[11px] text-[#546270] py-3">None yet.</div>
       ) : (
         <div className="flex flex-col gap-[2px]">
-          {sortUsers(active.users).map(u => <SocialUserRow key={u.user} user={u} isMutual={active.isMutual(u)} onCompare={onCompare} lastPlayed={activityMap.get(u.user)} cachedProfile={profileMap.get(u.user)} />)}
+          {sortUsers(active.users).map(u => <SocialUserRow key={u.user} user={u} isMutual={active.isMutual(u)} onCompare={onCompare} cachedProfile={profileMap.get(u.user)} />)}
         </div>
       )}
     </div>
@@ -3213,6 +3224,7 @@ export default function App() {
           loading={compareLoading}
           error={compareError}
           onClose={closeCompare}
+          profileMap={socialProfileMap}
         />
       )}
     </div>

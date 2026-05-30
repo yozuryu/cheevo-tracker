@@ -1662,7 +1662,8 @@ export async function getSocialProfileMap(users) {
 export async function fetchAndCacheSocialProfiles(username, apiKey, userList, { onProfile } = {}) {
   for (let i = 0; i < userList.length; i++) {
     try {
-      const profile = await getUserSummary(username, apiKey, { u: userList[i], g: 0, a: 0 });
+      const profile = await getUserSummary(username, apiKey, { u: userList[i], g: 1, a: 0 });
+      const rp = profile.recentlyPlayed?.[0];
       const record = {
         user:            userList[i],
         userPic:         profile.userPic,
@@ -1672,6 +1673,12 @@ export async function fetchAndCacheSocialProfiles(username, apiKey, userList, { 
         totalRanked:     profile.totalRanked,
         richPresenceMsg: profile.richPresenceMsg,
         motto:           profile.motto,
+        lastPlayed:      rp ? {
+          gameId:       rp.gameId,
+          gameTitle:    rp.title,
+          gameIcon:     rp.imageIcon,
+          lastPlayedTs: new Date(toIso(rp.lastPlayed)).getTime(),
+        } : null,
         ts:              Date.now(),
       };
       await idbPut('social_profiles', record);
@@ -1689,7 +1696,7 @@ const toIso = (s) =>
   typeof s === 'string' && !s.includes('T') && !s.endsWith('Z') ? s.replace(' ', 'T') + 'Z' : s;
 
 export async function getFriendActivityMap(usernames) {
-  const TTL_24H = 24 * 60 * 60 * 1000;
+  const TTL_24H = 7 * 24 * 60 * 60 * 1000;
   const entries = await Promise.all(usernames.map(u => idbGet('friend_activity', u)));
   const map = new Map();
   entries.forEach((entry, i) => {

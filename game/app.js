@@ -3,7 +3,7 @@ import { createRoot } from 'react-dom/client';
 import { Trophy, Crown, Medal, Lock, ExternalLink, AlertCircle, AlertTriangle, Flame, Feather, Gamepad2, Tag, Code, Calendar, BookOpen, MessageSquare, Loader, X } from 'lucide-react';
 import { MEDIA_URL, SITE_URL, TILDE_TAG_COLORS } from '../profile/utils/constants.js';
 import { getMediaUrl, parseTitle, formatDate, formatTimeAgo } from '../profile/utils/helpers.js';
-import { getCredentials, clearCredentials, getGameInfoAndUserProgress, getGameHashes, getGameProgression, getGameExtended, getActiveClaims, getGameRankAndScore, getComments, getGameLeaderboards, getUserGameLeaderboards, getLeaderboardEntries, getGame, fetchSocial } from '../profile/utils/ra-api.js';
+import { getCredentials, clearCredentials, getGameInfoAndUserProgress, getGameHashes, getGameProgression, getGameExtended, getActiveClaims, getGameRankAndScore, getComments, getGameLeaderboards, getUserGameLeaderboards, getLeaderboardEntries, getGame, fetchSocial, getSocialProfileMap } from '../profile/utils/ra-api.js';
 import { Topbar, Footer } from '../assets/ui.js';
 
 // ── Constants ─────────────────────────────────────────────────────────────────
@@ -178,6 +178,7 @@ function GameApp() {
   const [parentGame, setParentGame]             = useState(null);
   const [followingList, setFollowingList]         = useState(null);
   const [loadingFollowing, setLoadingFollowing]   = useState(false);
+  const [socialProfileMap, setSocialProfileMap]   = useState(new Map());
   const [selectedFriend, setSelectedFriend]       = useState(null);
   const [friendGameData, setFriendGameData]       = useState(null);
   const [loadingFriendData, setLoadingFriendData] = useState(false);
@@ -295,7 +296,9 @@ function GameApp() {
     setLoadingFollowing(true);
     try {
       const social = await fetchSocial(creds.username, creds.apiKey);
-      setFollowingList(social.following?.results || []);
+      const list = social.following?.results || [];
+      setFollowingList(list);
+      if (list.length) getSocialProfileMap(list.map(f => f.user)).then(setSocialProfileMap);
     } catch (err) {
       if (err?.message === 'AUTH_ERROR') handleAuthError();
       else setFollowingList([]);
@@ -677,7 +680,7 @@ function GameApp() {
                               <button key={f.user} type="button"
                                 onClick={() => selectFriendForCompare(f)}
                                 className="w-full flex items-center gap-2 px-2.5 py-2 hover:bg-[#1b2838] transition-colors text-left">
-                                <img src={f.userPic ? getMediaUrl(f.userPic) : `${MEDIA_URL}/UserPic/${f.user}.png`}
+                                <img src={(socialProfileMap.get(f.user)?.userPic || f.userPic) ? getMediaUrl(socialProfileMap.get(f.user)?.userPic || f.userPic) : `${MEDIA_URL}/UserPic/${f.user}.png`}
                                   alt={f.user}
                                   className="w-5 h-5 rounded-full border border-[#101214] shrink-0 object-cover bg-[#1b2838]"
                                   onError={e => { e.currentTarget.style.visibility = 'hidden'; }} />
@@ -696,7 +699,7 @@ function GameApp() {
               {selectedFriend && (
                 <div className="flex items-center gap-2.5 px-3 py-2 mb-2 bg-[#202d39] border border-[#2a475e] rounded-sm">
                   <img
-                    src={selectedFriend.userPic ? getMediaUrl(selectedFriend.userPic) : `${MEDIA_URL}/UserPic/${selectedFriend.user}.png`}
+                    src={(socialProfileMap.get(selectedFriend.user)?.userPic || selectedFriend.userPic) ? getMediaUrl(socialProfileMap.get(selectedFriend.user)?.userPic || selectedFriend.userPic) : `${MEDIA_URL}/UserPic/${selectedFriend.user}.png`}
                     alt={selectedFriend.user}
                     className="w-6 h-6 rounded-full border border-[#101214] shrink-0 object-cover bg-[#131a22]"
                     onError={e => { e.currentTarget.style.visibility = 'hidden'; }}

@@ -29,12 +29,23 @@ Inline code (backtick-wrapped) is rendered as `<code>` via `renderText()`.
 
 Sections render in this order (defined in `SECTION_ORDER`):
 
-1. Auth
-2. RetroAchievements
-3. Console Page
-4. (additional sections alphabetically)
+1. RetroAchievements API — gold `#e5b143`
+2. Auth — cyan `#57cbde`
+3. Cache — cyan `#57cbde`
+4. Structure — gray `#8f98a0`
+5. Profile — blue `#66c0f4`
+6. Social — blue `#66c0f4`
+7. Game Page — gray `#8f98a0`
+8. Console Page — gold `#e5b143`
+9. Achievement Page — cyan `#57cbde`
+10. Backlog — blue `#66c0f4`
+11. Settings — gray `#8f98a0`
+12. Search — blue `#66c0f4`
+13. Navigation — blue `#66c0f4`
+14. Polish — dark gray `#546270`
+15. User Page — gold `#e5b143`
 
-Each section has a distinct accent color for its badge.
+Unknown sections fall back to gray `#8f98a0`.
 
 ## Mobile
 

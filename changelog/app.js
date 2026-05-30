@@ -45,17 +45,21 @@ const renderText = (text) => {
 // ── Section order + colors ─────────────────────────────────────────────────────
 
 const SECTION_ORDER = [
+    'RetroAchievements API',
     'Auth',
-    'RetroAchievements',
-    'Console Page',
-    'User Page',
+    'Cache',
+    'Structure',
     'Profile',
-    'Achievement Page',
+    'Social',
     'Game Page',
+    'Console Page',
+    'Achievement Page',
+    'Backlog',
+    'Settings',
+    'Search',
     'Navigation',
     'Polish',
-    'Backlog',
-    'Structure',
+    'User Page',
 ];
 
 const sortSections = (sections) => {
@@ -67,17 +71,21 @@ const sortSections = (sections) => {
 };
 
 const SECTION_COLORS = {
-    'Auth':              '#57cbde',
-    'RetroAchievements': '#e5b143',
-    'Console Page':      '#e5b143',
-    'User Page':         '#e5b143',
-    'Profile':           '#66c0f4',
-    'Achievement Page':  '#57cbde',
-    'Game Page':         '#8f98a0',
-    'Navigation':        '#66c0f4',
-    'Polish':            '#546270',
-    'Backlog':           '#66c0f4',
-    'Structure':         '#8f98a0',
+    'RetroAchievements API': '#e5b143',
+    'Auth':                  '#57cbde',
+    'Cache':                 '#57cbde',
+    'Structure':             '#8f98a0',
+    'Profile':               '#66c0f4',
+    'Social':                '#66c0f4',
+    'Game Page':             '#8f98a0',
+    'Console Page':          '#e5b143',
+    'Achievement Page':      '#57cbde',
+    'Backlog':               '#66c0f4',
+    'Settings':              '#8f98a0',
+    'Search':                '#66c0f4',
+    'Navigation':            '#66c0f4',
+    'Polish':                '#546270',
+    'User Page':             '#e5b143',
 };
 
 const sectionColor = (title) =>

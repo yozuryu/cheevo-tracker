@@ -2,48 +2,68 @@
 
 ## v26.05.30 — Social Sub-tabs
 
-### RetroAchievements
+### RetroAchievements API
+
+- Social last-played now uses `recentlyPlayed[0]` from `getUserSummary` (`g:1, a:0`) instead of achievement unlock dates; users with no synced profile show nothing
+
+### Cache
+
+- Background profile sync added: after social data loads, individual profiles fetched sequentially (1 s apart) via `getUserSummary` and stored in new `social_profiles` IDB store (DB v2 — bumped to add store); stores `userPic`, `totalPoints`, `totalTruePoints`, `rank`, `totalRanked`, `richPresenceMsg`, `motto`, `lastPlayed`
+- Profile sync has 1 h TTL tracked in `meta` IDB store (`social_profiles_sync_<username>`); skipped on tab open if within TTL, always forced on manual Refresh
+- Social list (following/followers) has 24 h TTL with stale-while-revalidate: stale data shown immediately while fresh lists fetch in background; `socialRefreshing` indicator shown for both manual and background refreshes
+- Both stale and manual refresh paths share `applySocialData` helper for consistent behaviour; errors suppressed when stale data is available
+
+### Structure
+
+- Removed `getFriendActivityMap` dependency from social tab
+
+### Social
 
 - Social tab now splits Following and Followers into separate sub-tabs; Following is the default; count shown inline on each tab button; sort controls moved to the right of the sub-tab row
 - Replaced "Mutual" text badge in social rows with a compact `ArrowLeftRight` icon; hovering shows a "Mutual follow" tooltip
 - Fixed last-played game title in social rows not parsing tilde tags or subset notation — now uses `parseTitle` to show `baseTitle` with inline subset badge or tilde tag pills
 - Fixed tilde tags being suppressed on subset games in social rows — subset badge and tilde tags are now independent conditions so both render when present
-- After social data loads (tab open or refresh), lists display immediately; individual user profiles are then fetched sequentially (1 s apart) and cached in a new `social_profiles` IDB store (DB v2); cached `userPic` fills in stale or missing avatars caused by username changes; "Syncing profiles N/total" indicator shown in the social header during the background fetch; refresh button hidden while syncing
-- Social load effect now enforces 24 h TTL with stale-while-revalidate: stale cached data is shown immediately while fresh lists are fetched in the background; errors suppressed when stale data is available
-- Profile sync now has a 1 h TTL tracked in IDB (`meta` store); skipped on tab open if synced within the last hour, always forced on manual Refresh; both paths share a single `applySocialData` helper for consistent behaviour
+- Social rows now show rich presence as the activity line when available: game title + timestamp on first line, rich presence status on second line; both hidden if user has no activity in the past week
+- Green dot on avatar when last played within 1 hour
+- Compare modal now uses cached `userPic` from `social_profiles` IDB when available
+
+### Game Page
+
+- Friend picker and selected friend banner now use cached `userPic` from `social_profiles` IDB when available
 
 ## v26.05.27 — Bug Fix: Stale Friend Activity Progress Counter
 
-### RetroAchievements
+### RetroAchievements API
 
 - Fixed stale friend activity refresh showing progress stuck at 26/26 from the start: Phase 2 of `fetchFriendsActivity` now only counts fresh entries as done; stale entries are counted in Phase 4 after their API update completes, so the counter accurately advances as each background fetch finishes
 
 ## v26.05.19 — Separated Cache Actions + Social Last Played + IDB Migration + Bug Fixes
 
-### Structure
-
-- **"Refresh Data"** now selectively clears only ephemeral IDB stores (`progress`, `friend_activity`, `backlog`, `friend_list`, `meta`) + sessionStorage + `ra_*` localStorage — `consoles` and `games` stores are preserved, so the full game catalog doesn't need to be re-downloaded after each refresh
-- **"Purge Cache"** now clears only the service worker asset cache (JS, HTML, icons) — IDB is completely untouched; use this after a deployment to get fresh app files without losing game data
-
-### RetroAchievements
+### RetroAchievements API
 
 - Fixed `fetchFriendsActivity` Phase 2: `friendUser` was referenced from the wrong (outer) scope inside the cached-batch `forEach`, causing callbacks to fire with `undefined` as the user argument — now correctly destructured from `followingList[i]` per iteration
 - Added `getFriendActivityMap(usernames)` to `ra-api.js` — batch IDB reads from `friend_activity` store; scans all achievements per user to find the true most-recent entry (array order not guaranteed), applies 24h cutoff, returns `Map<username, { gameId, gameTitle, gameIcon, lastTs }>`
 
-### Profile
+### Cache
 
-- Social tab now shows "last played" info on each user row: game icon + title + time ago (e.g. `[icon] Sonic 3 · 2h ago`), resolved from cached `friend_activity` IDB data — zero API calls, gracefully absent if activity hasn't been fetched yet
-- Tapping the last-played line navigates to the game page
-
-
-
-### Structure
-
+- **"Refresh Data"** now selectively clears only ephemeral IDB stores (`progress`, `friend_activity`, `backlog`, `friend_list`, `meta`) + sessionStorage + `ra_*` localStorage — `consoles` and `games` stores are preserved, so the full game catalog doesn't need to be re-downloaded after each refresh
+- **"Purge Cache"** now clears only the service worker asset cache (JS, HTML, icons) — IDB is completely untouched; use this after a deployment to get fresh app files without losing game data
 - `fetchAchievementsChunk` replaced by `fetchAllAchievements` (exported) + internal `fetchChunk` — achievement unlock history now cached in the `progress` IDB store (keyPath `[username, gameId]`, `username` index) with a 5-min TTL stored in `meta` as `progress_ts_{username}`
 - Added `clearProgress(username)` export — deletes all progress rows for a user via index cursor
 - Added `idbMetaPut(key, value)` internal helper for the out-of-line-key `meta` store
 - Added `CHUNK_TTL = 5 min` constant
 - `ra_chunk_{username}_{n}` sessionStorage keys eliminated
+
+### Structure
+
+- `updateAllGamesForConsole` de-exported (internal helper, only called by `fetchConsoleGames`)
+- `clearAllGamesStore` deleted — no callers; Purge Cache already calls `indexedDB.deleteDatabase('cheevo_tracker')` directly
+- Verified: no `ra_fa_`, `ra_chunk_`, `ra_consolegames_`, `ra_backlog_`, or `ra_social_` keys remain in any read/write path; `ra_consoles` (console list, 24h localStorage TTL) is the only remaining `lcache` usage and is out of scope
+
+### Social
+
+- Social tab now shows "last played" info on each user row: game icon + title + time ago (e.g. `[icon] Sonic 3 · 2h ago`), resolved from cached `friend_activity` IDB data — zero API calls, gracefully absent if activity hasn't been fetched yet
+- Tapping the last-played line navigates to the game page
 
 ### Profile
 
@@ -53,17 +73,10 @@
 - Heatmap and ActivitySkeleton / `loadingMore` / `allLoaded` props updated to use the new state shape
 - `fetchProfile` result handler no longer seeds `achievementChunks[0]` — activity tab manages its own load lifecycle
 
-### Cleanup (Phase 5)
-
-- `updateAllGamesForConsole` de-exported (internal helper, only called by `fetchConsoleGames`)
-- `clearAllGamesStore` deleted — no callers; Purge Cache already calls `indexedDB.deleteDatabase('cheevo_tracker')` directly
-- Verified: no `ra_fa_`, `ra_chunk_`, `ra_consolegames_`, `ra_backlog_`, or `ra_social_` keys remain in any read/write path; `ra_consoles` (console list, 24h localStorage TTL) is the only remaining `lcache` usage and is out of scope
-
 ## v26.05.18 — IDB Migration (Backlog, Friends, Search) + Sync Timestamps
 
-### Structure
+### Cache
 
-- Bumped `CACHE_NAME` in `sw.js` to force service worker to evict stale precached assets (fixes module export errors after IDB migration)
 - Migrated all persistent caches from `localStorage` / `cheevo_search` IndexedDB to a unified `cheevo_tracker` IndexedDB with dedicated object stores: `consoles`, `games`, `progress`, `friend_activity`, `friend_list`, `backlog`, `meta`
 - Old `cheevo_search` database is deleted automatically on first open of the new DB
 - `fetchBacklog` now reads from / writes to the `backlog` IDB store (24 h TTL); added `getBacklog`, `setBacklog`, `clearBacklog` exports
@@ -72,10 +85,20 @@
 - Added `staleFriendActivity` and `clearAllFriendActivity` IDB helpers (used by soft/hard refresh)
 - "Refresh Data" and "Purge Cache" in both the desktop menu and mobile sheet now clear `cheevo_tracker` instead of the old `cheevo_search` DB
 
-### Profile
+### Structure
+
+- Bumped `CACHE_NAME` in `sw.js` to force service worker to evict stale precached assets (fixes module export errors after IDB migration)
+
+### Backlog
 
 - Backlog tab shows IDB-cached data instantly on open; added Refresh button with spinner and "Synced Xm ago" timestamp
+
+### Social
+
 - Social tab shows IDB-cached data instantly on open; added Refresh button with spinner and "Synced Xm ago" timestamp
+
+### Profile
+
 - `refreshFriendsActivity` (soft refresh) now marks IDB entries stale instead of writing to `localStorage`
 - `resetFriendsActivity` (hard reset) now clears the `friend_activity` IDB store
 - Activity tab friends toolbar: Refresh and Reset buttons unified to icon+text style (matching Backlog/Social headers); Reset uses `RotateCcw` icon with muted red hover; added "Synced X ago" timestamp; timezone label moved below the toggle row
@@ -109,13 +132,25 @@
 - Fixed friends feed sessions breaking when another user's unlock interleaved between two unlocks from the same user in the same game — sessions now group all same-user+game unlocks within a 1-hour gap regardless of other users' activity in between
 - Added timezone label (IANA name, e.g. `Asia/Jakarta`) to the right of the Mine/Friends toggle, always visible
 - Heatmap day buckets and timeline day headers now correctly reflect local dates, so achievements near midnight no longer appear under the wrong day
+
+### Backlog
+
 - Added pagination to the Backlog tab: page size selector (50 / 100 / 150 items), Prev / Page X of Y / Next navigation, and page reset on any filter or grouping change; grouped mode snaps to group boundaries so no group is split across pages
-- Added global game search (`/search/`) — indexes all console game lists into a permanent local store (`ra_allgames`); search is live-filtered across all indexed games with 50-result pages (Prev / Page X of Y / Next); includes a progress bar fetch with 1 req/s rate limiting, cancel support, and a Refresh All button; data persists until manually refreshed or cleared via the menu
-- Console page gains a Search button in the header linking to the search page
-- Per-console pages automatically update the search index whenever their 24 h cache expires and a live re-fetch occurs
-- Search link added to the mobile menu sheet
 - Fixed backlog rows blinking on scroll — `GameRow` was defined inside the render path, causing React to unmount/remount every row on each render; fixed by calling it as a plain function instead of a JSX component
 - Moved page size selector from the filter bar to the pagination footer; added bottom padding on mobile so the Next button no longer overlaps the back-to-top floating button
+
+### Search
+
+- Added global game search (`/search/`) — indexes all console game lists into a permanent local store (`ra_allgames`); search is live-filtered across all indexed games with 50-result pages (Prev / Page X of Y / Next); includes a progress bar fetch with 1 req/s rate limiting, cancel support, and a Refresh All button; data persists until manually refreshed or cleared via the menu
+- Per-console pages automatically update the search index whenever their 24 h cache expires and a live re-fetch occurs
+
+### Console Page
+
+- Console page gains a Search button in the header linking to the search page
+
+### Navigation
+
+- Search link added to the mobile menu sheet
 
 ## v26.05.13 — Profile Subset Title Rendering Fixes
 
@@ -126,6 +161,10 @@
 
 ## v26.05.10 — Mobile Menu Unification + Cache Fixes
 
+### Cache
+
+- Fixed "Delete Data" and "Purge PWA Cache" buttons not clearing `ra_social_*` and `ra_fa_*` localStorage entries — both now clear all `ra_` prefixed keys instead of only console-related ones
+
 ### Structure
 
 - Replaced mobile nav Settings tab with a **Menu** tab (hamburger icon) that opens a slide-up sheet; sheet contains username display, Consoles, Changelog, Refresh Data, Purge Cache, Debug toggle, and Log Out — no page navigation required
@@ -133,23 +172,33 @@
 - Deleted `settings/index.html` and `settings/app.js` — all functionality is now covered by the slide-up sheet (mobile) and the topbar dropdown (desktop)
 - Removed settings page from `sw.js` PRECACHE; bumped `CACHE_NAME` to force cache invalidation
 - Desktop `MenuDropdown` now animates in with a short slide-down + fade (~150ms ease-out) on open
-- Fixed "Delete Data" and "Purge PWA Cache" buttons not clearing `ra_social_*` and `ra_fa_*` localStorage entries — both now clear all `ra_` prefixed keys instead of only console-related ones
+
+### Social
+
+- Added sort controls to the Social tab (Following/Followers lists): A–Z (default) and Points; applies to both sections simultaneously
+- Fixed social compare game list not parsing subset badges and tilde tags from game titles — now shows base title + Subset badge/name or tilde tag chips, consistent with other views
 
 ### Profile
 
 - Fixed activity tab Mine view showing sessions oldest-first within a day — sessions now appear newest-first; ascending sort is kept internally for correct session grouping and time-range tracking, then reversed for display
 - Game links in visitor mode now include `?compare=<username>` so the game page opens with that user's comparison pre-selected — applies to all game links across the profile: recent game, recent achievement, activity sessions, progress series, backlog, and social compare
-- Added sort controls to the Social tab (Following/Followers lists): A–Z (default) and Points; applies to both sections simultaneously
-- Fixed social compare game list not parsing subset badges and tilde tags from game titles — now shows base title + Subset badge/name or tilde tag chips, consistent with other views
 - Fixed friends feed session header truncating on mobile with long game/console/username — on mobile the header splits into two rows (user row + game row with stacked title/console); desktop keeps the original single-row layout unchanged
 - Fixed friends feed showing no loading spinner/counter when opening with stale cache — now correctly sets `updating` status so the spinner and X/Y progress counter appear during the incremental background fetch
 
 ## v26.05.03 — Friends Feed Polish + Cache Improvements + Tab Bar Fixes
 
+### Cache
+
+- Smarter cache strategy for friends activity: stale cache (>1h) is served immediately then updated with an incremental delta fetch — delta ≤10d=1 call, ≤20d=2 calls, ≤30d=3 calls, >30d=full refresh; past achievements are never re-fetched unnecessarily
+
+### Backlog
+
+- Backlog rows animate in with `feedIn` (0.3s) on async page load — no more blink when streaming pages arrive
+- Backlog "loading…" text replaced with a spinning `Loader2` icon in the stats line
+
 ### Profile
 
 - Fixed missing activity for very active friends: friends now fetched as 3 × 10-day chunks (30-day window); server's ~500 result cap was dropping most-recent achievements since results are ordered oldest-first
-- Smarter cache strategy for friends activity: stale cache (>1h) is served immediately then updated with an incremental delta fetch — delta ≤10d=1 call, ≤20d=2 calls, ≤30d=3 calls, >30d=full refresh; past achievements are never re-fetched unnecessarily
 - Split friends feed toolbar into **Refresh** (soft: keeps feed visible, incremental delta update with progress counter, blue) and **Reset** (hard: clears cache, full re-fetch with shimmer, red); added `'updating'` status to drive the progress counter during soft refresh
 - Shimmer skeleton (3 fake sessions) shown on initial load before any data arrives; replaced by inline "X / Y users loaded" counter once the first user streams in
 - Game titles in feed now parsed for `~Tag~` prefixes and `[Subset - Name]` suffixes, rendered consistently with Mine tab
@@ -159,8 +208,6 @@
 - `feedIn` animation slowed from 0.2s to 0.5s
 - Mine / Friends sub-view persisted in `?view=` URL param — reload restores the active view
 - Loading progress moved to toggle row right side: spinning `Loader2` icon + `X/Y` counter replaces the Refresh/Reset buttons while fetching
-- Backlog rows animate in with `feedIn` (0.3s) on async page load — no more blink when streaming pages arrive
-- Backlog "loading…" text replaced with a spinning `Loader2` icon in the stats line
 - Tab bar sticky offset corrected for desktop: `md:top-[37px]` (was 26px) so tabs sit flush below the Topbar instead of overlapping it
 - Visitor mode tab bar inner container now matches own-profile styling: `gap-1 md:gap-6`, `px-2 md:px-8`, `overflow-x-auto` — was `gap-1` with `overflow-hidden` causing layout differences
 - Floating tab pill added for visitor mode on mobile: appears after scrolling 150px, slides up from above the bottom nav with Recent/Progress/Series buttons; disappears when scrolling back to top; own-profile mobile nav already covers all tabs so no pill there
@@ -197,12 +244,15 @@
 
 ## v26.04.29 — Mobile Compare Layout Fix
 
-### Profile
+### Social
 
 - Compare modal game rows now stack title above progress bars on mobile so the game title gets full width; desktop layout unchanged
 - Fixed "You / username" column headers to align with the stacked bar layout on mobile
 - Compare modal sort buttons now use the same bordered pill style as the game page filters
-- Friend comparison on the game page now shows a standalone full-width banner ("Comparing with username") below the filters instead of a cramped chip in the filter row; button changes to "Change ▾" when a friend is active
+
+### Game Page
+
+- Friend comparison now shows a standalone full-width banner ("Comparing with username") below the filters instead of a cramped chip in the filter row; button changes to "Change ▾" when a friend is active
 - Selecting a friend now sets `?compare=<user>` in the URL so the comparison persists on refresh
 - Friend banner now shows a layered HC/SC progress bar with achievement count once data loads
 
@@ -219,12 +269,18 @@
 - Migrated `profile/utils/CLAUDE.md` content into `docs/architecture.md` and deleted the file; updated `CLAUDE.md` and `_config.yml` accordingly
 - Deprecated `user/` page — visitor mode consolidated into `/profile/?u=<username>`; deleted `user/index.html` and `user/app.js`, removed from `sw.js` precache, deleted `docs/pages/user.md`
 
-### Profile
+### Social
 
 - Game title and icon in the compare modal are now clickable links to the game page with `?compare=<user>` so the game page auto-enters compare mode for that user
-- Deselecting a friend on the game page now removes the `compare` URL param
-- Game Awards section header now shows separate mastered and beaten counts
 - Leading player's column in the game compare modal now gets a subtle blue (you) or cyan (them) background highlight instead of just colored text
+
+### Game Page
+
+- Deselecting a friend now removes the `compare` URL param
+
+### Profile
+
+- Game Awards section header now shows separate mastered and beaten counts
 
 ---
 
@@ -296,10 +352,13 @@
 - All `../user/?u=` links in `profile/app.js`, `achievement/app.js`, and `game/app.js` updated to `../profile/?u=`
 - `user/app.js` retired; `user/index.html` converted to a lightweight JS redirect
 
+### RetroAchievements API
+
+- Added `userPic` field to `getAchievementUnlocks` unlocks, `getComments` results, `getLeaderboardEntries` results, and `getGameRankAndScore` results mappers
+
 ### Structure
 
 - User avatars now use the API-provided `UserPic` path instead of constructing from the current username — fixes broken images for users who changed their RA username; applied to all rendering sites (social tab, achievement unlocks/comments, game leaderboard entries/top scorers/recent masters/comments)
-- `ra-api.js`: added `userPic` field to `getAchievementUnlocks` unlocks, `getComments` results, `getLeaderboardEntries` results, and `getGameRankAndScore` results mappers
 
 ---
 
@@ -316,10 +375,13 @@
 - Game list: cached for **24 hours** in `localStorage`; breadcrumb simplified to `Cheevo Tracker › <Console Name>`; console name derived from cached list (removed `name` URL param)
 - Console → game list navigation via `history.pushState`; page scrolls to top on all transitions
 
-### Profile
+### Backlog
 
 - Renamed **Watchlist** tab to **Backlog** across tab bar, mobile nav, stats line, and all internal identifiers (`backlogData`, `fetchBacklog`, cache key `ra_backlog_`)
 - Backlog filter bar restructured for mobile — search takes full width, Status and Group filters each on their own horizontally-scrollable labeled row; desktop layout unchanged
+
+### Social
+
 - Social tab: "Mutual" indicator changed from inline icon to a small badge label below the username
 
 ### Achievement Page
@@ -357,29 +419,32 @@
 
 ## v26.04.17 — Social Tab Polish, Reliability Fixes
 
-### Profile
+### RetroAchievements API
+
+- Added `withRetry` helper — 1 initial attempt + 2 retries, 1s between attempts, 3s on HTTP 429; applied to `API_GetAchievementsEarnedBetween` (both on mount and lazy chunk loads), `getUsersIFollow`, and `getUsersFollowingMe`
+
+### Social
 
 - Social tab: "Mutual" badge replaced with an `ArrowLeftRight` icon inline next to the username
 - Social tab: points displayed in gold (`#e5b143`) instead of muted gray
 - Social tab: Following and Followers fetched sequentially (500ms gap) instead of in parallel — reduces request bursts and 429 rate-limit errors
 - Social tab: on fetch error, `socialData` stays `null` so switching away and back retries; shows error message with "Try again" button instead of silently showing empty lists
-- Removed Log Out button from topbar — already in the hamburger menu
 
 ### Navigation
 
 - Settings page + topbar menu: added **Purge Cache** — clears all PWA asset caches via Cache API and reloads
-
-### Structure
-
-- `ra-api.js`: added `withRetry` helper — 1 initial attempt + 2 retries, 1s between attempts, 3s on HTTP 429; applied to `API_GetAchievementsEarnedBetween` (both on mount and lazy chunk loads), `getUsersIFollow`, and `getUsersFollowingMe`
+- Removed Log Out button from topbar — already in the hamburger menu
 
 ---
 
 ## v26.04.16 — Achievement Page, Leaderboards Tab, Social Tab
 
-### Profile
+### Social
 
 - New **Social tab** — shows Following and Followers lists, lazy-loaded on first open; each row shows avatar, username (RA link), points, and a "Mutual" badge when the follow is reciprocal
+
+### Navigation
+
 - Mobile nav: added **Social** tab button (`/profile/?tab=social`)
 
 ### Achievement Page
@@ -416,9 +481,12 @@
 - Game page: removed orphan "Game" category label from breadcrumb — now `Cheevo Tracker › [Game Title]`
 - Achievement page: removed orphan "Game" category label — now `Cheevo Tracker › [Game Name] › [Achievement Title]`
 
+### RetroAchievements API
+
+- `getAchievementUnlocks` now properly maps the `achievement` object to camelCase (was passed as raw PascalCase); `console` and `game` objects also mapped
+
 ### Structure
 
-- `ra-api.js`: `getAchievementUnlocks` now properly maps the `achievement` object to camelCase (was passed as raw PascalCase); `console` and `game` objects also mapped
 - Profile page: all achievement links (game modal, activity feed, recent achievement card) updated to internal `/achievement/` page; removed `target="_blank"`
 
 ---
@@ -441,9 +509,9 @@
 - Empty achievement list shows "This game has no achievements yet." instead of the filter-mismatch message
 - Tab state persists in URL (`?tab=`) via `history.replaceState`; restored on reload
 
-### Structure
+### RetroAchievements API
 
-- `ra-api.js`: `getGameExtended` now maps `claims` through `mapClaim` for consistent camelCase fields
+- `getGameExtended` now maps `claims` through `mapClaim` for consistent camelCase fields
 
 ---
 

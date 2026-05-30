@@ -55,4 +55,9 @@ These are enforced on every task. Details in the linked docs.
 **Changelog**
 - **Always update `changelog.md` after every code change.** Do not wait to be asked.
 - Format: `## vYY.MM.DD`. If today's entry exists, add to it — never create a duplicate header.
-- Section order: RetroAchievements, Auth, Structure.
+- Only use sections that exist. Valid sections: `RetroAchievements API`, `Auth`, `Cache`, `Structure`, `Profile`, `Social`, `Game Page`, `Console Page`, `Achievement Page`, `Backlog`, `Settings`, `Search`, `Navigation`, `Polish`, `User Page`.
+- Preferred order when multiple sections appear in one entry: `RetroAchievements API` → `Auth` → `Cache` → `Structure` → page-specific sections.
+- `### RetroAchievements API` — RA API call changes, endpoint wrappers, data transforms.
+- `### Cache` — IDB store schema/reads/writes, sessionStorage, localStorage cache behaviour.
+- `### Structure` — code organisation, refactors, dead code removal, shared helpers.
+- **If a new section is added**, also update `SECTION_ORDER` and `SECTION_COLORS` in `changelog/app.js` and the section table in `docs/pages/changelog.md`.
