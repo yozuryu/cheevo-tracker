@@ -13,6 +13,7 @@ import {
   staleFriendActivity, clearAllFriendActivity,
   getFriendActivityMap,
   getSocialProfileMap, fetchAndCacheSocialProfiles,
+  getSocialProfilesSyncTs, setSocialProfilesSyncTs, PROFILE_SYNC_TTL,
 } from './utils/ra-api.js';
 import { Topbar, Footer } from '../assets/ui.js';
 
@@ -1993,13 +1994,17 @@ export default function App() {
     }
   };
 
-  const startSocialProfilesFetch = (creds, data) => {
+  const startSocialProfilesFetch = async (creds, data, { force = false } = {}) => {
     if (socialProfilesFetchingRef.current) return;
     const allUsers = [...new Set([
       ...(data.following?.results || []),
       ...(data.followers?.results || []),
     ].map(u => u.user))];
     if (!allUsers.length) return;
+    if (!force) {
+      const lastSynced = await getSocialProfilesSyncTs(creds.username);
+      if (lastSynced && Date.now() - lastSynced < PROFILE_SYNC_TTL) return;
+    }
     socialProfilesFetchingRef.current = true;
     setSocialProfilesProgress({ done: 0, total: allUsers.length });
     fetchAndCacheSocialProfiles(creds.username, creds.apiKey, allUsers, {
@@ -2007,10 +2012,22 @@ export default function App() {
         setSocialProfileMap(prev => new Map(prev).set(user, record));
         setSocialProfilesProgress(prev => prev ? { ...prev, done: prev.done + 1 } : null);
       },
-    }).finally(() => {
-      socialProfilesFetchingRef.current = false;
-      setSocialProfilesProgress(null);
-    });
+    }).then(() => setSocialProfilesSyncTs(creds.username))
+      .finally(() => {
+        socialProfilesFetchingRef.current = false;
+        setSocialProfilesProgress(null);
+      });
+  };
+
+  const applySocialData = (creds, data, ts, { force = false } = {}) => {
+    setSocialData(data);
+    setSocialTs(ts);
+    const allUsers = [...new Set([
+      ...(data.following?.results || []),
+      ...(data.followers?.results || []),
+    ].map(u => u.user))];
+    if (allUsers.length) getSocialProfileMap(allUsers).then(setSocialProfileMap);
+    startSocialProfilesFetch(creds, data, { force });
   };
 
   const refreshSocial = async () => {
@@ -2019,10 +2036,8 @@ export default function App() {
     setSocialRefreshing(true);
     try {
       const data = await fetchSocial(creds.username, creds.apiKey, true);
-      setSocialData(data);
       const rec = await getSocialData(creds.username);
-      if (rec) setSocialTs(rec.ts);
-      startSocialProfilesFetch(creds, data);
+      applySocialData(creds, data, rec?.ts ?? Date.now(), { force: true });
     } catch (err) {
       if (err.message === 'AUTH_ERROR') handleAuthError();
     } finally {
@@ -2199,25 +2214,15 @@ export default function App() {
     (async () => {
       const SOCIAL_TTL = 24 * 60 * 60 * 1000;
       const cached = await getSocialData(creds.username);
-      const applyData = (data, ts) => {
-        setSocialData(data);
-        setSocialTs(ts);
-        const allUsers = [...new Set([
-          ...(data.following?.results || []),
-          ...(data.followers?.results || []),
-        ].map(u => u.user))];
-        if (allUsers.length) getSocialProfileMap(allUsers).then(setSocialProfileMap);
-        startSocialProfilesFetch(creds, data);
-      };
       if (cached) {
-        applyData({ following: cached.following, followers: cached.followers }, cached.ts);
-        if (Date.now() - cached.ts < SOCIAL_TTL) return; // fresh — no API call needed
+        applySocialData(creds, { following: cached.following, followers: cached.followers }, cached.ts);
+        if (Date.now() - cached.ts < SOCIAL_TTL) return;
       }
-      // no cache, or stale — fetch fresh lists in background
       setSocialRefreshing(true);
       fetchSocial(creds.username, creds.apiKey, true)
         .then(data => {
-          getSocialData(creds.username).then(rec => applyData(data, rec?.ts ?? Date.now()));
+          getSocialData(creds.username).then(rec =>
+            applySocialData(creds, data, rec?.ts ?? Date.now()));
           setSocialError(false);
         })
         .catch(err => {

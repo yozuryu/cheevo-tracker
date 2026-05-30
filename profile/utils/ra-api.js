@@ -1633,6 +1633,16 @@ export async function fetchSocial(username, apiKey, forceRefresh = false) {
   return result;
 }
 
+export const PROFILE_SYNC_TTL = 60 * 60 * 1000; // 1 hour
+
+export async function getSocialProfilesSyncTs(username) {
+  return idbGet('meta', `social_profiles_sync_${username}`);
+}
+
+export async function setSocialProfilesSyncTs(username) {
+  return idbMetaPut(`social_profiles_sync_${username}`, Date.now());
+}
+
 /**
  * Batch-reads social_profiles from IDB.
  * Returns Map<username, { user, userPic, totalPoints, ts }>.
