@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { createRoot } from 'react-dom/client';
-import { Gamepad2, Activity, BarChart2, Award, Star, ChevronDown, ChevronUp, AlertCircle, Trophy, Crown, Lock, Unlock, AlertTriangle, Flame, Feather, Medal, ShieldOff, CircleDashed, X, Clock, Layers, Users, Loader2, RefreshCw, RotateCcw } from 'lucide-react';
+import { Gamepad2, Activity, BarChart2, Award, Star, ChevronDown, ChevronUp, AlertCircle, Trophy, Crown, Lock, Unlock, AlertTriangle, Flame, Feather, Medal, ShieldOff, CircleDashed, X, Clock, Layers, Users, Loader2, RefreshCw, RotateCcw, ArrowLeftRight } from 'lucide-react';
 import { MEDIA_URL, SITE_URL, TILDE_TAG_COLORS } from './utils/constants.js';
 import { getMediaUrl, parseTitle, formatTimeAgo } from './utils/helpers.js';
 import { transformData } from './utils/transform.js';
@@ -12,6 +12,7 @@ import {
   getSocialData,
   staleFriendActivity, clearAllFriendActivity,
   getFriendActivityMap,
+  getSocialProfileMap, fetchAndCacheSocialProfiles,
 } from './utils/ra-api.js';
 import { Topbar, Footer } from '../assets/ui.js';
 
@@ -1716,37 +1717,51 @@ const CompareModal = ({ otherUser, myGames, compareData, loading, error, onClose
   );
 };
 
-const SocialUserRow = ({ user, isMutual, onCompare, lastPlayed }) => (
+const SocialUserRow = ({ user, isMutual, onCompare, lastPlayed, cachedProfile }) => {
+  const userPic = cachedProfile?.userPic || user.userPic;
+  return (
   <div className="flex items-center gap-2.5 px-2.5 py-2 bg-[#1b2838] hover:bg-[#202d39] rounded-[2px] transition-colors">
     <img
-      src={user.userPic ? getMediaUrl(user.userPic) : `${MEDIA_URL}/UserPic/${user.user}.png`}
+      src={userPic ? getMediaUrl(userPic) : `${MEDIA_URL}/UserPic/${user.user}.png`}
       alt={user.user}
       className="w-7 h-7 rounded-full border border-[#101214] shrink-0 object-cover bg-[#131a22]"
       onError={e => { e.currentTarget.style.visibility = 'hidden'; }}
     />
     <div className="flex flex-col min-w-0 flex-1">
-      <a href={`../profile/?u=${user.user}`}
-        className="text-[11px] font-medium text-[#e5b143] hover:text-[#f0c96a] transition-colors truncate">
-        {user.user}
-      </a>
-      {isMutual && (
-        <span className="text-[7px] font-bold uppercase tracking-[0.07em] px-1 py-[1px] rounded-[2px] border border-[rgba(102,192,244,0.3)] bg-[rgba(102,192,244,0.08)] text-[#66c0f4] w-fit">Mutual</span>
-      )}
-      {lastPlayed && (
-        <a href={`../game/?id=${lastPlayed.gameId}`}
-          className="flex items-center gap-1 mt-[2px] w-fit max-w-full hover:opacity-75 transition-opacity"
-          onClick={e => e.stopPropagation()}>
-          {lastPlayed.gameIcon && (
-            <img src={getMediaUrl(lastPlayed.gameIcon)} alt=""
-              className="w-3 h-3 rounded-[1px] shrink-0 object-cover bg-[#131a22]" />
-          )}
-          <span className="text-[9px] truncate">
-            <span className="text-[#66c0f4]">{lastPlayed.gameTitle}</span>
-            <span className="text-[#3d4e5a] mx-0.5">·</span>
-            <span className="text-[#546270]">{timeAgo(lastPlayed.lastTs)}</span>
-          </span>
+      <div className="flex items-center gap-1 min-w-0">
+        <a href={`../profile/?u=${user.user}`}
+          className="text-[11px] font-medium text-[#e5b143] hover:text-[#f0c96a] transition-colors truncate">
+          {user.user}
         </a>
-      )}
+        {isMutual && (
+          <div className="relative group shrink-0">
+            <ArrowLeftRight size={9} className="text-[#66c0f4]" />
+            <div className="absolute left-0 bottom-full mb-1.5 z-10 hidden group-hover:block pointer-events-none">
+              <div className="text-[9px] font-medium text-[#c6d4df] bg-[#0e1620] border border-[#2a475e] rounded-[2px] px-1.5 py-[3px] whitespace-nowrap shadow-lg">
+                Mutual follow
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+      {lastPlayed && (() => {
+        const { baseTitle, subsetName, isSubset, tags } = parseTitle(lastPlayed.gameTitle);
+        return (
+          <a href={`../game/?id=${lastPlayed.gameId}`}
+            className="flex items-center gap-1 mt-[2px] w-fit max-w-full hover:opacity-75 transition-opacity"
+            onClick={e => e.stopPropagation()}>
+            {lastPlayed.gameIcon && (
+              <img src={getMediaUrl(lastPlayed.gameIcon)} alt=""
+                className="w-3 h-3 rounded-[1px] shrink-0 object-cover bg-[#131a22]" />
+            )}
+            <span className="text-[9px] text-[#66c0f4] truncate">{baseTitle}</span>
+            {isSubset && <><span className="text-[7px] font-bold uppercase tracking-[0.07em] px-1 py-[1px] rounded-[2px] border border-[rgba(229,177,67,0.3)] bg-[rgba(229,177,67,0.1)] text-[#c8a84b] shrink-0">Subset</span>{subsetName && <span className="text-[9px] text-[#c8a84b] shrink-0 truncate">{subsetName}</span>}</>}
+            {tags.length > 0 && renderTildeTags(tags)}
+            <span className="text-[#3d4e5a] mx-0.5 shrink-0">·</span>
+            <span className="text-[9px] text-[#546270] shrink-0">{timeAgo(lastPlayed.lastTs)}</span>
+          </a>
+        );
+      })()}
     </div>
     {user.points != null && (
       <span className="text-[10px] text-[#e5b143] shrink-0">{user.points.toLocaleString()} pts</span>
@@ -1757,10 +1772,12 @@ const SocialUserRow = ({ user, isMutual, onCompare, lastPlayed }) => (
       Compare
     </button>
   </div>
-);
+  );
+};
 
-const SocialTab = ({ socialData, socialError, onRetry, onCompare }) => {
+const SocialTab = ({ socialData, socialError, onRetry, onCompare, profileMap = new Map() }) => {
   const [sortBy, setSortBy] = useState('az');
+  const [subTab, setSubTab] = useState('following');
   const [activityMap, setActivityMap] = useState(new Map());
 
   useEffect(() => {
@@ -1791,21 +1808,35 @@ const SocialTab = ({ socialData, socialError, onRetry, onCompare }) => {
       </div>
     );
   }
+
+  const followingTotal = socialData?.following?.total ?? 0;
+  const followerTotal  = socialData?.followers?.total ?? 0;
+
+  const subTabs = [
+    { id: 'following', label: 'Following', count: followingTotal },
+    { id: 'followers', label: 'Followers', count: followerTotal },
+  ];
+
   if (!socialData) {
     return (
-      <div className="flex flex-col gap-5">
-        {[0, 1].map(s => (
-          <div key={s}>
-            <div className="shimmer h-3 w-24 rounded mb-3" />
-            {[...Array(4)].map((_, i) => (
-              <div key={i} className="flex items-center gap-2.5 px-2.5 py-2 mb-[2px] bg-[#1b2838] rounded-[2px]">
-                <div className="shimmer w-7 h-7 rounded-full shrink-0" />
-                <div className="shimmer h-2.5 w-32 rounded flex-1" />
-                <div className="shimmer h-2 w-12 rounded shrink-0" />
-              </div>
-            ))}
-          </div>
-        ))}
+      <div className="flex flex-col gap-4">
+        <div className="flex gap-1 border-b border-[#1e2a38] pb-2">
+          {subTabs.map(({ id, label }) => (
+            <button key={id} onClick={() => setSubTab(id)}
+              className={`text-[11px] px-3 py-1 rounded-[2px] border font-medium transition-colors uppercase tracking-wider ${subTab === id ? 'bg-[#1b2838] text-[#c6d4df] border-[#2a475e]' : 'bg-[#101214] text-[#546270] border-[#323f4c] hover:text-[#c6d4df]'}`}>
+              {label}
+            </button>
+          ))}
+        </div>
+        <div className="flex flex-col gap-[2px]">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="flex items-center gap-2.5 px-2.5 py-2 mb-[2px] bg-[#1b2838] rounded-[2px]">
+              <div className="shimmer w-7 h-7 rounded-full shrink-0" />
+              <div className="shimmer h-2.5 w-32 rounded flex-1" />
+              <div className="shimmer h-2 w-12 rounded shrink-0" />
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
@@ -1813,40 +1844,39 @@ const SocialTab = ({ socialData, socialError, onRetry, onCompare }) => {
   const followingUsers = socialData.following?.results || [];
   const followerUsers  = socialData.followers?.results || [];
 
-  const sections = [
-    { title: 'Following', users: followingUsers, total: socialData.following?.total ?? 0,
-      isMutual: u => u.isFollowingMe },
-    { title: 'Followers', users: followerUsers,  total: socialData.followers?.total ?? 0,
-      isMutual: u => u.amIFollowing },
-  ];
+  const active = subTab === 'following'
+    ? { users: followingUsers, total: followingTotal, isMutual: u => u.isFollowingMe }
+    : { users: followerUsers,  total: followerTotal,  isMutual: u => u.amIFollowing };
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex items-center gap-1.5">
-        <span className="text-[8px] uppercase tracking-wider text-[#546270] shrink-0">Sort</span>
-        {[['az', 'A–Z'], ['points', 'Points']].map(([v, label]) => (
-          <button key={v} onClick={() => setSortBy(v)}
-            className={`text-[9px] font-semibold uppercase tracking-wider px-2 py-[3px] rounded-sm border transition-colors ${sortBy === v ? 'bg-[#1b2838] text-[#c6d4df] border-[#2a475e]' : 'bg-[#101214] text-[#546270] border-[#323f4c] hover:text-[#c6d4df] hover:border-[#546270]'}`}>
-            {label}
-          </button>
-        ))}
-      </div>
-      {sections.map(({ title, users, total, isMutual }) => (
-        <div key={title}>
-          <div className="flex items-center gap-2 mb-2">
-            <span className="w-[3px] h-[14px] bg-[#66c0f4] rounded-[1px] shrink-0" />
-            <span className="text-[13px] text-white tracking-wide uppercase font-medium">{title}</span>
-            <span className="text-[10px] text-[#546270] ml-1">{total}</span>
-          </div>
-          {users.length === 0 ? (
-            <div className="text-[11px] text-[#546270] py-3">None yet.</div>
-          ) : (
-            <div className="flex flex-col gap-[2px]">
-              {sortUsers(users).map(u => <SocialUserRow key={u.user} user={u} isMutual={isMutual(u)} onCompare={onCompare} lastPlayed={activityMap.get(u.user)} />)}
-            </div>
-          )}
+    <div className="flex flex-col gap-4">
+      <div className="flex items-center justify-between border-b border-[#1e2a38] pb-2">
+        <div className="flex gap-1">
+          {subTabs.map(({ id, label, count }) => (
+            <button key={id} onClick={() => setSubTab(id)}
+              className={`text-[11px] px-3 py-1 rounded-[2px] border font-medium transition-colors uppercase tracking-wider ${subTab === id ? 'bg-[#1b2838] text-[#c6d4df] border-[#2a475e]' : 'bg-[#101214] text-[#546270] border-[#323f4c] hover:text-[#c6d4df]'}`}>
+              {label}
+              <span className={`ml-1.5 text-[9px] ${subTab === id ? 'text-[#546270]' : 'text-[#3a4a57]'}`}>{count}</span>
+            </button>
+          ))}
         </div>
-      ))}
+        <div className="flex items-center gap-1.5">
+          <span className="text-[8px] uppercase tracking-wider text-[#546270] shrink-0">Sort</span>
+          {[['az', 'A–Z'], ['points', 'Points']].map(([v, label]) => (
+            <button key={v} onClick={() => setSortBy(v)}
+              className={`text-[9px] font-semibold uppercase tracking-wider px-2 py-[3px] rounded-sm border transition-colors ${sortBy === v ? 'bg-[#1b2838] text-[#c6d4df] border-[#2a475e]' : 'bg-[#101214] text-[#546270] border-[#323f4c] hover:text-[#c6d4df] hover:border-[#546270]'}`}>
+              {label}
+            </button>
+          ))}
+        </div>
+      </div>
+      {active.users.length === 0 ? (
+        <div className="text-[11px] text-[#546270] py-3">None yet.</div>
+      ) : (
+        <div className="flex flex-col gap-[2px]">
+          {sortUsers(active.users).map(u => <SocialUserRow key={u.user} user={u} isMutual={active.isMutual(u)} onCompare={onCompare} lastPlayed={activityMap.get(u.user)} cachedProfile={profileMap.get(u.user)} />)}
+        </div>
+      )}
     </div>
   );
 };
@@ -1864,6 +1894,9 @@ export default function App() {
   const [socialError,   setSocialError]   = useState(false);
   const [socialTs,        setSocialTs]        = useState(null);
   const [socialRefreshing, setSocialRefreshing] = useState(false);
+  const [socialProfileMap, setSocialProfileMap] = useState(new Map());
+  const [socialProfilesProgress, setSocialProfilesProgress] = useState(null); // null | { done, total }
+  const socialProfilesFetchingRef = useRef(false);
   const [compareUser,   setCompareUser]   = useState(null);
   const [compareData,   setCompareData]   = useState(null);
   const [compareLoading, setCompareLoading] = useState(false);
@@ -1960,6 +1993,26 @@ export default function App() {
     }
   };
 
+  const startSocialProfilesFetch = (creds, data) => {
+    if (socialProfilesFetchingRef.current) return;
+    const allUsers = [...new Set([
+      ...(data.following?.results || []),
+      ...(data.followers?.results || []),
+    ].map(u => u.user))];
+    if (!allUsers.length) return;
+    socialProfilesFetchingRef.current = true;
+    setSocialProfilesProgress({ done: 0, total: allUsers.length });
+    fetchAndCacheSocialProfiles(creds.username, creds.apiKey, allUsers, {
+      onProfile: (user, record) => {
+        setSocialProfileMap(prev => new Map(prev).set(user, record));
+        setSocialProfilesProgress(prev => prev ? { ...prev, done: prev.done + 1 } : null);
+      },
+    }).finally(() => {
+      socialProfilesFetchingRef.current = false;
+      setSocialProfilesProgress(null);
+    });
+  };
+
   const refreshSocial = async () => {
     const creds = getCredentials();
     if (!creds) { handleAuthError(); return; }
@@ -1969,6 +2022,7 @@ export default function App() {
       setSocialData(data);
       const rec = await getSocialData(creds.username);
       if (rec) setSocialTs(rec.ts);
+      startSocialProfilesFetch(creds, data);
     } catch (err) {
       if (err.message === 'AUTH_ERROR') handleAuthError();
     } finally {
@@ -2143,22 +2197,34 @@ export default function App() {
     const creds = getCredentials();
     if (!creds) { handleAuthError(); return; }
     (async () => {
+      const SOCIAL_TTL = 24 * 60 * 60 * 1000;
       const cached = await getSocialData(creds.username);
+      const applyData = (data, ts) => {
+        setSocialData(data);
+        setSocialTs(ts);
+        const allUsers = [...new Set([
+          ...(data.following?.results || []),
+          ...(data.followers?.results || []),
+        ].map(u => u.user))];
+        if (allUsers.length) getSocialProfileMap(allUsers).then(setSocialProfileMap);
+        startSocialProfilesFetch(creds, data);
+      };
       if (cached) {
-        setSocialData({ following: cached.following, followers: cached.followers });
-        setSocialTs(cached.ts);
-        return;
+        applyData({ following: cached.following, followers: cached.followers }, cached.ts);
+        if (Date.now() - cached.ts < SOCIAL_TTL) return; // fresh — no API call needed
       }
-      fetchSocial(creds.username, creds.apiKey)
+      // no cache, or stale — fetch fresh lists in background
+      setSocialRefreshing(true);
+      fetchSocial(creds.username, creds.apiKey, true)
         .then(data => {
-          setSocialData(data);
-          getSocialData(creds.username).then(rec => { if (rec) setSocialTs(rec.ts); });
+          getSocialData(creds.username).then(rec => applyData(data, rec?.ts ?? Date.now()));
           setSocialError(false);
         })
         .catch(err => {
           if (err.message === 'AUTH_ERROR') handleAuthError();
-          else setSocialError(true);
-        });
+          else if (!cached) setSocialError(true);
+        })
+        .finally(() => setSocialRefreshing(false));
     })();
   }, [activeTab, socialError]);
 
@@ -2608,17 +2674,28 @@ export default function App() {
                   <span className="text-[13px] text-white tracking-wide uppercase font-medium">Social</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  {socialTs && (
+                  {socialProfilesProgress && (
+                    <div className="flex items-center gap-1.5">
+                      <Loader2 size={11} className="text-[#66c0f4] animate-spin" />
+                      <span className="text-[11px] text-[#66c0f4] font-medium tabular-nums">{socialProfilesProgress.done}/{socialProfilesProgress.total}</span>
+                    </div>
+                  )}
+                  {socialRefreshing && !socialProfilesProgress && (
+                    <Loader2 size={11} className="text-[#66c0f4] animate-spin" />
+                  )}
+                  {!socialProfilesProgress && !socialRefreshing && socialTs && (
                     <span className="text-[9px] text-[#546270]">Synced {timeAgo(socialTs)}</span>
                   )}
-                  <button type="button" onClick={refreshSocial} disabled={socialRefreshing}
-                    className="flex items-center gap-1.5 text-[9px] font-semibold uppercase tracking-wider text-[#546270] hover:text-[#66c0f4] transition-colors disabled:opacity-40">
-                    <RefreshCw size={11} className={socialRefreshing ? 'animate-spin' : ''} />
-                    Refresh
-                  </button>
+                  {!socialProfilesProgress && !socialRefreshing && (
+                    <button type="button" onClick={refreshSocial}
+                      className="flex items-center gap-1.5 text-[9px] font-semibold uppercase tracking-wider text-[#546270] hover:text-[#66c0f4] transition-colors">
+                      <RefreshCw size={11} />
+                      Refresh
+                    </button>
+                  )}
                 </div>
               </div>
-              <SocialTab socialData={socialData} socialError={socialError} onRetry={() => setSocialError(false)} onCompare={openCompare} />
+              <SocialTab socialData={socialData} socialError={socialError} onRetry={() => setSocialError(false)} onCompare={openCompare} profileMap={socialProfileMap} />
             </div>
           ) : activeTab === 'series' ? (
             <SeriesProgressTab seriesData={seriesData} gamesData={gamesData} backlogData={backlogData} />

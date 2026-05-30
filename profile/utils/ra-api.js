@@ -49,7 +49,7 @@ function cacheSet(key, data) {
 // ── IndexedDB (cheevo_tracker) ────────────────────────────────────────────────
 
 const DB_NAME    = 'cheevo_tracker';
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 let   _db        = null;
 
 function openDB() {
@@ -76,6 +76,8 @@ function openDB() {
         db.createObjectStore('backlog', { keyPath: 'username' });
       if (!db.objectStoreNames.contains('meta'))
         db.createObjectStore('meta');
+      if (!db.objectStoreNames.contains('social_profiles'))
+        db.createObjectStore('social_profiles', { keyPath: 'user' });
     };
     req.onsuccess = e => {
       _db = e.target.result;
@@ -1629,6 +1631,44 @@ export async function fetchSocial(username, apiKey, forceRefresh = false) {
   const result = { following, followers };
   await setSocialData(username, result);
   return result;
+}
+
+/**
+ * Batch-reads social_profiles from IDB.
+ * Returns Map<username, { user, userPic, totalPoints, ts }>.
+ */
+export async function getSocialProfileMap(users) {
+  const entries = await Promise.all(users.map(u => idbGet('social_profiles', u)));
+  const map = new Map();
+  entries.forEach((entry, i) => { if (entry) map.set(users[i], entry); });
+  return map;
+}
+
+/**
+ * Sequentially fetches individual profiles for each username, stores them in IDB.
+ * 1 second between each fetch to respect rate limits.
+ * Calls onProfile(username, record) after each successful fetch.
+ */
+export async function fetchAndCacheSocialProfiles(username, apiKey, userList, { onProfile } = {}) {
+  for (let i = 0; i < userList.length; i++) {
+    try {
+      const profile = await getUserSummary(username, apiKey, { u: userList[i], g: 0, a: 0 });
+      const record = {
+        user:            userList[i],
+        userPic:         profile.userPic,
+        totalPoints:     profile.totalPoints,
+        totalTruePoints: profile.totalTruePoints,
+        rank:            profile.rank,
+        totalRanked:     profile.totalRanked,
+        richPresenceMsg: profile.richPresenceMsg,
+        motto:           profile.motto,
+        ts:              Date.now(),
+      };
+      await idbPut('social_profiles', record);
+      onProfile?.(userList[i], record);
+    } catch { /* skip individual failures */ }
+    if (i < userList.length - 1) await sleep(1000);
+  }
 }
 
 /**

@@ -1,5 +1,16 @@
 # Changelog
 
+## v26.05.30 — Social Sub-tabs
+
+### RetroAchievements
+
+- Social tab now splits Following and Followers into separate sub-tabs; Following is the default; count shown inline on each tab button; sort controls moved to the right of the sub-tab row
+- Replaced "Mutual" text badge in social rows with a compact `ArrowLeftRight` icon; hovering shows a "Mutual follow" tooltip
+- Fixed last-played game title in social rows not parsing tilde tags or subset notation — now uses `parseTitle` to show `baseTitle` with inline subset badge or tilde tag pills
+- Fixed tilde tags being suppressed on subset games in social rows — subset badge and tilde tags are now independent conditions so both render when present
+- After social data loads (tab open or refresh), lists display immediately; individual user profiles are then fetched sequentially (1 s apart) and cached in a new `social_profiles` IDB store (DB v2); cached `userPic` fills in stale or missing avatars caused by username changes; "Syncing profiles N/total" indicator shown in the social header during the background fetch; refresh button hidden while syncing
+- Social load effect now enforces 24 h TTL with stale-while-revalidate: stale cached data is shown immediately while fresh lists are fetched in the background; errors suppressed when stale data is available
+
 ## v26.05.27 — Bug Fix: Stale Friend Activity Progress Counter
 
 ### RetroAchievements
