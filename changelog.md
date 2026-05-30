@@ -29,7 +29,11 @@
 
 ### Game Page
 
-- Friend picker and selected friend banner now use cached `userPic` from `social_profiles` IDB when available
+- Friend picker, selected friend banner, and compare-via-URL entry point now use cached `userPic` from `social_profiles` IDB when available; profile is pre-loaded from IDB on page load when `?compare=` is in the URL so the avatar resolves before the following list fetches
+
+### Profile
+
+- Friends activity feed user avatars now use cached `userPic` from `social_profiles` IDB when available
 
 ## v26.05.27 — Bug Fix: Stale Friend Activity Progress Counter
 

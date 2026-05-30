@@ -336,6 +336,7 @@ function GameApp() {
 
   useEffect(() => {
     if (!compareUsername || !creds) return;
+    getSocialProfileMap([compareUsername]).then(m => setSocialProfileMap(m));
     selectFriendForCompare({ user: compareUsername });
   }, []);
 

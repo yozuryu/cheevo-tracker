@@ -564,7 +564,7 @@ const FeedSession = ({ session, hideUser = false }) => {
 
 // ── ActivityTab Component ──────────────────────────────────────────────────
 
-const ActivityTab = ({ achievements, refTime, heatmapData, loadingMore, allLoaded, socialView, setSocialView, friendsActivityStatus, setFriendsActivityStatus, friendsActivity, friendsFetchProgress, failedFriends, onRefreshFriends, onResetFriends, friendsActivityTs, ownUsername }) => {
+const ActivityTab = ({ achievements, refTime, heatmapData, loadingMore, allLoaded, socialView, setSocialView, friendsActivityStatus, setFriendsActivityStatus, friendsActivity, friendsFetchProgress, failedFriends, onRefreshFriends, onResetFriends, friendsActivityTs, ownUsername, socialProfileMap = new Map() }) => {
   const [selectedDay, setSelectedDay] = useState(null);
   const [collapsedDays, setCollapsedDays] = useState(new Set());
   const [visibleSessionCount, setVisibleSessionCount] = useState(100);
@@ -902,7 +902,7 @@ const ActivityTab = ({ achievements, refTime, heatmapData, loadingMore, allLoade
                                 <div key={username}>
                                   <div className="flex items-center gap-2 mb-1.5">
                                     <a href={`../profile/?u=${username}`} className="shrink-0">
-                                      <img src={`${MEDIA_URL}/UserPic/${username}.png`} alt={username} className="w-5 h-5 rounded-[2px] object-cover" />
+                                      <img src={socialProfileMap.get(username)?.userPic ? getMediaUrl(socialProfileMap.get(username).userPic) : `${MEDIA_URL}/UserPic/${username}.png`} alt={username} className="w-5 h-5 rounded-[2px] object-cover" />
                                     </a>
                                     <a href={`../profile/?u=${username}`} className="text-[11px] font-medium hover:underline truncate" style={{ color: isOwn ? '#57cbde' : '#e5b143' }}>
                                       {username}
@@ -2735,6 +2735,7 @@ export default function App() {
                   onResetFriends={resetFriendsActivity}
                   friendsActivityTs={friendsActivityTs}
                   ownUsername={PROFILE_DATA.username}
+                  socialProfileMap={socialProfileMap}
                 />
           ) : activeTab === 'backlog' ? (
             backlogData === null ? (
