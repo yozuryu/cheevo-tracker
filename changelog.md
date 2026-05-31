@@ -1,5 +1,21 @@
 # Changelog
 
+## v26.05.31 — Social Bug Fixes + Softcore Points
+
+### Social
+
+- Fixed stale social refresh not updating "last synced" timestamp — was caused by a nested floating promise (`getSocialData().then()`) inside the fetch `.then()`, so `.finally(() => setSocialRefreshing(false))` ran before `setSocialTs` was called; now uses `Date.now()` directly, which is synchronous within the `.then()` callback and guaranteed to run before the spinner clears
+- Softcore-only users (`totalPoints === 0`) now show their softcore points in gray (`#8f98a0`) instead of 0 pts in gold in both the social rows and the visitor-mode profile header; uses `totalSoftcorePoints` from IDB cache (social) or `transformData` (profile); `totalPoints === 0` is more reliable than `rank === null` since users can hide their rank
+- Users inactive more than 1 week no longer show game info or rich presence; instead shows "Last active X ago" using `recentlyPlayed[0].lastPlayed` as the timestamp; users with no cached profile show nothing
+
+### Profile
+
+- Green dot on profile avatar when last game activity is under 1 hour ago, using `profileData.mostRecentGame.lastPlayed`; takes priority over the API status dots (Online/Playing/Offline); applies to both own profile and visitor mode
+
+### Profile
+
+- Fixed friends activity feed avatars not using IDB-cached `userPic` when Social tab was never opened — `socialProfileMap` now loaded from `social_profiles` IDB at the start of the friends activity fetch using the following list, so avatars resolve correctly regardless of tab visit order
+
 ## v26.05.30 — Social Sub-tabs
 
 ### RetroAchievements API
@@ -8,7 +24,7 @@
 
 ### Cache
 
-- Background profile sync added: after social data loads, individual profiles fetched sequentially (1 s apart) via `getUserSummary` and stored in new `social_profiles` IDB store (DB v2 — bumped to add store); stores `userPic`, `totalPoints`, `totalTruePoints`, `rank`, `totalRanked`, `richPresenceMsg`, `motto`, `lastPlayed`
+- Background profile sync added: after social data loads, individual profiles fetched sequentially (1 s apart) via `getUserSummary` and stored in new `social_profiles` IDB store (DB v2 — bumped to add store); stores `userPic`, `totalPoints`, `totalTruePoints`, `totalSoftcorePoints`, `rank`, `totalRanked`, `richPresenceMsg`, `motto`, `lastPlayed`
 - Profile sync has 1 h TTL tracked in `meta` IDB store (`social_profiles_sync_<username>`); skipped on tab open if within TTL, always forced on manual Refresh
 - Social list (following/followers) has 24 h TTL with stale-while-revalidate: stale data shown immediately while fresh lists fetch in background; `socialRefreshing` indicator shown for both manual and background refreshes
 - Both stale and manual refresh paths share `applySocialData` helper for consistent behaviour; errors suppressed when stale data is available

@@ -1665,14 +1665,15 @@ export async function fetchAndCacheSocialProfiles(username, apiKey, userList, { 
       const profile = await getUserSummary(username, apiKey, { u: userList[i], g: 1, a: 0 });
       const rp = profile.recentlyPlayed?.[0];
       const record = {
-        user:            userList[i],
-        userPic:         profile.userPic,
-        totalPoints:     profile.totalPoints,
-        totalTruePoints: profile.totalTruePoints,
-        rank:            profile.rank,
-        totalRanked:     profile.totalRanked,
-        richPresenceMsg: profile.richPresenceMsg,
-        motto:           profile.motto,
+        user:                userList[i],
+        userPic:             profile.userPic,
+        totalPoints:         profile.totalPoints,
+        totalTruePoints:     profile.totalTruePoints,
+        totalSoftcorePoints: profile.totalSoftcorePoints,
+        rank:                profile.rank,
+        totalRanked:         profile.totalRanked,
+        richPresenceMsg:     profile.richPresenceMsg,
+        motto:               profile.motto,
         lastPlayed:      rp ? {
           gameId:       rp.gameId,
           gameTitle:    rp.title,

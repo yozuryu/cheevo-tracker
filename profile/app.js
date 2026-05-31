@@ -1719,8 +1719,12 @@ const CompareModal = ({ otherUser, myGames, compareData, loading, error, onClose
 
 const SocialUserRow = ({ user, isMutual, onCompare, cachedProfile }) => {
   const userPic = cachedProfile?.userPic || user.userPic;
-  const lastPlayed = cachedProfile?.lastPlayed ?? null;
+  const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
+  const rawLastPlayed = cachedProfile?.lastPlayed ?? null;
+  const lastPlayed = rawLastPlayed?.lastPlayedTs && (Date.now() - rawLastPlayed.lastPlayedTs) < WEEK_MS ? rawLastPlayed : null;
   const isRecentlyActive = lastPlayed?.lastPlayedTs && (Date.now() - lastPlayed.lastPlayedTs) < 60 * 60 * 1000;
+  const isSoftcore = cachedProfile ? cachedProfile.totalPoints === 0 : false;
+  const displayPoints = isSoftcore ? (cachedProfile.totalSoftcorePoints ?? user.pointsSoftcore ?? 0) : user.points;
   return (
   <div className="flex items-center gap-2.5 px-2.5 py-2 bg-[#1b2838] hover:bg-[#202d39] rounded-[2px] transition-colors">
     <div className="relative shrink-0">
@@ -1783,11 +1787,18 @@ const SocialUserRow = ({ user, isMutual, onCompare, cachedProfile }) => {
             </div>
           );
         }
+        if (rawLastPlayed?.lastPlayedTs) {
+          return (
+            <span className="text-[9px] text-[#546270] mt-[2px]">Last active {timeAgo(rawLastPlayed.lastPlayedTs)}</span>
+          );
+        }
         return null;
       })()}
     </div>
-    {user.points != null && (
-      <span className="text-[10px] text-[#e5b143] shrink-0">{user.points.toLocaleString()} pts</span>
+    {displayPoints != null && (
+      <span className={`text-[10px] shrink-0 ${isSoftcore ? 'text-[#8f98a0]' : 'text-[#e5b143]'}`}>
+        {displayPoints.toLocaleString()} pts
+      </span>
     )}
     <button
       onClick={() => onCompare(user.user)}
@@ -2196,6 +2207,8 @@ export default function App() {
         const social = socialData ?? await fetchSocial(u, k);
         const followingList = social.following.results;
         if (followingList.length === 0) { setFriendsActivityStatus('done'); return; }
+        if (socialProfileMap.size === 0)
+          getSocialProfileMap(followingList.map(f => f.user)).then(m => { if (m.size > 0) setSocialProfileMap(m); });
         const cached = await allFriendsCached(followingList);
         if (!cached) setFriendsActivityStatus('loading');
         else setFriendsActivityStatus('updating');
@@ -2232,8 +2245,7 @@ export default function App() {
       setSocialRefreshing(true);
       fetchSocial(creds.username, creds.apiKey, true)
         .then(data => {
-          getSocialData(creds.username).then(rec =>
-            applySocialData(creds, data, rec?.ts ?? Date.now()));
+          applySocialData(creds, data, Date.now());
           setSocialError(false);
         })
         .catch(err => {
@@ -2340,20 +2352,27 @@ export default function App() {
         <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center md:items-start gap-5">
 
           {/* Avatar */}
-          <div className="relative shrink-0">
-            <div className="w-20 h-20 md:w-24 md:h-24 rounded-[2px] border border-[#4c9be8] shadow-[0_2px_12px_rgba(0,0,0,0.5)] overflow-hidden bg-[#101214]">
-              <img src={PROFILE_DATA.avatar} alt={PROFILE_DATA.username} className="w-full h-full object-cover" />
+          {(() => {
+            const lp = profileData?.mostRecentGame?.lastPlayed;
+            const lpTs = lp ? new Date(lp.includes('T') ? lp : lp.replace(' ', 'T') + 'Z').getTime() : null;
+            const isRecentlyActive = lpTs && (Date.now() - lpTs) < 60 * 60 * 1000;
+            return (
+            <div className="relative shrink-0">
+              <div className="w-20 h-20 md:w-24 md:h-24 rounded-[2px] border border-[#4c9be8] shadow-[0_2px_12px_rgba(0,0,0,0.5)] overflow-hidden bg-[#101214]">
+                <img src={PROFILE_DATA.avatar} alt={PROFILE_DATA.username} className="w-full h-full object-cover" />
+              </div>
+              {isRecentlyActive ? (
+                <span className="absolute bottom-1 right-1 w-3 h-3 rounded-full bg-[#4caf50] border-2 border-[#1b2838]"></span>
+              ) : PROFILE_DATA.status === 'Online' ? (
+                <span className="absolute bottom-1 right-1 w-3 h-3 rounded-full bg-[#57cbde] border-2 border-[#1b2838]"></span>
+              ) : PROFILE_DATA.status === 'Playing' ? (
+                <span className="absolute bottom-1 right-1 w-3 h-3 rounded-full bg-[#6bcf7f] border-2 border-[#1b2838]"></span>
+              ) : PROFILE_DATA.status === 'Offline' ? (
+                <span className="absolute bottom-1 right-1 w-3 h-3 rounded-full bg-[#546270] border-2 border-[#1b2838]"></span>
+              ) : null}
             </div>
-            {PROFILE_DATA.status === 'Online' && (
-              <span className="absolute bottom-1 right-1 w-3 h-3 rounded-full bg-[#57cbde] border-2 border-[#1b2838]"></span>
-            )}
-            {PROFILE_DATA.status === 'Playing' && (
-              <span className="absolute bottom-1 right-1 w-3 h-3 rounded-full bg-[#6bcf7f] border-2 border-[#1b2838]"></span>
-            )}
-            {PROFILE_DATA.status === 'Offline' && (
-              <span className="absolute bottom-1 right-1 w-3 h-3 rounded-full bg-[#546270] border-2 border-[#1b2838]"></span>
-            )}
-          </div>
+            );
+          })()}
 
           {/* Meta */}
           <div className="flex-1 flex flex-col gap-1.5 text-center md:text-left">
@@ -2392,7 +2411,10 @@ export default function App() {
             {/* Pills */}
             <div className="flex flex-wrap justify-center md:justify-start gap-1.5 mt-0.5">
               <span className="text-[9px] font-semibold uppercase tracking-[0.07em] px-2 py-[3px] rounded-[2px] border border-[#323f4c] bg-[#101214] text-[#546270]">
-                <span className="text-[#e5b143]">{PROFILE_DATA.totalPoints.toLocaleString()}</span> pts
+                {PROFILE_DATA.totalPoints === 0
+                  ? <span className="text-[#8f98a0]">{PROFILE_DATA.totalSoftcorePoints.toLocaleString()}</span>
+                  : <span className="text-[#e5b143]">{PROFILE_DATA.totalPoints.toLocaleString()}</span>
+                } pts
               </span>
               <span className="text-[9px] font-semibold uppercase tracking-[0.07em] px-2 py-[3px] rounded-[2px] border border-[#323f4c] bg-[#101214] text-[#546270]">
                 <span className="text-[#c6d4df]">{PROFILE_DATA.totalUnlocked.toLocaleString()}</span> achievements

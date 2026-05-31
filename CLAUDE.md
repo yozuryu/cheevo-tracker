@@ -54,7 +54,7 @@ These are enforced on every task. Details in the linked docs.
 
 **Changelog**
 - **Always update `changelog.md` after every code change.** Do not wait to be asked.
-- Format: `## vYY.MM.DD`. If today's entry exists, add to it — never create a duplicate header.
+- Format: `## vYY.MM.DD`. If today's entry exists, add to it — **never create a duplicate version header or a duplicate section within the same entry**. Before writing, grep for the version string to confirm it doesn't already exist.
 - Only use sections that exist. Valid sections: `RetroAchievements API`, `Auth`, `Cache`, `Structure`, `Profile`, `Social`, `Game Page`, `Console Page`, `Achievement Page`, `Backlog`, `Settings`, `Search`, `Navigation`, `Polish`, `User Page`.
 - Preferred order when multiple sections appear in one entry: `RetroAchievements API` → `Auth` → `Cache` → `Structure` → page-specific sections.
 - `### RetroAchievements API` — RA API call changes, endpoint wrappers, data transforms.

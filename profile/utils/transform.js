@@ -188,7 +188,8 @@ export const transformData = (data) => {
       richPresenceMsg: data.coreProfile.richPresenceMsg,
       status: data.userSummary?.status || null,
       rank: data.userSummary?.rank || "N/A",
-      totalPoints: data.coreProfile.totalPoints,
+      totalPoints:         data.coreProfile.totalPoints,
+      totalSoftcorePoints: data.coreProfile.totalSoftcorePoints || 0,
       totalUnlocked: totalUnlocked,
       topPercentage: data.userSummary?.rank && data.userSummary?.totalRanked
         ? `${((data.userSummary.rank / data.userSummary.totalRanked) * 100).toFixed(1)}%`
