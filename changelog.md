@@ -1,5 +1,20 @@
 # Changelog
 
+## v26.06.12 — Feed Session Indent Fix
+
+### Social
+
+- Fixed "By Session" feed grouping missing the `ml-4 border-l` indent under the day header — now visually consistent with "By User" mode
+- Sessions with more than 3 achievements now collapse into a badge strip in both grouping modes — previously only worked in "By User" mode (`hideUser=true`); collapse initial state and expand/collapse buttons no longer gated on `hideUser`
+- **By Session / By User** grouping toggle moved to second row alongside timezone label (left: timezone, right: toggle buttons)
+
+## v26.06.11 — Friends Feed Group Mode
+
+### Social
+
+- Friends activity feed now supports two grouping modes: **By Session** (default) shows sessions chronologically with user shown inline per session; **By User** (previous behaviour) groups sessions under a per-user header within each day — toggle buttons appear below the Mine/Friends selector when in Friends view
+- Switching between grouping modes fades the feed in with a 0.2s opacity animation
+
 ## v26.05.31 — Social Bug Fixes + Softcore Points
 
 ### Social

@@ -464,7 +464,7 @@ const FeedSession = ({ session, hideUser = false }) => {
   const fmtT = toLocalTime;
   const { baseTitle, subsetName, isSubset, tags } = parseTitle(gameTitle);
   const gameHref = isOwn ? `../game/?id=${gameId}` : `../game/?id=${gameId}&compare=${username}`;
-  const [collapsed, setCollapsed] = React.useState(hideUser && achievements.length > 3);
+  const [collapsed, setCollapsed] = React.useState(achievements.length > 3);
 
   return (
     <div className={`feed-item ${hideUser ? '' : 'mb-3'}`}>
@@ -545,12 +545,26 @@ const FeedSession = ({ session, hideUser = false }) => {
           </div>
         </>)}
       </div>
+      {!hideUser && collapsed && achievements.length > 0 && (
+        <button onClick={() => setCollapsed(false)} className="w-full mt-1.5 flex items-center gap-1.5 bg-[#1b2838] border border-[#2a475e] rounded-[2px] px-2 py-2 hover:bg-[#202d39] transition-colors outline-none">
+          {achievements.slice(0, 8).map((ach, i) => (
+            <img key={i} src={`${MEDIA_URL}/Badge/${ach.badgeName}.png`} alt={ach.title} title={ach.title}
+              className={`w-8 h-8 rounded-[2px] border shrink-0 ${i >= 5 ? 'hidden md:block' : ''} ${ach.hardcoreMode ? 'border-[#e5b143]' : 'border-[#2a475e]'}`} />
+          ))}
+          {achievements.length > 5 && (
+            <span className="text-[10px] text-[#546270] ml-1 shrink-0 md:hidden">+{achievements.length - 5}</span>
+          )}
+          {achievements.length > 8 && (
+            <span className="text-[10px] text-[#546270] ml-1 shrink-0 hidden md:inline">+{achievements.length - 8}</span>
+          )}
+        </button>
+      )}
       {!collapsed && (
         <div className={`flex flex-col gap-1 ${hideUser ? 'mt-1.5' : ''}`}>
           {achievements.map((ach, i) => (
             <FeedAchRow key={`${ach.achievementId}-${i}`} ach={ach} />
           ))}
-          {hideUser && achievements.length > 3 && (
+          {achievements.length > 3 && (
             <button onClick={() => setCollapsed(true)} className="w-full flex items-center justify-center gap-1 py-1 text-[9px] text-[#546270] hover:text-[#8f98a0] transition-colors outline-none">
               <ChevronUp size={10} />
               collapse
@@ -714,6 +728,17 @@ const ActivityTab = ({ achievements, refTime, heatmapData, loadingMore, allLoade
     return sessions.sort((a, b) => b.latestDate.localeCompare(a.latestDate));
   }, [mergedFeed]);
 
+  // Group feed sessions by day only (flat, for "by sessions" mode)
+  const feedBySession = useMemo(() => {
+    const byDay = {};
+    feedGroups.slice(0, visibleSessionCount).forEach(item => {
+      const day = toLocalDay(item.latestDate);
+      if (!byDay[day]) byDay[day] = [];
+      byDay[day].push(item);
+    });
+    return Object.entries(byDay).sort(([a], [b]) => b.localeCompare(a));
+  }, [feedGroups, visibleSessionCount]);
+
   // Group feed sessions by day → by user for day-header layout (paginated)
   const feedByDay = useMemo(() => {
     const byDay = {};
@@ -737,6 +762,8 @@ const ActivityTab = ({ achievements, refTime, heatmapData, loadingMore, allLoade
     next.has(day) ? next.delete(day) : next.add(day);
     return next;
   });
+
+  const [groupMode, setGroupMode] = useState('sessions');
 
   const fmtTime = toLocalTime;
   const fmtDay  = (str) => new Date(str + 'T00:00:00').toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
@@ -783,8 +810,18 @@ const ActivityTab = ({ achievements, refTime, heatmapData, loadingMore, allLoade
             </div>
           )}
         </div>
-        <div className="flex justify-end">
+        <div className="flex items-center justify-between">
           <span className="text-[9px] text-[#546270] opacity-60">{tzName}</span>
+          {socialView === 'friends' && (
+            <div className="flex items-center gap-1">
+              {[['sessions', 'By Session'], ['users', 'By User']].map(([mode, label]) => (
+                <button key={mode} onClick={() => setGroupMode(mode)}
+                  className={`text-[9px] px-2 py-0.5 rounded-[2px] border font-medium transition-colors uppercase tracking-wider ${groupMode === mode ? 'bg-[#1b2838] text-[#c6d4df] border-[#2a475e]' : 'bg-[#101214] text-[#546270] border-[#323f4c] hover:text-[#c6d4df]'}`}>
+                  {label}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
@@ -880,8 +917,33 @@ const ActivityTab = ({ achievements, refTime, heatmapData, loadingMore, allLoade
                   <Users size={24} className="text-[#546270]" />
                   <div className="text-[11px] text-[#546270]">No activity in the last 30 days</div>
                 </div>
+              ) : groupMode === 'sessions' ? (
+                <div key="sessions" className="feed-group-container flex flex-col gap-0">
+                  {feedBySession.map(([day, sessions]) => {
+                    const isFeedDayCollapsed = collapsedFeedDays.has(day);
+                    const achCount = sessions.reduce((s, sess) => s + sess.achievements.length, 0);
+                    return (
+                      <div key={day} className="mb-4">
+                        <button onClick={() => toggleFeedDay(day)} className="w-full flex items-center gap-2 mb-2 group outline-none">
+                          <div className="w-2 h-2 rounded-full bg-[#2a475e] border border-[#66c0f4] shrink-0"></div>
+                          <span className="text-[10px] text-[#66c0f4] font-semibold group-hover:text-[#c6d4df] transition-colors">{fmtDay(day)}</span>
+                          <div className="flex-1 h-px bg-[#2a475e] opacity-40"></div>
+                          <span className="text-[9px] text-[#546270]">{achCount} achievement{achCount !== 1 ? 's' : ''}</span>
+                          <ChevronDown size={11} className={`text-[#546270] transition-transform duration-200 shrink-0 ${isFeedDayCollapsed ? '' : 'rotate-180'}`} />
+                        </button>
+                        {!isFeedDayCollapsed && (
+                          <div className="ml-4 border-l border-[#2a475e] pl-3 flex flex-col gap-2">
+                            {sessions.map(session => (
+                              <FeedSession key={`${session.username}-${session.gameId}-${session.latestDate}`} session={session} hideUser={false} />
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
               ) : (
-                <div className="flex flex-col gap-0">
+                <div key="users" className="feed-group-container flex flex-col gap-0">
                   {feedByDay.map(([day, userGroups]) => {
                     const isFeedDayCollapsed = collapsedFeedDays.has(day);
                     const achCount = userGroups.reduce((s, ug) => s + ug.sessions.reduce((ss, sess) => ss + sess.achievements.length, 0), 0);
@@ -3195,8 +3257,13 @@ export default function App() {
           from { opacity: 0; transform: translateY(-6px); }
           to   { opacity: 1; transform: translateY(0); }
         }
+        @keyframes feedGroupFade {
+          from { opacity: 0; }
+          to   { opacity: 1; }
+        }
         .feed-item { animation: feedIn 0.5s ease both; }
         .backlog-item { animation: feedIn 0.3s ease both; }
+        .feed-group-container { animation: feedGroupFade 0.2s ease both; }
 
         @keyframes slideUpPill {
           from { opacity: 0; transform: translateX(-50%) translateY(12px); }
