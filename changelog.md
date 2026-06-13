@@ -1,6 +1,15 @@
 # Changelog
 
-## v26.06.13 — PWA Install Prompt
+## v26.06.13 — PWA Install Prompt + Session Feed Avatar Fix
+
+### Social
+
+- Fixed cached avatar from IDB (`socialProfileMap`) not being used in **By Session** feed mode — `FeedSession` now accepts a `socialProfileMap` prop and resolves the user avatar from the cache first, falling back to the RA `UserPic` URL; matches the behaviour already in place for **By User** mode.
+- Added achievement type icons per achievement row in `FeedAchRow` — Trophy (Progression), Crown (Win Condition), AlertTriangle (Missable) with pop-box tooltips; matches the existing "mine" tab design exactly.
+- Added per-achievement **pts** badge and RetroPoints **×multiplier** in `FeedAchRow`; multiplier is color-coded by magnitude (grey ×1–9, blue ×10–19, gold ×20–29, red ×30+) — matches the mine tab's existing design.
+- Added session-level achievement count, pts, and RP totals in `FeedSession` header (next to the time range) for **By Session** mode — mirrors the achievement count shown in **By User** user headers.
+- Added day-level pts and RP totals in the day-group header for **By Session** mode.
+- Added user-level pts and RP totals in the user-group header for **By User** mode — all totals follow the same display rule: RP badge hidden when `trueRatio === points` (no rarity multiplier).
 
 ### Polish
 

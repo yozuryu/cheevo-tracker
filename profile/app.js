@@ -437,28 +437,61 @@ const RAchievementModal = ({ game, onClose, loadingDetails }) => {
 
 // ── FeedAchRow Component — individual achievement row inside a FeedSession ─
 
-const FeedAchRow = ({ ach }) => (
-  <div className={`feed-item flex items-center gap-2 p-2 rounded-[2px] border border-[#2a475e] border-l-[2px] ${ach.hardcoreMode ? 'border-l-[#e5b143] bg-[#202d39]' : 'border-l-[#546270] bg-[#1b2838]'} hover:bg-[#2a475e] transition-colors`}>
-    <a href={`../achievement/?id=${ach.achievementId}`} className="shrink-0 w-8 h-8 rounded-[2px] overflow-hidden border border-[#101214] bg-black block hover:scale-105 transition-transform">
-      <img src={`${MEDIA_URL}/Badge/${ach.badgeName}.png`} alt={ach.title} className="w-full h-full object-cover" />
-    </a>
-    <div className="flex-1 min-w-0">
-      <div className="flex items-center gap-1.5 mb-0.5 flex-wrap">
-        <a href={`../achievement/?id=${ach.achievementId}`} className={`text-[11px] font-medium transition-colors truncate ${ach.hardcoreMode ? 'text-[#e5b143] hover:text-[#f0c96a]' : 'text-[#c6d4df] hover:text-[#66c0f4]'}`}>
-          {ach.title}
-        </a>
-        <span className="text-[9px] font-bold text-[#66c0f4] bg-[#101214] border border-[#323f4c] px-1.5 py-[1px] rounded-sm shrink-0">{ach.points} pts</span>
+const FeedAchRow = ({ ach }) => {
+  const ratio = ach.trueRatio && ach.points ? ach.trueRatio / ach.points : null;
+  return (
+    <div className={`feed-item flex items-center gap-2 p-2 rounded-[2px] border border-[#2a475e] border-l-[2px] ${ach.hardcoreMode ? 'border-l-[#e5b143] bg-[#202d39]' : 'border-l-[#546270] bg-[#1b2838]'} hover:bg-[#2a475e] transition-colors`}>
+      <a href={`../achievement/?id=${ach.achievementId}`} className="shrink-0 w-8 h-8 rounded-[2px] overflow-hidden border border-[#101214] bg-black block hover:scale-105 transition-transform">
+        <img src={`${MEDIA_URL}/Badge/${ach.badgeName}.png`} alt={ach.title} className="w-full h-full object-cover" />
+      </a>
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-1.5 mb-0.5 flex-wrap">
+          <a href={`../achievement/?id=${ach.achievementId}`} className={`text-[11px] font-medium transition-colors truncate ${ach.hardcoreMode ? 'text-[#e5b143] hover:text-[#f0c96a]' : 'text-[#c6d4df] hover:text-[#66c0f4]'}`}>
+            {ach.title}
+          </a>
+          <span className="text-[9px] font-bold text-[#66c0f4] bg-[#101214] border border-[#323f4c] px-1.5 py-[1px] rounded-sm shrink-0">{ach.points} pts</span>
+          {ratio > 0 && <span className="text-[9px] shrink-0" style={{ color: ratio >= 30 ? '#ff6b6b' : ratio >= 20 ? '#e5b143' : ratio >= 10 ? '#66c0f4' : '#8f98a0' }}>×{ratio.toFixed(1)}</span>}
+          {ach.type === 'progression' && (
+            <span className="pop-wrap">
+              <Trophy size={11} className="text-[#e5b143]" />
+              <span className="pop-box">
+                <div className="pop-name" style={{color:'#e5b143'}}>Progression</div>
+                <div className="pop-sub">Required to complete the game</div>
+              </span>
+            </span>
+          )}
+          {ach.type === 'win_condition' && (
+            <span className="pop-wrap">
+              <Crown size={11} className="text-[#ff6b6b]" />
+              <span className="pop-box">
+                <div className="pop-name" style={{color:'#ff6b6b'}}>Win Condition</div>
+                <div className="pop-sub">Triggers game completion</div>
+              </span>
+            </span>
+          )}
+          {ach.type === 'missable' && (
+            <span className="pop-wrap">
+              <AlertTriangle size={11} className="text-[#ff9800]" />
+              <span className="pop-box">
+                <div className="pop-name" style={{color:'#ff9800'}}>Missable</div>
+                <div className="pop-sub">Can be permanently missed</div>
+              </span>
+            </span>
+          )}
+        </div>
+        {ach.description && <p className="text-[9px] text-[#546270] truncate">{ach.description}</p>}
       </div>
-      {ach.description && <p className="text-[9px] text-[#546270] truncate">{ach.description}</p>}
+      <span className="text-[8px] text-[#546270] shrink-0 ml-auto">{toLocalTime(ach.date)}</span>
     </div>
-    <span className="text-[8px] text-[#546270] shrink-0 ml-auto">{toLocalTime(ach.date)}</span>
-  </div>
-);
+  );
+};
 
 // ── FeedSession Component — session header + achievement list ─────────────
 
-const FeedSession = ({ session, hideUser = false }) => {
+const FeedSession = ({ session, hideUser = false, socialProfileMap = new Map() }) => {
   const { username, isOwn, gameId, gameTitle, gameIcon, consoleName, achievements } = session;
+  const sessionPts   = achievements.reduce((s, a) => s + (a.points    || 0), 0);
+  const sessionRetro = achievements.reduce((s, a) => s + (a.trueRatio || 0), 0);
   const startTime = achievements[achievements.length - 1]?.date || '';
   const endTime   = achievements[0]?.date || '';
   const fmtT = toLocalTime;
@@ -506,7 +539,7 @@ const FeedSession = ({ session, hideUser = false }) => {
           {/* Row 1: always visible — user + earned in + [desktop: game info] + time */}
           <div className="flex items-center gap-2 mb-1 md:mb-0">
             <a href={`../profile/?u=${username}`} className="shrink-0">
-              <img src={`${MEDIA_URL}/UserPic/${username}.png`} alt={username} className="w-5 h-5 rounded-[2px] object-cover" />
+              <img src={socialProfileMap.get(username)?.userPic ? getMediaUrl(socialProfileMap.get(username).userPic) : `${MEDIA_URL}/UserPic/${username}.png`} alt={username} className="w-5 h-5 rounded-[2px] object-cover" />
             </a>
             <a href={`../profile/?u=${username}`} className="text-[11px] font-medium min-w-0 truncate hover:underline" style={{ color: isOwn ? '#57cbde' : '#e5b143' }}>
               {username}
@@ -523,9 +556,14 @@ const FeedSession = ({ session, hideUser = false }) => {
               {!isSubset && renderTildeTags(tags)}
               {consoleName && <span className="text-[8px] text-[#546270] shrink-0">· {consoleName}</span>}
             </div>
-            <span className="text-[8px] text-[#546270] shrink-0 ml-auto">
-              {fmtT(startTime)}{startTime !== endTime ? `–${fmtT(endTime)}` : ''}
-            </span>
+            <div className="flex items-center gap-1.5 shrink-0 ml-auto">
+              <span className="hidden md:inline text-[9px] text-[#546270]">{achievements.length} achievement{achievements.length !== 1 ? 's' : ''}</span>
+              <span className="hidden md:inline text-[9px] text-[#2a475e]">·</span>
+              <span className="text-[9px] text-[#546270]">{sessionPts} pts</span>
+              {sessionRetro > sessionPts && <><span className="text-[9px] text-[#2a475e]">·</span><span className="text-[9px] text-[#546270]">{sessionRetro} RP</span></>}
+              <span className="text-[9px] text-[#2a475e]">·</span>
+              <span className="text-[8px] text-[#546270]">{fmtT(startTime)}{startTime !== endTime ? `–${fmtT(endTime)}` : ''}</span>
+            </div>
           </div>
           {/* Row 2: mobile only — game icon + title + console stacked */}
           <div className="md:hidden flex items-center gap-1.5 pl-7">
@@ -601,13 +639,17 @@ const ActivityTab = ({ achievements, refTime, heatmapData, loadingMore, allLoade
     const map = {};
     achievements.forEach(ach => {
       const day = toLocalDay(ach.date);
-      if (!map[day]) map[day] = { count: 0, points: 0, achievements: [] };
+      if (!map[day]) map[day] = { count: 0, points: 0, retro: 0, achievements: [] };
       map[day].count++;
-      map[day].points += ach.points || 0;
+      map[day].points += ach.points    || 0;
+      map[day].retro  += ach.trueRatio || 0;
       map[day].achievements.push(ach);
     });
     return map;
   }, [achievements]);
+
+  const totalPts   = useMemo(() => achievements.reduce((s, a) => s + (a.points    || 0), 0), [achievements]);
+  const totalRetro = useMemo(() => achievements.reduce((s, a) => s + (a.trueRatio || 0), 0), [achievements]);
 
   const maxPoints = useMemo(() => Math.max(1, ...Object.values(heatmapData).map(d => d.points || 0)), [heatmapData]);
 
@@ -683,8 +725,9 @@ const ActivityTab = ({ achievements, refTime, heatmapData, loadingMore, allLoade
           }
         });
         sessions.reverse(); // newest session first within a day
-        const dayPts = achs.reduce((s, a) => s + (a.points || 0), 0);
-        return { day, dayPts, achCount: achs.length, sessions };
+        const dayPts   = achs.reduce((s, a) => s + (a.points    || 0), 0);
+        const dayRetro = achs.reduce((s, a) => s + (a.trueRatio || 0), 0);
+        return { day, dayPts, dayRetro, achCount: achs.length, sessions };
       });
   }, [achievements, selectedDay, dayMap]);
 
@@ -921,7 +964,9 @@ const ActivityTab = ({ achievements, refTime, heatmapData, loadingMore, allLoade
                 <div key="sessions" className="feed-group-container flex flex-col gap-0">
                   {feedBySession.map(([day, sessions]) => {
                     const isFeedDayCollapsed = collapsedFeedDays.has(day);
-                    const achCount = sessions.reduce((s, sess) => s + sess.achievements.length, 0);
+                    const achCount   = sessions.reduce((s, sess) => s + sess.achievements.length, 0);
+                    const dayPts     = sessions.reduce((s, sess) => s + sess.achievements.reduce((ss, a) => ss + (a.points    || 0), 0), 0);
+                    const dayRetro   = sessions.reduce((s, sess) => s + sess.achievements.reduce((ss, a) => ss + (a.trueRatio || 0), 0), 0);
                     return (
                       <div key={day} className="mb-4">
                         <button onClick={() => toggleFeedDay(day)} className="w-full flex items-center gap-2 mb-2 group outline-none">
@@ -929,12 +974,15 @@ const ActivityTab = ({ achievements, refTime, heatmapData, loadingMore, allLoade
                           <span className="text-[10px] text-[#66c0f4] font-semibold group-hover:text-[#c6d4df] transition-colors">{fmtDay(day)}</span>
                           <div className="flex-1 h-px bg-[#2a475e] opacity-40"></div>
                           <span className="text-[9px] text-[#546270]">{achCount} achievement{achCount !== 1 ? 's' : ''}</span>
+                          <span className="text-[9px] text-[#2a475e]">·</span>
+                          <span className="text-[9px] text-[#546270]">{dayPts} pts</span>
+                          {dayRetro > dayPts && <><span className="text-[9px] text-[#2a475e]">·</span><span className="text-[9px] text-[#546270]">{dayRetro} RP</span></>}
                           <ChevronDown size={11} className={`text-[#546270] transition-transform duration-200 shrink-0 ${isFeedDayCollapsed ? '' : 'rotate-180'}`} />
                         </button>
                         {!isFeedDayCollapsed && (
                           <div className="ml-4 border-l border-[#2a475e] pl-3 flex flex-col gap-2">
                             {sessions.map(session => (
-                              <FeedSession key={`${session.username}-${session.gameId}-${session.latestDate}`} session={session} hideUser={false} />
+                              <FeedSession key={`${session.username}-${session.gameId}-${session.latestDate}`} session={session} hideUser={false} socialProfileMap={socialProfileMap} />
                             ))}
                           </div>
                         )}
@@ -960,6 +1008,8 @@ const ActivityTab = ({ achievements, refTime, heatmapData, loadingMore, allLoade
                           <div className="ml-4 border-l border-[#2a475e] pl-3 flex flex-col gap-3">
                             {userGroups.map(({ username, isOwn, sessions }) => {
                               const userAchCount = sessions.reduce((s, sess) => s + sess.achievements.length, 0);
+                              const userPts      = sessions.reduce((s, sess) => s + sess.achievements.reduce((ss, a) => ss + (a.points    || 0), 0), 0);
+                              const userRetro    = sessions.reduce((s, sess) => s + sess.achievements.reduce((ss, a) => ss + (a.trueRatio || 0), 0), 0);
                               return (
                                 <div key={username}>
                                   <div className="flex items-center gap-2 mb-1.5">
@@ -969,9 +1019,12 @@ const ActivityTab = ({ achievements, refTime, heatmapData, loadingMore, allLoade
                                     <a href={`../profile/?u=${username}`} className="text-[11px] font-medium hover:underline truncate" style={{ color: isOwn ? '#57cbde' : '#e5b143' }}>
                                       {username}
                                     </a>
-                                    <span className="text-[9px] text-[#546270] shrink-0">
+                                    <span className="hidden md:inline text-[9px] text-[#546270] shrink-0">
                                       {sessions.length > 1 ? `${sessions.length} sessions · ` : ''}{userAchCount} achievement{userAchCount !== 1 ? 's' : ''}
                                     </span>
+                                    <span className="hidden md:inline text-[9px] text-[#2a475e] shrink-0">·</span>
+                                    <span className="text-[9px] text-[#546270] shrink-0">{userPts} pts</span>
+                                    {userRetro > userPts && <><span className="text-[9px] text-[#2a475e] shrink-0">·</span><span className="text-[9px] text-[#546270] shrink-0">{userRetro} RP</span></>}
                                   </div>
                                   <div className="ml-7 border-l border-[#2a475e] pl-3 flex flex-col gap-2">
                                     {sessions.map(session => (
@@ -1070,12 +1123,20 @@ const ActivityTab = ({ achievements, refTime, heatmapData, loadingMore, allLoade
         <div className="flex items-center gap-2 border-b border-[#2a475e] pb-1.5 mb-3">
           <span className="w-[3px] h-[14px] bg-[#e5b143] rounded-[1px] shrink-0"></span>
           <span className="text-[13px] text-white tracking-wide uppercase font-medium flex items-center gap-2"><Trophy size={15} className="text-[#e5b143]" /> Recent Unlocks</span>
-          <span className="text-[10px] text-[#546270] ml-auto">
-            {selectedDay
-              ? `${fmtDay(selectedDay)} · ${dayMap[selectedDay]?.count || 0} achievements`
-              : allLoaded
-              ? `${achievements.length} total`
-              : `Last ~6 months · ${achievements.length} loaded`}
+          <span className="text-[10px] text-[#546270] ml-auto flex items-center gap-1.5">
+            {selectedDay ? (<>
+              <span>{fmtDay(selectedDay)}</span>
+              <span className="text-[#2a475e]">·</span>
+              <span>{dayMap[selectedDay]?.count || 0} achievements</span>
+              <span className="text-[#2a475e]">·</span>
+              <span>{dayMap[selectedDay]?.points || 0} pts</span>
+              {(dayMap[selectedDay]?.retro || 0) > (dayMap[selectedDay]?.points || 0) && <><span className="text-[#2a475e]">·</span><span>{dayMap[selectedDay].retro} RP</span></>}
+            </>) : (<>
+              <span>{achievements.length} {allLoaded ? 'total' : 'loaded'}</span>
+              <span className="text-[#2a475e]">·</span>
+              <span>{totalPts} pts</span>
+              {totalRetro > totalPts && <><span className="text-[#2a475e]">·</span><span>{totalRetro} RP</span></>}
+            </>)}
           </span>
         </div>
 
@@ -1095,7 +1156,7 @@ const ActivityTab = ({ achievements, refTime, heatmapData, loadingMore, allLoade
           <div className="text-[#8f98a0] text-[11px] py-4 italic text-center">No achievements unlocked in the last 180 days.</div>
         ) : (
           <div className="flex flex-col gap-0">
-            {timelineGroups.map(({ day, dayPts, achCount, sessions }) => {
+            {timelineGroups.map(({ day, dayPts, dayRetro, achCount, sessions }) => {
               const isCollapsed = collapsedDays.has(day);
               return (
               <div key={day} className="mb-4 feed-item">
@@ -1104,12 +1165,15 @@ const ActivityTab = ({ achievements, refTime, heatmapData, loadingMore, allLoade
                   <div className="w-2 h-2 rounded-full bg-[#2a475e] border border-[#66c0f4] shrink-0"></div>
                   <span className="text-[10px] text-[#66c0f4] font-semibold group-hover:text-[#c6d4df] transition-colors">{fmtDay(day)}</span>
                   <div className="flex-1 h-px bg-[#2a475e] opacity-40"></div>
-                  <span className="text-[9px] text-[#546270]">+{dayPts} pts · {achCount} achievement{achCount !== 1 ? 's' : ''}</span>
+                  <span className="text-[9px] text-[#546270]">{achCount} achievement{achCount !== 1 ? 's' : ''} · +{dayPts} pts{dayRetro > dayPts ? ` · ${dayRetro} RP` : ''}</span>
                   <ChevronDown size={11} className={`text-[#546270] transition-transform duration-200 shrink-0 ${isCollapsed ? '' : 'rotate-180'}`} />
                 </button>
 
                 {/* Sessions — hidden when collapsed */}
-                {!isCollapsed && sessions.map((session, si) => (
+                {!isCollapsed && sessions.map((session, si) => {
+                  const sessPts   = session.achievements.reduce((s, a) => s + (a.points    || 0), 0);
+                  const sessRetro = session.achievements.reduce((s, a) => s + (a.trueRatio || 0), 0);
+                  return (
                   <div key={si} className="ml-4 border-l border-[#2a475e] pl-3 mb-3">
                     {/* Session label */}
                     <div className="flex items-center gap-2 mb-1.5">
@@ -1131,7 +1195,12 @@ const ActivityTab = ({ achievements, refTime, heatmapData, loadingMore, allLoade
                         </>); })()}
                         <span className="text-[8px] text-[#546270] shrink-0">· {session.consoleName}</span>
                       </div>
-                      <span className="text-[8px] text-[#546270] shrink-0 ml-auto">{fmtTime(session.startTime)}{session.startTime !== session.endTime ? `–${fmtTime(session.endTime)}` : ''}</span>
+                      <div className="flex items-center gap-1.5 shrink-0 ml-auto">
+                        <span className="text-[8px] text-[#546270]">+{sessPts} pts</span>
+                        {sessRetro > sessPts && <><span className="text-[8px] text-[#2a475e]">·</span><span className="text-[8px] text-[#546270]">{sessRetro} RP</span></>}
+                        <span className="text-[8px] text-[#2a475e]">·</span>
+                        <span className="text-[8px] text-[#546270]">{fmtTime(session.startTime)}{session.startTime !== session.endTime ? `–${fmtTime(session.endTime)}` : ''}</span>
+                      </div>
                     </div>
 
                     {/* Achievements in session */}
@@ -1186,7 +1255,7 @@ const ActivityTab = ({ achievements, refTime, heatmapData, loadingMore, allLoade
                       })}
                     </div>
                   </div>
-                ))}
+                ); })}
               </div>
               );
             })}

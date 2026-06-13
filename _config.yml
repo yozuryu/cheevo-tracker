@@ -1,13 +1,13 @@
 exclude:
   - scripts/
   - CLAUDE.md
-  - TODO.md
   - package.json
   - package-lock.json
   - .env
   - .gitignore
   - .claude/
   - .agents/
+  - .backlog/
   - SKILL.md
   - skills-lock.json
   - node_modules/
