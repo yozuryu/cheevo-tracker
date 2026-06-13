@@ -1,5 +1,15 @@
 # Changelog
 
+## v26.06.13 — PWA Install Prompt
+
+### Polish
+
+- Added a slide-up install banner (`assets/pwa-install.js`) that appears when the browser fires `beforeinstallprompt` — lets users add the app to their home screen without hunting through browser menus.
+- Banner auto-dismisses after 10 seconds with an animated progress bar; clicking **Install** triggers the native prompt, clicking × sets a 7-day cooldown via `ra_pwa_dismissed_at` in localStorage.
+- Shown at most once per session (guarded by `sessionStorage`); skipped entirely if already running in standalone/PWA mode.
+- Injected into all 7 pages (`index.html`, `profile/`, `game/`, `achievement/`, `console/`, `changelog/`, `search/`) via a `<script>` tag after `mobile-nav.js`.
+- On mobile the banner sits above the bottom nav bar using the same safe-area-inset offset pattern as `mobile-nav.js`.
+
 ## v26.06.12 — Feed Session Indent Fix
 
 ### Social

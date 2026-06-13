@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "skills": {
+    "backlog-md": {
+      "source": "nickcrew/claude-ctx-plugin",
+      "sourceType": "github",
+      "skillPath": "skills/backlog-md/SKILL.md",
+      "computedHash": "9d5a260ea115c67410b013b9fb95d6e7e4559c9b74231732b537b9d0174ae280"
+    }
+  }
+}

@@ -7,6 +7,9 @@ exclude:
   - .env
   - .gitignore
   - .claude/
+  - .agents/
+  - SKILL.md
+  - skills-lock.json
   - node_modules/
   - profile/utils/ra-api.md
   - docs/

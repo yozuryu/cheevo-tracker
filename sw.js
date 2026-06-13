@@ -22,6 +22,7 @@ const PRECACHE = [
   './search/index.html',
   './search/app.js',
   './assets/mobile-nav.js',
+  './assets/pwa-install.js',
   './assets/ui.js',
   './assets/favicon.ico',
   './assets/icon-192.png',
