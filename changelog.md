@@ -1,5 +1,12 @@
 # Changelog
 
+## v26.06.16 — Game Awards Display Order
+
+### Profile
+
+- Game awards now sort by `DisplayOrder` from the RA API within each type group (Mastery/Completion first, then Game Beaten), respecting the order the user configured in their RetroAchievements settings. Falls back to `awardedAt` descending when no award has a non-zero `DisplayOrder`.
+- `DisplayOrder` is now passed through in the `pageAwards.visibleUserAwards` transform in `ra-api.js` (was previously stripped).
+
 ## v26.06.13 — PWA Install Prompt + Session Feed Avatar Fix
 
 ### Social

@@ -260,10 +260,13 @@ export const transformData = (data) => {
               const existing = byGameId.get(key);
               if (!existing || a.awardType === "Mastery/Completion") byGameId.set(key, a);
             });
-          return Array.from(byGameId.values())
+          const awards = Array.from(byGameId.values());
+          const hasDisplayOrder = awards.some(a => (a.displayOrder || 0) > 0);
+          return awards
             .sort((a, b) => {
               const typeOrder = { "Mastery/Completion": 0, "Game Beaten": 1 };
               if (typeOrder[a.awardType] !== typeOrder[b.awardType]) return typeOrder[a.awardType] - typeOrder[b.awardType];
+              if (hasDisplayOrder) return a.displayOrder - b.displayOrder;
               return new Date(b.awardedAt) - new Date(a.awardedAt);
             })
             .map((a, i) => ({
