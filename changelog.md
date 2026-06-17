@@ -1,5 +1,11 @@
 # Changelog
 
+## v26.06.17 — Babel JSX Runtime Fix
+
+### Structure
+
+- Fixed `Uncaught TypeError: Failed to resolve module specifier "react/jsx-runtime"` — unpinned `@babel/standalone` pulled a newer version that defaults to the automatic JSX runtime, which can't resolve `react/jsx-runtime` as a bare specifier without a bundler. Pinned all 7 pages to `@babel/standalone@7.21.8`, the last version before the default changed.
+
 ## v26.06.16 — Game Awards Display Order
 
 ### Profile
