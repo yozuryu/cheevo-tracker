@@ -1,5 +1,22 @@
 # Changelog
 
+## v26.07.13 — Professor Oak Challenge Guide
+
+### Structure
+
+- Added `game/utils/poc.js` — `classifyPocAchievement()` and `buildPocCheckpoints()` group a POC subset's achievements into ordered checkpoints (gym leader / Elite Four / Champion / legendary finale) purely by parsing the live achievement `title`/`description` text — a checkpoint marker is identified by a target Pokédex count embedded anywhere in its description (`NUMERIC_TARGET_PATTERNS`, handling half a dozen different phrasings), and each catch requirement's species name(s) are pulled from the description (`SPECIES_PATTERNS`), the title when the description is too generic (`looksLikeSpeciesList`), or an exact-title lookup as a last resort (`KNOWN_CHOICE_GROUPS`, e.g. Red's "Choose your Eeveelution"). No hardcoded species-to-checkpoint mapping. Validated against all five independently-authored subsets (HeartGold, SoulSilver, Red, Blue, Yellow) with zero unclassified achievements. Checkpoints whose final requirement also names its own species (e.g. HeartGold's Kyogre, Yellow's Mewtwo) correctly list that species as a checklist entry, not just as the checkpoint-clear marker.
+- Added `game/data/poc-pokemon.json` — a static, PokeAPI-generated reference table (422 entries) of evolution method/level, per-version wild encounter locations, breeding info, and legendary flags, keyed by species name (including known alternate spellings across all five subsets, e.g. `NidoranF`/`Nidoran Female`/`Nidoran♀`). Not hand-authored, to avoid seeding the guide with incorrect game data.
+- Added `scripts/poc-data-gen.js` — reusable generator that fetches a POC subset's live achievement data from RA, parses it into species requirements, cross-references PokeAPI for evolution/location/breeding data, and merges the result into `game/data/poc-pokemon.json`. Mirrors the same achievement-text classification `game/utils/poc.js` uses at runtime.
+- Updated `docs/pages/game.md` with a new "Professor Oak Challenge Tab" section documenting the subset lookup, checkpoint parsing, reference data shape, and accordion UI.
+- Added `docs/poc-data-generation.md` — walkthrough for extending the POC guide to a new Pokémon game (finding the subset ID, running the generator, wiring up `POC_GAMES`), linked from `CLAUDE.md`'s documentation table.
+
+### Game Page
+
+- Added a **Professor Oak** tab, shown when browsing a POC subset's own game page directly (`findPocSubset(gameId)` in `game/utils/poc.js`). Covers HeartGold (`22862`) and SoulSilver (`22693`) under parent `7212`, Red (`16084`) and Blue (`29295`) under parent `724`, and Yellow (`22851`) under parent `723`. No separate fetch — reuses the achievement data already loaded for the page. If the subset has a sibling under the same parent, an "Also see" link jumps to its page.
+- Fixed `?tab=poc` not restoring on page load/refresh — the tab allowlist used to seed initial state from the URL didn't include `'poc'`, so a direct link or refresh silently fell back to the Achievements tab.
+- Tab renders an accordion — one collapsible section per checkpoint, with the player's current (first not-yet-cleared) checkpoint auto-expanded. Each checkpoint header shows a cleared checkmark and a `caught / total` species count.
+- For each locked species, shows a pointer: evolution method/level if it's an evolution (e.g. "Evolves from Pidgey — Level 18"), wild encounter locations for the active version, breeding instructions for baby Pokémon, or a legendary-encounter flag — falling back to the achievement's own description text when no structured hint exists for that species.
+
 ## v26.06.17 — Babel JSX Runtime Fix
 
 ### Structure

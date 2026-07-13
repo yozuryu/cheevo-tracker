@@ -23,8 +23,11 @@ All in parallel:
 | Tab | Contents |
 |---|---|
 | Achievements | Full achievement list with unlock status, friend comparison |
+| Info | Media gallery, time-to-beat, metadata, links |
 | Leaderboards | Game leaderboards + user's entries |
-| Comments | RA game comment thread |
+| Community | Recent masters, comments |
+| Hashes | Supported ROM hashes |
+| Professor Oak | Only shown when `findPocSubset(gameId)` matches — i.e. when browsing a POC subset's own page — see below |
 
 ## Achievement Rows
 
@@ -86,6 +89,57 @@ Stripe: `w-[3px] self-stretch rounded-full`. Badge: `w-7 h-7 rounded-[2px]`.
 | `completed` | Completed | `#e5b143` |
 | `beaten-hardcore` | Beaten | `#c6d4df` |
 | `beaten-softcore` | Beaten (SC) | `#8f98a0` |
+
+## Professor Oak Challenge Tab
+
+**File:** `game/utils/poc.js` (parsing logic) + inline components in `game/app.js` (`PocEntryRow`, `PocHintLine`)
+
+RetroAchievements represents the Professor Oak Challenge (POC) as a **subset game** — its own RA game ID with its own achievement set. The tab shows up when browsing the **subset's own page** directly (e.g. `game/?id=22862`), not the parent game's page — a POC subset already has a normal, independently-browsable game page (with a "Subset of X" link back to the parent, like any other RA subset), so the guide lives there rather than being bolted onto the parent.
+
+`POC_GAMES` in `game/utils/poc.js` groups subsets by their parent game, and `findPocSubset(gameId)` looks up whether the *current* game ID is one of them:
+
+```js
+export const POC_GAMES = {
+  '7212': { // Pokémon HeartGold Version | Pokémon SoulSilver Version
+    subsets: [
+      { id: 22862, label: 'HeartGold', version: 'heartgold' },
+      { id: 22693, label: 'SoulSilver', version: 'soulsilver' },
+    ],
+  },
+};
+```
+
+The tab only appears in the tab bar when `findPocSubset(gameId)` returns non-null. If the subset has siblings under the same parent (e.g. HeartGold's page links to SoulSilver's), an "Also see" row renders plain links to `?id=<siblingId>&tab=poc` — navigating to the sibling's own page, not an in-place data switch.
+
+### Data fetch
+
+No separate fetch — since the tab only appears while already viewing the subset's own page, the achievement data fetched on mount for the page (`getGameInfoAndUserProgress`, see Mount Sequence above) *is* the POC data. `achList` (already computed for the Achievements tab) is reused directly.
+
+### Checkpoint parsing (`game/utils/poc.js`)
+
+POC subsets are community-authored and use inconsistent wording between sets (compare the HeartGold and SoulSilver subsets), so grouping is derived entirely from the live achievement text rather than any hardcoded species/checkpoint list:
+
+- `classifyPocAchievement(ach)` — pattern-matches `ach.description` (and in a few cases `ach.title`, e.g. starter-choice achievements) into either a **marker** (a checkpoint-clear achievement like "Defeat Falkner with 41 pokemon caught", carrying a target Pokédex count) or a **species** entry (a single catch requirement, possibly a multi-choice like a starter).
+- `buildPocCheckpoints(achievements)` — sorts achievements by ID, then buckets every species entry into the next marker achievement that follows it in ID order. Anything after the last marker becomes a trailing "Finale" checkpoint (used when the final legendary isn't gated behind its own marker achievement, e.g. SoulSilver's Groudon).
+
+This means adding support for a new POC subset (a different game) only requires adding an entry to `POC_GAMES` — no parsing changes, as long as the achievement text follows one of the known phrasings in `poc.js`. See [`docs/poc-data-generation.md`](../poc-data-generation.md) for the full walkthrough of adding a new game (finding the subset ID, generating reference data, wiring up the config).
+
+### Reference data (`game/data/poc-pokemon.json`)
+
+RA achievement text doesn't say *where* to find a Pokémon or *what level* it evolves at, so a static JSON file (generated once from [PokeAPI](https://pokeapi.co), not hand-authored) is fetched at `./data/poc-pokemon.json` and cached in the `pocReference` state. It's keyed by species display name (including known alternate spellings, e.g. both `Mr. Mime` and `Mr Mime`) and each entry may contain:
+
+| Field | Meaning |
+|---|---|
+| `evolvesFrom` / `evolveMethod` | Pre-evolution species name + trigger text (e.g. `"Level 18"`, `"Trade holding Metal Coat"`) |
+| `locations` | `{ heartgold: [...], soulsilver: [...] }` — human-readable wild encounter spots + method (grass/surf/rod/headbutt/etc.) |
+| `breeding` | Text for baby Pokémon only obtainable by breeding (with incense item if required) |
+| `legendary` / `mythical` | Flags used as a last-resort fallback when no location/evolution/breeding data applies |
+
+`getPocHint(name, reference, version)` in `game/app.js` resolves a species to a hint in that priority order (evolution → location → breeding → legendary flag). If nothing resolves, `PocEntryRow` falls back to showing the achievement's own `description` text rather than nothing.
+
+### Accordion UI
+
+One collapsible section per checkpoint (gym leader / Elite Four / Champion / finale). The checkpoint containing the first not-yet-cleared marker achievement auto-expands on load (`currentCheckpointKey`); clicking a header toggles `expandedCheckpoint` (only one open at a time). Each checkpoint header shows a cleared checkmark (from the marker achievement's own unlock state) and a `caught / total` count for its species entries. Unlocked species show a caught badge; locked species show their hint from the reference data (or achievement description fallback).
 
 ## Caching
 

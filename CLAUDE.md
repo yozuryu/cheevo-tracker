@@ -23,6 +23,7 @@ Personal RetroAchievements profile tracker. Static site — React, Tailwind, Luc
 | Login page | [`docs/pages/login.md`](docs/pages/login.md) |
 | Profile page (tabs, mount sequence, modals, compare, visitor mode) | [`docs/pages/profile.md`](docs/pages/profile.md) |
 | Game page (achievements, friend comparison, leaderboards) | [`docs/pages/game.md`](docs/pages/game.md) |
+| Adding a new game to the Professor Oak Challenge guide | [`docs/poc-data-generation.md`](docs/poc-data-generation.md) |
 | Achievement page | [`docs/pages/achievement.md`](docs/pages/achievement.md) |
 | Console page | [`docs/pages/console.md`](docs/pages/console.md) |
 | Settings page | [`docs/pages/settings.md`](docs/pages/settings.md) |

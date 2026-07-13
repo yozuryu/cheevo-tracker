@@ -1,0 +1,6648 @@
+{
+  "Abra": {
+    "locations": {
+      "heartgold": [
+        "Route 34 (grass)",
+        "Route 35 (grass)",
+        "Kanto Route 5 (grass)",
+        "Kanto Route 6 (grass)",
+        "Kanto Route 8 (grass)",
+        "Kanto Route 24 (grass)"
+      ],
+      "soulsilver": [
+        "Route 34 (grass)",
+        "Route 35 (grass)",
+        "Kanto Route 5 (grass)",
+        "Kanto Route 6 (grass)",
+        "Kanto Route 8 (grass)",
+        "Kanto Route 24 (grass)"
+      ],
+      "red": [
+        "Kanto Route 24 (grass)",
+        "Kanto Route 25 (grass)",
+        "Celadon City Prize Corner (gift)"
+      ],
+      "blue": [
+        "Kanto Route 24 (grass)",
+        "Kanto Route 25 (grass)",
+        "Celadon City Prize Corner (gift)"
+      ],
+      "yellow": [
+        "Kanto Route 5 (grass)",
+        "Kanto Route 6 (grass)",
+        "Kanto Route 7 (grass)",
+        "Kanto Route 8 (grass)",
+        "Celadon City Prize Corner (gift)"
+      ]
+    }
+  },
+  "Absol": {
+    "locations": {
+      "heartgold": [
+        "Union Cave 1F (grass)",
+        "Union Cave B1F (grass)",
+        "Union Cave B2F (grass)",
+        "Slowpoke Well 1F (grass)",
+        "Slowpoke Well B1F (grass)",
+        "Whirl Islands 1F (grass)"
+      ],
+      "soulsilver": [
+        "Union Cave 1F (grass)",
+        "Union Cave B1F (grass)",
+        "Union Cave B2F (grass)",
+        "Slowpoke Well 1F (grass)",
+        "Slowpoke Well B1F (grass)",
+        "Whirl Islands 1F (grass)"
+      ]
+    }
+  },
+  "Aerodactyl": {
+    "locations": {
+      "heartgold": [
+        "Pewter City Pewter Museum Of Science (gift)"
+      ],
+      "soulsilver": [
+        "Pewter City Pewter Museum Of Science (gift)"
+      ],
+      "red": [
+        "Cinnabar Island Cinnabar Lab (gift)"
+      ],
+      "blue": [
+        "Cinnabar Island Cinnabar Lab (gift)"
+      ],
+      "yellow": [
+        "Cinnabar Island Cinnabar Lab (gift)"
+      ]
+    }
+  },
+  "Aggron": {
+    "evolvesFrom": "Lairon",
+    "evolveMethod": "Level 42"
+  },
+  "Aipom": {
+    "locations": {
+      "heartgold": [
+        "Route 33 (headbutt)",
+        "Route 42 (headbutt)",
+        "Route 44 (headbutt)",
+        "Route 45 (headbutt)",
+        "Route 46 (headbutt)",
+        "Mt Silver Outside (headbutt)"
+      ],
+      "soulsilver": [
+        "Route 33 (headbutt)",
+        "Route 42 (headbutt)",
+        "Route 44 (headbutt)",
+        "Route 45 (headbutt)",
+        "Route 46 (headbutt)",
+        "Mt Silver Outside (headbutt)"
+      ]
+    }
+  },
+  "Altaria": {
+    "evolvesFrom": "Swablu",
+    "evolveMethod": "Level 35"
+  },
+  "Ambipom": {
+    "evolvesFrom": "Aipom",
+    "evolveMethod": "Level up knowing Double Hit"
+  },
+  "Ampharos": {
+    "evolvesFrom": "Flaaffy",
+    "evolveMethod": "Level 30"
+  },
+  "Anorith": {
+    "locations": {
+      "heartgold": [
+        "Pewter City Pewter Museum Of Science (gift)"
+      ],
+      "soulsilver": [
+        "Pewter City Pewter Museum Of Science (gift)"
+      ]
+    }
+  },
+  "Arbok": {
+    "evolvesFrom": "Ekans",
+    "evolveMethod": "Level 22",
+    "locations": {
+      "heartgold": [
+        "Johto Safari Zone Marshland (grass)"
+      ],
+      "soulsilver": [
+        "Kanto Route 26 (grass)",
+        "Kanto Route 27 (grass)",
+        "Kanto Route 3 (grass)",
+        "Kanto Route 4 (grass)",
+        "Johto Safari Zone Marshland (grass)"
+      ],
+      "red": [
+        "Cerulean Cave 1F (grass)",
+        "Cerulean Cave B1F (grass)",
+        "Kanto Route 23 (grass)"
+      ]
+    }
+  },
+  "Arcanine": {
+    "evolvesFrom": "Growlithe",
+    "evolveMethod": "Use a Fire Stone"
+  },
+  "Ariados": {
+    "evolvesFrom": "Spinarak",
+    "evolveMethod": "Level 22",
+    "locations": {
+      "heartgold": [
+        "Kanto Route 2 (south towards viridian city) (grass)",
+        "Kanto Route 2 (north towards pewter city) (grass)",
+        "Viridian Forest (headbutt)"
+      ]
+    }
+  },
+  "Armaldo": {
+    "evolvesFrom": "Anorith",
+    "evolveMethod": "Level 40"
+  },
+  "Aron": {
+    "locations": {
+      "heartgold": [
+        "Johto Safari Zone Rocky Beach (grass)"
+      ],
+      "soulsilver": [
+        "Johto Safari Zone Rocky Beach (grass)"
+      ]
+    }
+  },
+  "Articuno": {
+    "legendary": true,
+    "locations": {
+      "heartgold": [
+        "Seafoam Islands B4F (gift)"
+      ],
+      "soulsilver": [
+        "Seafoam Islands B4F (gift)"
+      ],
+      "red": [
+        "Seafoam Islands B4F (gift)"
+      ],
+      "blue": [
+        "Seafoam Islands B4F (gift)"
+      ],
+      "yellow": [
+        "Seafoam Islands B4F (gift)"
+      ]
+    }
+  },
+  "Azumarill": {
+    "evolvesFrom": "Marill",
+    "evolveMethod": "Level 18"
+  },
+  "Azurill": {
+    "locations": {
+      "heartgold": [
+        "Johto Safari Zone Savannah (grass)"
+      ],
+      "soulsilver": [
+        "Johto Safari Zone Savannah (grass)"
+      ]
+    }
+  },
+  "Bagon": {
+    "locations": {
+      "heartgold": [
+        "Johto Safari Zone Swamp (grass)"
+      ],
+      "soulsilver": [
+        "Johto Safari Zone Swamp (grass)"
+      ]
+    }
+  },
+  "Baltoy": {
+    "locations": {
+      "heartgold": [
+        "Kanto Route 3 (grass)"
+      ]
+    }
+  },
+  "Banette": {
+    "evolvesFrom": "Shuppet",
+    "evolveMethod": "Level 37",
+    "locations": {
+      "heartgold": [
+        "Johto Safari Zone Marshland (grass)"
+      ],
+      "soulsilver": [
+        "Johto Safari Zone Marshland (grass)"
+      ]
+    }
+  },
+  "Barboach": {
+    "locations": {
+      "heartgold": [
+        "Johto Safari Zone Marshland (super rod)"
+      ],
+      "soulsilver": [
+        "Johto Safari Zone Marshland (super rod)"
+      ]
+    }
+  },
+  "Bayleef": {
+    "evolvesFrom": "Chikorita",
+    "evolveMethod": "Level 16"
+  },
+  "Beautifly": {
+    "evolvesFrom": "Silcoon",
+    "evolveMethod": "Level 10",
+    "locations": {
+      "heartgold": [
+        "National Park (grass)"
+      ],
+      "soulsilver": [
+        "National Park (grass)"
+      ]
+    }
+  },
+  "Beedrill": {
+    "evolvesFrom": "Kakuna",
+    "evolveMethod": "Level 10",
+    "locations": {
+      "heartgold": [
+        "National Park (grass)"
+      ],
+      "soulsilver": [
+        "Ilex Forest (headbutt)",
+        "National Park (grass)",
+        "Route 47 (headbutt)",
+        "Kanto Route 2 (south towards viridian city) (grass)",
+        "Kanto Route 2 (north towards pewter city) (grass)",
+        "Viridian Forest (grass)"
+      ]
+    }
+  },
+  "Beldum": {
+    "locations": {
+      "heartgold": [
+        "Johto Safari Zone Forest (grass)"
+      ],
+      "soulsilver": [
+        "Johto Safari Zone Forest (grass)"
+      ]
+    }
+  },
+  "Bellossom": {
+    "evolvesFrom": "Gloom",
+    "evolveMethod": "Use a Sun Stone"
+  },
+  "Bellsprout": {
+    "locations": {
+      "heartgold": [
+        "Route 31 (grass)",
+        "Route 32 (grass)",
+        "Route 44 (grass)",
+        "Kanto Route 5 (grass)",
+        "Kanto Route 6 (grass)",
+        "Kanto Route 24 (grass)"
+      ],
+      "soulsilver": [
+        "Route 31 (grass)",
+        "Route 32 (grass)",
+        "Route 44 (grass)",
+        "Kanto Route 5 (grass)",
+        "Kanto Route 6 (grass)",
+        "Kanto Route 24 (grass)"
+      ],
+      "blue": [
+        "Kanto Route 12 (grass)",
+        "Kanto Route 5 (grass)",
+        "Kanto Route 6 (grass)",
+        "Kanto Route 7 (grass)",
+        "Kanto Route 13 (grass)",
+        "Kanto Route 14 (grass)"
+      ],
+      "yellow": [
+        "Kanto Route 12 (grass)",
+        "Kanto Route 13 (grass)",
+        "Kanto Route 14 (grass)",
+        "Kanto Route 15 (grass)",
+        "Kanto Route 24 (grass)",
+        "Kanto Route 25 (grass)"
+      ]
+    }
+  },
+  "Bibarel": {
+    "evolvesFrom": "Bidoof",
+    "evolveMethod": "Level 15"
+  },
+  "Bidoof": {
+    "locations": {
+      "heartgold": [
+        "Route 30 (grass)",
+        "Route 31 (grass)",
+        "Route 32 (grass)",
+        "Ruins of Alph (grass)",
+        "Route 34 (grass)",
+        "Route 35 (grass)"
+      ],
+      "soulsilver": [
+        "Route 30 (grass)",
+        "Route 31 (grass)",
+        "Route 32 (grass)",
+        "Ruins of Alph (grass)",
+        "Route 34 (grass)",
+        "Route 35 (grass)"
+      ]
+    }
+  },
+  "Blastoise": {
+    "evolvesFrom": "Wartortle",
+    "evolveMethod": "Level 36"
+  },
+  "Blaziken": {
+    "evolvesFrom": "Combusken",
+    "evolveMethod": "Level 36"
+  },
+  "Blissey": {
+    "evolvesFrom": "Chansey",
+    "evolveMethod": "High friendship"
+  },
+  "Bonsly": {
+    "breeding": "Breed a Sudowoodo holding a Rock Incense"
+  },
+  "Breloom": {
+    "evolvesFrom": "Shroomish",
+    "evolveMethod": "Level 23",
+    "locations": {
+      "heartgold": [
+        "Johto Safari Zone Wasteland (grass)"
+      ],
+      "soulsilver": [
+        "Johto Safari Zone Wasteland (grass)"
+      ]
+    }
+  },
+  "Bronzong": {
+    "evolvesFrom": "Bronzor",
+    "evolveMethod": "Level 33",
+    "locations": {
+      "heartgold": [
+        "Johto Safari Zone Forest (grass)"
+      ],
+      "soulsilver": [
+        "Johto Safari Zone Forest (grass)"
+      ]
+    }
+  },
+  "Bronzor": {
+    "locations": {
+      "heartgold": [
+        "Union Cave 1F (grass)",
+        "Union Cave B1F (grass)",
+        "Union Cave B2F (grass)",
+        "Slowpoke Well 1F (grass)",
+        "Slowpoke Well B1F (grass)",
+        "Whirl Islands 1F (grass)"
+      ],
+      "soulsilver": [
+        "Union Cave 1F (grass)",
+        "Union Cave B1F (grass)",
+        "Union Cave B2F (grass)",
+        "Slowpoke Well 1F (grass)",
+        "Slowpoke Well B1F (grass)",
+        "Whirl Islands 1F (grass)"
+      ]
+    }
+  },
+  "Budew": {
+    "locations": {
+      "heartgold": [
+        "Ilex Forest (grass)",
+        "Viridian Forest (grass)",
+        "Johto Safari Zone Forest (grass)",
+        "Johto Safari Zone Rocky Beach (grass)"
+      ],
+      "soulsilver": [
+        "Ilex Forest (grass)",
+        "Viridian Forest (grass)",
+        "Johto Safari Zone Forest (grass)",
+        "Johto Safari Zone Rocky Beach (grass)"
+      ]
+    }
+  },
+  "Buizel": {
+    "locations": {
+      "heartgold": [
+        "Route 30 (grass)",
+        "Route 31 (grass)",
+        "Route 32 (grass)",
+        "Ruins of Alph (grass)",
+        "Route 34 (grass)",
+        "Route 35 (grass)"
+      ],
+      "soulsilver": [
+        "Route 30 (grass)",
+        "Route 31 (grass)",
+        "Route 32 (grass)",
+        "Ruins of Alph (grass)",
+        "Route 34 (grass)",
+        "Route 35 (grass)"
+      ]
+    }
+  },
+  "Bulbasaur": {
+    "locations": {
+      "heartgold": [
+        "Pallet Town (gift)"
+      ],
+      "soulsilver": [
+        "Pallet Town (gift)"
+      ],
+      "red": [
+        "Pallet Town (gift)"
+      ],
+      "blue": [
+        "Pallet Town (gift)"
+      ],
+      "yellow": [
+        "Cerulean City (gift)"
+      ]
+    }
+  },
+  "Buneary": {
+    "locations": {
+      "heartgold": [
+        "Kanto Route 25 (grass)"
+      ],
+      "soulsilver": [
+        "Kanto Route 25 (grass)"
+      ]
+    }
+  },
+  "Burmy": {
+    "locations": {
+      "heartgold": [
+        "Route 38 (headbutt)"
+      ],
+      "soulsilver": [
+        "Route 38 (headbutt)"
+      ]
+    }
+  },
+  "Butterfree": {
+    "evolvesFrom": "Metapod",
+    "evolveMethod": "Level 10",
+    "locations": {
+      "heartgold": [
+        "Ilex Forest (headbutt)",
+        "National Park (grass)",
+        "Route 47 (headbutt)",
+        "Kanto Route 2 (south towards viridian city) (grass)",
+        "Kanto Route 2 (north towards pewter city) (grass)",
+        "Viridian Forest (grass)"
+      ],
+      "soulsilver": [
+        "National Park (grass)"
+      ]
+    }
+  },
+  "Cacnea": {
+    "locations": {
+      "heartgold": [
+        "Johto Safari Zone Desert (grass)"
+      ],
+      "soulsilver": [
+        "Johto Safari Zone Desert (grass)"
+      ]
+    }
+  },
+  "Cacturne": {
+    "evolvesFrom": "Cacnea",
+    "evolveMethod": "Level 32",
+    "locations": {
+      "heartgold": [
+        "Johto Safari Zone Desert (grass)",
+        "Johto Safari Zone Savannah (grass)"
+      ],
+      "soulsilver": [
+        "Johto Safari Zone Desert (grass)",
+        "Johto Safari Zone Savannah (grass)"
+      ]
+    }
+  },
+  "Camerupt": {
+    "evolvesFrom": "Numel",
+    "evolveMethod": "Level 33"
+  },
+  "Carnivine": {
+    "locations": {
+      "heartgold": [
+        "Ilex Forest (grass)",
+        "Viridian Forest (grass)",
+        "Johto Safari Zone Desert (grass)",
+        "Johto Safari Zone Marshland (grass)"
+      ],
+      "soulsilver": [
+        "Ilex Forest (grass)",
+        "Viridian Forest (grass)",
+        "Johto Safari Zone Desert (grass)",
+        "Johto Safari Zone Marshland (grass)"
+      ]
+    }
+  },
+  "Cascoon": {
+    "evolvesFrom": "Wurmple",
+    "evolveMethod": "Level 7",
+    "locations": {
+      "heartgold": [
+        "National Park (grass)"
+      ],
+      "soulsilver": [
+        "National Park (grass)"
+      ]
+    }
+  },
+  "Caterpie": {
+    "locations": {
+      "heartgold": [
+        "Route 30 (grass)",
+        "Route 31 (grass)",
+        "Ilex Forest (grass/headbutt)",
+        "National Park (grass)",
+        "Kanto Route 2 (south towards viridian city) (grass)",
+        "Kanto Route 2 (north towards pewter city) (grass)"
+      ],
+      "soulsilver": [
+        "National Park (grass)"
+      ],
+      "red": [
+        "Kanto Route 25 (grass)",
+        "Viridian Forest (grass)"
+      ],
+      "blue": [
+        "Kanto Route 2 (south towards viridian city) (grass)",
+        "Kanto Route 24 (grass)",
+        "Kanto Route 25 (grass)",
+        "Viridian Forest (grass)"
+      ],
+      "yellow": [
+        "Viridian Forest (grass)"
+      ]
+    }
+  },
+  "Chansey": {
+    "evolvesFrom": "Happiny",
+    "evolveMethod": "Level up (day)",
+    "locations": {
+      "heartgold": [
+        "Kanto Route 13 (grass)",
+        "Kanto Route 14 (grass)",
+        "Kanto Route 15 (grass)",
+        "Johto Safari Zone Meadow (grass)"
+      ],
+      "soulsilver": [
+        "Kanto Route 13 (grass)",
+        "Kanto Route 14 (grass)",
+        "Kanto Route 15 (grass)",
+        "Johto Safari Zone Meadow (grass)"
+      ],
+      "red": [
+        "Cerulean Cave 2F (grass)",
+        "Cerulean Cave B1F (grass)",
+        "Kanto Safari Zone Middle (grass)",
+        "Kanto Safari Zone Area 2 North (grass)"
+      ],
+      "blue": [
+        "Cerulean Cave 2F (grass)",
+        "Cerulean Cave B1F (grass)",
+        "Kanto Safari Zone Middle (grass)",
+        "Kanto Safari Zone Area 2 North (grass)"
+      ],
+      "yellow": [
+        "Cerulean Cave B1F (grass)",
+        "Kanto Safari Zone Middle (grass)",
+        "Kanto Safari Zone Area 1 East (grass)"
+      ]
+    }
+  },
+  "Charizard": {
+    "evolvesFrom": "Charmeleon",
+    "evolveMethod": "Level 36"
+  },
+  "Charmander": {
+    "locations": {
+      "heartgold": [
+        "Pallet Town (gift)"
+      ],
+      "soulsilver": [
+        "Pallet Town (gift)"
+      ],
+      "red": [
+        "Pallet Town (gift)"
+      ],
+      "blue": [
+        "Pallet Town (gift)"
+      ],
+      "yellow": [
+        "Kanto Route 24 (gift)"
+      ]
+    }
+  },
+  "Charmeleon": {
+    "evolvesFrom": "Charmander",
+    "evolveMethod": "Level 16"
+  },
+  "Chatot": {
+    "locations": {
+      "heartgold": [
+        "Sprout Tower 2F (grass)",
+        "Sprout Tower 3F (grass)",
+        "Burned Tower 1F (grass)",
+        "Burned Tower B1F (grass)",
+        "Bell Tower 2F (grass)",
+        "Bell Tower 3F (grass)"
+      ],
+      "soulsilver": [
+        "Sprout Tower 2F (grass)",
+        "Sprout Tower 3F (grass)",
+        "Burned Tower 1F (grass)",
+        "Burned Tower B1F (grass)",
+        "Bell Tower 2F (grass)",
+        "Bell Tower 3F (grass)"
+      ]
+    }
+  },
+  "Cherrim": {
+    "evolvesFrom": "Cherubi",
+    "evolveMethod": "Level 25"
+  },
+  "Cherubi": {
+    "locations": {
+      "heartgold": [
+        "National Park (headbutt)"
+      ],
+      "soulsilver": [
+        "National Park (headbutt)"
+      ]
+    }
+  },
+  "Chikorita": {
+    "locations": {
+      "heartgold": [
+        "New Bark Town (gift)"
+      ],
+      "soulsilver": [
+        "New Bark Town (gift)"
+      ]
+    }
+  },
+  "Chimecho": {
+    "evolvesFrom": "Chingling",
+    "evolveMethod": "High friendship (night)",
+    "locations": {
+      "heartgold": [
+        "Johto Safari Zone Swamp (grass)"
+      ],
+      "soulsilver": [
+        "Johto Safari Zone Swamp (grass)"
+      ]
+    }
+  },
+  "Chinchou": {
+    "locations": {
+      "heartgold": [
+        "New Bark Town (good rod/super rod)",
+        "Johto Sea Route 41 (good rod/super rod)",
+        "Route 47 (good rod/super rod)",
+        "Kanto Sea Route 20 (good rod/super rod)",
+        "Cinnabar Island (good rod/super rod)",
+        "Vermilion City (good rod/super rod)"
+      ],
+      "soulsilver": [
+        "New Bark Town (good rod/super rod)",
+        "Johto Sea Route 41 (good rod/super rod)",
+        "Route 47 (good rod/super rod)",
+        "Kanto Sea Route 20 (good rod/super rod)",
+        "Cinnabar Island (good rod/super rod)",
+        "Vermilion City (good rod/super rod)"
+      ]
+    }
+  },
+  "Chingling": {
+    "locations": {
+      "heartgold": [
+        "Union Cave 1F (grass)",
+        "Union Cave B1F (grass)",
+        "Union Cave B2F (grass)",
+        "Slowpoke Well 1F (grass)",
+        "Slowpoke Well B1F (grass)",
+        "Whirl Islands 1F (grass)"
+      ],
+      "soulsilver": [
+        "Union Cave 1F (grass)",
+        "Union Cave B1F (grass)",
+        "Union Cave B2F (grass)",
+        "Slowpoke Well 1F (grass)",
+        "Slowpoke Well B1F (grass)",
+        "Whirl Islands 1F (grass)"
+      ]
+    }
+  },
+  "Clamperl": {
+    "locations": {
+      "heartgold": [
+        "Kanto Sea Route 19 (surf)"
+      ],
+      "soulsilver": [
+        "Kanto Sea Route 19 (surf)"
+      ]
+    }
+  },
+  "Claydol": {
+    "evolvesFrom": "Baltoy",
+    "evolveMethod": "Level 36"
+  },
+  "Clefable": {
+    "evolvesFrom": "Clefairy",
+    "evolveMethod": "Use a Moon Stone"
+  },
+  "Clefairy": {
+    "evolvesFrom": "Cleffa",
+    "evolveMethod": "High friendship",
+    "locations": {
+      "heartgold": [
+        "Mt Moon 1F (grass)",
+        "Mt Moon 2F (grass)",
+        "Johto Safari Zone Meadow (grass)"
+      ],
+      "soulsilver": [
+        "Mt Moon 1F (grass)",
+        "Mt Moon 2F (grass)",
+        "Johto Safari Zone Meadow (grass)"
+      ],
+      "red": [
+        "Mt Moon 1F (grass)",
+        "Mt Moon B1F (grass)",
+        "Mt Moon B2F (grass)",
+        "Celadon City Prize Corner (gift)"
+      ],
+      "blue": [
+        "Mt Moon 1F (grass)",
+        "Mt Moon B1F (grass)",
+        "Mt Moon B2F (grass)",
+        "Celadon City Prize Corner (gift)"
+      ],
+      "yellow": [
+        "Mt Moon 1F (grass)",
+        "Mt Moon B1F (grass)",
+        "Mt Moon B2F (grass)"
+      ]
+    }
+  },
+  "Cleffa": {
+    "breeding": "Breed a Clefairy or Clefable"
+  },
+  "Cloyster": {
+    "evolvesFrom": "Shellder",
+    "evolveMethod": "Use a Water Stone"
+  },
+  "Combee": {
+    "locations": {
+      "heartgold": [
+        "National Park (grass)",
+        "Cerulean City (headbutt)",
+        "Vermilion City (headbutt)",
+        "Celadon City (headbutt)",
+        "Kanto Route 5 (headbutt)",
+        "Kanto Route 6 (headbutt)"
+      ],
+      "soulsilver": [
+        "National Park (grass)",
+        "Cerulean City (headbutt)",
+        "Vermilion City (headbutt)",
+        "Celadon City (headbutt)",
+        "Kanto Route 5 (headbutt)",
+        "Kanto Route 6 (headbutt)"
+      ]
+    }
+  },
+  "Combusken": {
+    "evolvesFrom": "Torchic",
+    "evolveMethod": "Level 16"
+  },
+  "Corphish": {
+    "locations": {
+      "heartgold": [
+        "Johto Safari Zone Rocky Beach (super rod)",
+        "Johto Safari Zone Wetland (good rod)"
+      ],
+      "soulsilver": [
+        "Johto Safari Zone Rocky Beach (super rod)",
+        "Johto Safari Zone Wetland (good rod)"
+      ]
+    }
+  },
+  "Corsola": {
+    "locations": {
+      "heartgold": [
+        "Cherrygrove City (good rod/super rod)",
+        "Union Cave B2F (good rod/super rod)",
+        "Route 34 (good rod/super rod)",
+        "Olivine City (good rod/super rod)",
+        "Johto Sea Route 40 (good rod/super rod)",
+        "Cianwood City (good rod/super rod)"
+      ],
+      "soulsilver": [
+        "Cherrygrove City (good rod/super rod)",
+        "Union Cave B2F (good rod/super rod)",
+        "Route 34 (good rod/super rod)",
+        "Olivine City (good rod/super rod)",
+        "Johto Sea Route 40 (good rod/super rod)",
+        "Cianwood City (good rod/super rod)"
+      ]
+    }
+  },
+  "Cradily": {
+    "evolvesFrom": "Lileep",
+    "evolveMethod": "Level 40"
+  },
+  "Crawdaunt": {
+    "evolvesFrom": "Corphish",
+    "evolveMethod": "Level 30"
+  },
+  "Croagunk": {
+    "locations": {
+      "heartgold": [
+        "Johto Safari Zone Marshland (grass)"
+      ],
+      "soulsilver": [
+        "Johto Safari Zone Marshland (grass)"
+      ]
+    }
+  },
+  "Crobat": {
+    "evolvesFrom": "Golbat",
+    "evolveMethod": "High friendship"
+  },
+  "Croconaw": {
+    "evolvesFrom": "Totodile",
+    "evolveMethod": "Level 18"
+  },
+  "Cubone": {
+    "locations": {
+      "heartgold": [
+        "Rock Tunnel 1F (grass)",
+        "Rock Tunnel B1F (grass)",
+        "Johto Safari Zone Desert (grass)"
+      ],
+      "soulsilver": [
+        "Rock Tunnel 1F (grass)",
+        "Rock Tunnel B1F (grass)",
+        "Johto Safari Zone Desert (grass)"
+      ],
+      "red": [
+        "Pokemon Tower 3F (grass)",
+        "Pokemon Tower 4F (grass)",
+        "Pokemon Tower 5F (grass)",
+        "Pokemon Tower 6F (grass)",
+        "Pokemon Tower 7F (grass)"
+      ],
+      "blue": [
+        "Pokemon Tower 3F (grass)",
+        "Pokemon Tower 4F (grass)",
+        "Pokemon Tower 5F (grass)",
+        "Pokemon Tower 6F (grass)",
+        "Pokemon Tower 7F (grass)"
+      ],
+      "yellow": [
+        "Pokemon Tower 5F (grass)",
+        "Pokemon Tower 6F (grass)",
+        "Pokemon Tower 7F (grass)",
+        "Kanto Safari Zone Area 1 East (grass)",
+        "Kanto Safari Zone Area 2 North (grass)",
+        "Kanto Safari Zone Area 3 West (grass)"
+      ]
+    }
+  },
+  "Cyndaquil": {
+    "locations": {
+      "heartgold": [
+        "New Bark Town (gift)"
+      ],
+      "soulsilver": [
+        "New Bark Town (gift)"
+      ]
+    }
+  },
+  "Delibird": {
+    "locations": {
+      "soulsilver": [
+        "Ice Path 1F (grass)",
+        "Ice Path B1F (grass)",
+        "Ice Path B2F (grass)",
+        "Ice Path B3F (grass)"
+      ]
+    }
+  },
+  "Dewgong": {
+    "evolvesFrom": "Seel",
+    "evolveMethod": "Level 34",
+    "locations": {
+      "heartgold": [
+        "Seafoam Islands B3F (grass)",
+        "Seafoam Islands B4F (grass)"
+      ],
+      "soulsilver": [
+        "Seafoam Islands B3F (grass)",
+        "Seafoam Islands B4F (grass)"
+      ],
+      "red": [
+        "Seafoam Islands B1F (grass)",
+        "Seafoam Islands B3F (grass)"
+      ],
+      "blue": [
+        "Seafoam Islands B1F (grass)",
+        "Seafoam Islands B3F (grass)"
+      ],
+      "yellow": [
+        "Seafoam Islands B3F (grass)",
+        "Seafoam Islands B4F (grass)",
+        "Cinnabar Island Cinnabar Lab (npc trade)"
+      ]
+    }
+  },
+  "Diglett": {
+    "locations": {
+      "heartgold": [
+        "Vermilion City (rock smash)",
+        "Route 48 (grass)",
+        "Digletts Cave (grass)",
+        "Johto Safari Zone Marshland (grass)"
+      ],
+      "soulsilver": [
+        "Vermilion City (rock smash)",
+        "Route 48 (grass)",
+        "Digletts Cave (grass)",
+        "Johto Safari Zone Marshland (grass)"
+      ],
+      "red": [
+        "Digletts Cave (grass)"
+      ],
+      "blue": [
+        "Digletts Cave (grass)"
+      ],
+      "yellow": [
+        "Digletts Cave (grass)"
+      ]
+    }
+  },
+  "Ditto": {
+    "locations": {
+      "heartgold": [
+        "Route 34 (grass)",
+        "Route 35 (grass)",
+        "Route 47 (grass)",
+        "Cerulean Cave 1F (grass)",
+        "Cerulean Cave 2F (grass)",
+        "Cerulean Cave B1F (grass)"
+      ],
+      "soulsilver": [
+        "Route 34 (grass)",
+        "Route 35 (grass)",
+        "Route 47 (grass)",
+        "Cerulean Cave 1F (grass)",
+        "Cerulean Cave 2F (grass)",
+        "Cerulean Cave B1F (grass)"
+      ],
+      "red": [
+        "Kanto Route 13 (grass)",
+        "Kanto Route 14 (grass)",
+        "Kanto Route 15 (grass)",
+        "Cerulean Cave 1F (grass)",
+        "Cerulean Cave 2F (grass)",
+        "Cerulean Cave B1F (grass)"
+      ],
+      "blue": [
+        "Kanto Route 13 (grass)",
+        "Kanto Route 14 (grass)",
+        "Kanto Route 15 (grass)",
+        "Cerulean Cave 1F (grass)",
+        "Cerulean Cave 2F (grass)",
+        "Cerulean Cave B1F (grass)"
+      ],
+      "yellow": [
+        "Cerulean Cave 1F (grass)",
+        "Cerulean Cave 2F (grass)",
+        "Cerulean Cave B1F (grass)",
+        "Pokemon Mansion B1F (grass)"
+      ]
+    }
+  },
+  "Dodrio": {
+    "evolvesFrom": "Doduo",
+    "evolveMethod": "Level 31",
+    "locations": {
+      "heartgold": [
+        "Mt Silver Outside (grass)",
+        "Kanto Route 26 (grass)",
+        "Kanto Route 28 (grass)",
+        "Johto Safari Zone Rocky Beach (grass)"
+      ],
+      "soulsilver": [
+        "Mt Silver Outside (grass)",
+        "Kanto Route 27 (grass)",
+        "Kanto Route 28 (grass)",
+        "Johto Safari Zone Rocky Beach (grass)"
+      ],
+      "red": [
+        "Cerulean Cave 1F (grass)",
+        "Cerulean Cave 2F (grass)"
+      ],
+      "blue": [
+        "Cerulean Cave 1F (grass)",
+        "Cerulean Cave 2F (grass)"
+      ],
+      "yellow": [
+        "Kanto Route 17 (grass)"
+      ]
+    }
+  },
+  "Doduo": {
+    "locations": {
+      "heartgold": [
+        "Mt Silver Outside (grass)",
+        "Kanto Route 26 (grass)",
+        "Kanto Route 27 (grass)",
+        "Kanto Route 28 (grass)",
+        "Kanto Route 22 (grass)",
+        "Johto Safari Zone Rocky Beach (grass)"
+      ],
+      "soulsilver": [
+        "Mt Silver Outside (grass)",
+        "Kanto Route 26 (grass)",
+        "Kanto Route 27 (grass)",
+        "Kanto Route 28 (grass)",
+        "Kanto Route 22 (grass)",
+        "Johto Safari Zone Rocky Beach (grass)"
+      ],
+      "red": [
+        "Kanto Route 16 (grass)",
+        "Kanto Route 17 (grass)",
+        "Kanto Route 18 (grass)",
+        "Kanto Safari Zone Area 1 East (grass)",
+        "Kanto Safari Zone Area 3 West (grass)"
+      ],
+      "blue": [
+        "Kanto Route 16 (grass)",
+        "Kanto Route 17 (grass)",
+        "Kanto Route 18 (grass)",
+        "Kanto Safari Zone Area 1 East (grass)",
+        "Kanto Safari Zone Area 3 West (grass)"
+      ],
+      "yellow": [
+        "Kanto Route 16 (grass)",
+        "Kanto Route 17 (grass)",
+        "Kanto Route 18 (grass)"
+      ]
+    }
+  },
+  "Donphan": {
+    "evolvesFrom": "Phanpy",
+    "evolveMethod": "Level 25",
+    "locations": {
+      "heartgold": [
+        "Mt Silver 2F (grass)",
+        "Mt Silver 1F Top (grass)",
+        "Mt Silver 4F (grass)",
+        "Mt Silver Outside (grass)",
+        "Mt Silver 1F (grass)",
+        "Mt Silver Mountainside (grass)"
+      ]
+    }
+  },
+  "Dragonair": {
+    "evolvesFrom": "Dratini",
+    "evolveMethod": "Level 30",
+    "locations": {
+      "heartgold": [
+        "Dragons Den (super rod)",
+        "Johto Safari Zone Swamp (super rod)"
+      ],
+      "soulsilver": [
+        "Dragons Den (super rod)",
+        "Johto Safari Zone Swamp (super rod)"
+      ],
+      "yellow": [
+        "Kanto Safari Zone Middle (super rod)"
+      ]
+    }
+  },
+  "Dragonite": {
+    "evolvesFrom": "Dragonair",
+    "evolveMethod": "Level 55"
+  },
+  "Drapion": {
+    "evolvesFrom": "Skorupi",
+    "evolveMethod": "Level 40"
+  },
+  "Dratini": {
+    "locations": {
+      "heartgold": [
+        "Dragons Den (gift/good rod/super rod/surf)",
+        "Johto Safari Zone Swamp (good rod/super rod)",
+        "Goldenrod City Game Corner (gift)"
+      ],
+      "soulsilver": [
+        "Dragons Den (gift/good rod/super rod/surf)",
+        "Johto Safari Zone Swamp (good rod/super rod)",
+        "Goldenrod City Game Corner (gift)"
+      ],
+      "red": [
+        "Kanto Safari Zone Middle (super rod)",
+        "Kanto Safari Zone Area 1 East (super rod)",
+        "Kanto Safari Zone Area 2 North (super rod)",
+        "Kanto Safari Zone Area 3 West (super rod)",
+        "Celadon City Prize Corner (gift)"
+      ],
+      "blue": [
+        "Kanto Safari Zone Middle (super rod)",
+        "Kanto Safari Zone Area 1 East (super rod)",
+        "Kanto Safari Zone Area 2 North (super rod)",
+        "Kanto Safari Zone Area 3 West (super rod)",
+        "Celadon City Prize Corner (gift)"
+      ],
+      "yellow": [
+        "Kanto Safari Zone Middle (super rod)",
+        "Kanto Safari Zone Area 1 East (super rod)",
+        "Kanto Safari Zone Area 2 North (super rod)",
+        "Kanto Safari Zone Area 3 West (super rod)"
+      ]
+    }
+  },
+  "Drowzee": {
+    "locations": {
+      "heartgold": [
+        "Route 34 (grass)",
+        "Route 35 (grass)",
+        "Kanto Route 11 (grass)",
+        "Johto Safari Zone Swamp (grass)"
+      ],
+      "soulsilver": [
+        "Route 34 (grass)",
+        "Route 35 (grass)",
+        "Kanto Route 11 (grass)",
+        "Johto Safari Zone Swamp (grass)"
+      ],
+      "red": [
+        "Kanto Route 11 (grass)"
+      ],
+      "blue": [
+        "Kanto Route 11 (grass)"
+      ],
+      "yellow": [
+        "Kanto Route 11 (grass)"
+      ]
+    }
+  },
+  "Dugtrio": {
+    "evolvesFrom": "Diglett",
+    "evolveMethod": "Level 26",
+    "locations": {
+      "heartgold": [
+        "Digletts Cave (grass)"
+      ],
+      "soulsilver": [
+        "Digletts Cave (grass)"
+      ],
+      "red": [
+        "Digletts Cave (grass)"
+      ],
+      "blue": [
+        "Digletts Cave (grass)"
+      ],
+      "yellow": [
+        "Kanto Route 11 (npc trade)",
+        "Digletts Cave (grass)"
+      ]
+    }
+  },
+  "Dunsparce": {
+    "locations": {
+      "heartgold": [
+        "Dark Cave Violet City Entrance (grass/rock smash)"
+      ],
+      "soulsilver": [
+        "Dark Cave Violet City Entrance (grass/rock smash)"
+      ]
+    }
+  },
+  "Dusclops": {
+    "evolvesFrom": "Duskull",
+    "evolveMethod": "Level 37",
+    "locations": {
+      "heartgold": [
+        "Johto Safari Zone Mountain (grass)"
+      ],
+      "soulsilver": [
+        "Johto Safari Zone Mountain (grass)"
+      ]
+    }
+  },
+  "Duskull": {
+    "locations": {
+      "heartgold": [
+        "Johto Safari Zone Swamp (grass/surf)"
+      ],
+      "soulsilver": [
+        "Johto Safari Zone Swamp (grass/surf)"
+      ]
+    }
+  },
+  "Dustox": {
+    "evolvesFrom": "Cascoon",
+    "evolveMethod": "Level 10",
+    "locations": {
+      "heartgold": [
+        "National Park (grass)"
+      ],
+      "soulsilver": [
+        "National Park (grass)"
+      ]
+    }
+  },
+  "Eevee": {
+    "locations": {
+      "heartgold": [
+        "Goldenrod City Bills House (gift)",
+        "Celadon City Prize Corner (gift)"
+      ],
+      "soulsilver": [
+        "Goldenrod City Bills House (gift)",
+        "Celadon City Prize Corner (gift)"
+      ],
+      "red": [
+        "Celadon City Celadon Mansion (gift)"
+      ],
+      "blue": [
+        "Celadon City Celadon Mansion (gift)"
+      ],
+      "yellow": [
+        "Celadon City Celadon Mansion (gift)"
+      ]
+    }
+  },
+  "Ekans": {
+    "locations": {
+      "heartgold": [
+        "Johto Safari Zone Marshland (grass)",
+        "Goldenrod City Game Corner (gift)"
+      ],
+      "soulsilver": [
+        "Route 32 (grass)",
+        "Route 33 (grass)",
+        "Kanto Route 3 (grass)",
+        "Kanto Route 4 (grass)",
+        "Johto Safari Zone Marshland (grass)"
+      ],
+      "red": [
+        "Kanto Route 4 (grass)",
+        "Kanto Route 8 (grass)",
+        "Kanto Route 9 (grass)",
+        "Kanto Route 10 (grass)",
+        "Kanto Route 11 (grass)",
+        "Kanto Route 23 (grass)"
+      ]
+    }
+  },
+  "Electabuzz": {
+    "evolvesFrom": "Elekid",
+    "evolveMethod": "Level 30",
+    "locations": {
+      "heartgold": [
+        "Kanto Route 10 (grass)",
+        "Johto Safari Zone Forest (grass)"
+      ],
+      "soulsilver": [
+        "Kanto Route 10 (grass)",
+        "Johto Safari Zone Forest (grass)"
+      ],
+      "red": [
+        "Kanto Power Plant (grass)"
+      ]
+    }
+  },
+  "Electrike": {
+    "locations": {
+      "heartgold": [
+        "Johto Safari Zone Rocky Beach (grass)"
+      ],
+      "soulsilver": [
+        "Johto Safari Zone Rocky Beach (grass)"
+      ]
+    }
+  },
+  "Electrode": {
+    "evolvesFrom": "Voltorb",
+    "evolveMethod": "Level 30",
+    "locations": {
+      "heartgold": [
+        "Cerulean Cave 1F (grass)",
+        "Cerulean Cave 2F (grass)",
+        "Cerulean Cave B1F (grass)",
+        "Team Rocket Hq (gift)"
+      ],
+      "soulsilver": [
+        "Cerulean Cave 1F (grass)",
+        "Cerulean Cave 2F (grass)",
+        "Cerulean Cave B1F (grass)",
+        "Team Rocket Hq (gift)"
+      ],
+      "red": [
+        "Cerulean Cave 2F (grass)",
+        "Cerulean Cave B1F (grass)",
+        "Kanto Power Plant (gift)",
+        "Cinnabar Island Cinnabar Lab (npc trade)"
+      ],
+      "blue": [
+        "Cerulean Cave 2F (grass)",
+        "Cerulean Cave B1F (grass)",
+        "Kanto Power Plant (gift)",
+        "Cinnabar Island Cinnabar Lab (npc trade)"
+      ],
+      "yellow": [
+        "Kanto Power Plant (gift)"
+      ]
+    }
+  },
+  "Elekid": {
+    "breeding": "Breed an Electabuzz"
+  },
+  "Entei": {
+    "legendary": true,
+    "locations": {
+      "heartgold": [
+        "Roaming Johto (roaming grass)"
+      ],
+      "soulsilver": [
+        "Roaming Johto (roaming grass)"
+      ]
+    }
+  },
+  "Espeon": {
+    "evolvesFrom": "Eevee",
+    "evolveMethod": "High friendship (day)"
+  },
+  "Exeggcute": {
+    "locations": {
+      "heartgold": [
+        "New Bark Town (headbutt)",
+        "Route 29 (headbutt)",
+        "Cherrygrove City (headbutt)",
+        "Route 30 (headbutt)",
+        "Route 31 (headbutt)",
+        "Violet City (headbutt)"
+      ],
+      "soulsilver": [
+        "New Bark Town (headbutt)",
+        "Route 29 (headbutt)",
+        "Cherrygrove City (headbutt)",
+        "Route 30 (headbutt)",
+        "Route 31 (headbutt)",
+        "Violet City (headbutt)"
+      ],
+      "red": [
+        "Kanto Safari Zone Middle (grass)",
+        "Kanto Safari Zone Area 1 East (grass)",
+        "Kanto Safari Zone Area 2 North (grass)",
+        "Kanto Safari Zone Area 3 West (grass)"
+      ],
+      "blue": [
+        "Kanto Safari Zone Middle (grass)",
+        "Kanto Safari Zone Area 1 East (grass)",
+        "Kanto Safari Zone Area 2 North (grass)",
+        "Kanto Safari Zone Area 3 West (grass)"
+      ],
+      "yellow": [
+        "Kanto Safari Zone Middle (grass)",
+        "Kanto Safari Zone Area 1 East (grass)",
+        "Kanto Safari Zone Area 2 North (grass)",
+        "Kanto Safari Zone Area 3 West (grass)"
+      ]
+    }
+  },
+  "Exeggutor": {
+    "evolvesFrom": "Exeggcute",
+    "evolveMethod": "Use a Leaf Stone"
+  },
+  "Exploud": {
+    "evolvesFrom": "Loudred",
+    "evolveMethod": "Level 40"
+  },
+  "Farfetch'd": {
+    "locations": {
+      "heartgold": [
+        "Route 38 (grass)",
+        "Route 39 (grass)",
+        "Route 47 (grass)",
+        "Route 48 (grass)",
+        "Johto Safari Zone Wetland (grass)"
+      ],
+      "soulsilver": [
+        "Route 38 (grass)",
+        "Route 39 (grass)",
+        "Route 47 (grass)",
+        "Route 48 (grass)",
+        "Johto Safari Zone Wetland (grass)"
+      ],
+      "red": [
+        "Vermilion City (npc trade)"
+      ],
+      "blue": [
+        "Vermilion City (npc trade)"
+      ],
+      "yellow": [
+        "Kanto Route 12 (grass)",
+        "Kanto Route 13 (grass)"
+      ]
+    }
+  },
+  "Fearow": {
+    "evolvesFrom": "Spearow",
+    "evolveMethod": "Level 20",
+    "locations": {
+      "heartgold": [
+        "Route 47 (grass)",
+        "Route 48 (grass)",
+        "Kanto Route 9 (grass)",
+        "Kanto Route 10 (grass)",
+        "Kanto Route 16 (grass)",
+        "Kanto Route 17 (grass)"
+      ],
+      "soulsilver": [
+        "Route 47 (grass)",
+        "Route 48 (grass)",
+        "Kanto Route 9 (grass)",
+        "Kanto Route 10 (grass)",
+        "Kanto Route 16 (grass)",
+        "Kanto Route 17 (grass)"
+      ],
+      "red": [
+        "Kanto Route 17 (grass)",
+        "Kanto Route 18 (grass)",
+        "Kanto Route 23 (grass)"
+      ],
+      "blue": [
+        "Kanto Route 17 (grass)",
+        "Kanto Route 18 (grass)",
+        "Kanto Route 23 (grass)"
+      ],
+      "yellow": [
+        "Kanto Route 9 (grass)",
+        "Kanto Route 16 (grass)",
+        "Kanto Route 17 (grass)",
+        "Kanto Route 18 (grass)",
+        "Kanto Route 23 (grass)"
+      ]
+    }
+  },
+  "Feraligatr": {
+    "evolvesFrom": "Croconaw",
+    "evolveMethod": "Level 30"
+  },
+  "Flaaffy": {
+    "evolvesFrom": "Mareep",
+    "evolveMethod": "Level 15",
+    "locations": {
+      "heartgold": [
+        "Route 42 (grass)",
+        "Route 43 (grass)"
+      ],
+      "soulsilver": [
+        "Route 42 (grass)",
+        "Route 43 (grass)"
+      ]
+    }
+  },
+  "Flareon": {
+    "evolvesFrom": "Eevee",
+    "evolveMethod": "Use a Fire Stone"
+  },
+  "Floatzel": {
+    "evolvesFrom": "Buizel",
+    "evolveMethod": "Level 26",
+    "locations": {
+      "heartgold": [
+        "Johto Safari Zone Swamp (grass)"
+      ],
+      "soulsilver": [
+        "Johto Safari Zone Swamp (grass)"
+      ]
+    }
+  },
+  "Flygon": {
+    "evolvesFrom": "Vibrava",
+    "evolveMethod": "Level 45"
+  },
+  "Forretress": {
+    "evolvesFrom": "Pineco",
+    "evolveMethod": "Level 31"
+  },
+  "Furret": {
+    "evolvesFrom": "Sentret",
+    "evolveMethod": "Level 15",
+    "locations": {
+      "heartgold": [
+        "Kanto Route 1 (grass)",
+        "Johto Safari Zone Swamp (grass)",
+        "Johto Safari Zone Wetland (grass)"
+      ],
+      "soulsilver": [
+        "Kanto Route 1 (grass)",
+        "Johto Safari Zone Swamp (grass)",
+        "Johto Safari Zone Wetland (grass)"
+      ]
+    }
+  },
+  "Gabite": {
+    "evolvesFrom": "Gible",
+    "evolveMethod": "Level 24"
+  },
+  "Gallade": {
+    "evolvesFrom": "Kirlia",
+    "evolveMethod": "Use a Dawn Stone"
+  },
+  "Garchomp": {
+    "evolvesFrom": "Gabite",
+    "evolveMethod": "Level 48"
+  },
+  "Gardevoir": {
+    "evolvesFrom": "Kirlia",
+    "evolveMethod": "Level 30"
+  },
+  "Gastly": {
+    "locations": {
+      "heartgold": [
+        "Sprout Tower 2F (grass)",
+        "Sprout Tower 3F (grass)",
+        "Bell Tower 2F (grass)",
+        "Bell Tower 3F (grass)",
+        "Bell Tower 4F (grass)",
+        "Bell Tower 5F (grass)"
+      ],
+      "soulsilver": [
+        "Sprout Tower 2F (grass)",
+        "Sprout Tower 3F (grass)",
+        "Bell Tower 2F (grass)",
+        "Bell Tower 3F (grass)",
+        "Bell Tower 4F (grass)",
+        "Bell Tower 5F (grass)"
+      ],
+      "red": [
+        "Pokemon Tower 3F (grass)",
+        "Pokemon Tower 4F (grass)",
+        "Pokemon Tower 5F (grass)",
+        "Pokemon Tower 6F (grass)",
+        "Pokemon Tower 7F (grass)"
+      ],
+      "blue": [
+        "Pokemon Tower 3F (grass)",
+        "Pokemon Tower 4F (grass)",
+        "Pokemon Tower 5F (grass)",
+        "Pokemon Tower 6F (grass)",
+        "Pokemon Tower 7F (grass)"
+      ],
+      "yellow": [
+        "Pokemon Tower 3F (grass)",
+        "Pokemon Tower 4F (grass)",
+        "Pokemon Tower 5F (grass)",
+        "Pokemon Tower 6F (grass)",
+        "Pokemon Tower 7F (grass)"
+      ]
+    }
+  },
+  "Geodude": {
+    "locations": {
+      "heartgold": [
+        "Ruins of Alph (rock smash)",
+        "Union Cave 1F (grass)",
+        "Union Cave B1F (grass)",
+        "Union Cave B2F (grass)",
+        "Mt Mortar 1F (grass)",
+        "Mt Mortar Lower Cave (grass)"
+      ],
+      "soulsilver": [
+        "Ruins of Alph (rock smash)",
+        "Union Cave 1F (grass)",
+        "Union Cave B1F (grass)",
+        "Union Cave B2F (grass)",
+        "Mt Mortar 1F (grass)",
+        "Mt Mortar Lower Cave (grass)"
+      ],
+      "red": [
+        "Mt Moon 1F (grass)",
+        "Rock Tunnel B1F (grass)",
+        "Mt Moon B1F (grass)",
+        "Mt Moon B2F (grass)",
+        "Rock Tunnel B2F (grass)",
+        "Kanto Victory Road 2 1F (grass)"
+      ],
+      "blue": [
+        "Mt Moon 1F (grass)",
+        "Rock Tunnel B1F (grass)",
+        "Mt Moon B1F (grass)",
+        "Mt Moon B2F (grass)",
+        "Rock Tunnel B2F (grass)",
+        "Kanto Victory Road 2 1F (grass)"
+      ],
+      "yellow": [
+        "Mt Moon 1F (grass)",
+        "Rock Tunnel B1F (grass)",
+        "Mt Moon B1F (grass)",
+        "Mt Moon B2F (grass)",
+        "Rock Tunnel B2F (grass)",
+        "Kanto Victory Road 2 1F (grass)"
+      ]
+    }
+  },
+  "Gible": {
+    "locations": {
+      "heartgold": [
+        "Johto Safari Zone Rocky Beach (grass)"
+      ],
+      "soulsilver": [
+        "Johto Safari Zone Rocky Beach (grass)"
+      ]
+    }
+  },
+  "Girafarig": {
+    "locations": {
+      "heartgold": [
+        "Route 43 (grass)",
+        "Route 48 (grass)",
+        "Johto Safari Zone Plains (grass)"
+      ],
+      "soulsilver": [
+        "Route 43 (grass)",
+        "Route 48 (grass)",
+        "Johto Safari Zone Plains (grass)"
+      ]
+    }
+  },
+  "Gligar": {
+    "locations": {
+      "heartgold": [
+        "Route 45 (grass)"
+      ]
+    }
+  },
+  "Gliscor": {
+    "evolvesFrom": "Gligar",
+    "evolveMethod": "Level up (night)"
+  },
+  "Gloom": {
+    "evolvesFrom": "Oddish",
+    "evolveMethod": "Level 21",
+    "locations": {
+      "heartgold": [
+        "Route 47 (grass)",
+        "Route 48 (grass)",
+        "Kanto Route 5 (grass)",
+        "Johto Safari Zone Marshland (grass)"
+      ],
+      "soulsilver": [
+        "Route 47 (grass)",
+        "Route 48 (grass)",
+        "Kanto Route 5 (grass)",
+        "Johto Safari Zone Marshland (grass)"
+      ],
+      "red": [
+        "Kanto Route 12 (grass)",
+        "Kanto Route 13 (grass)",
+        "Kanto Route 14 (grass)",
+        "Kanto Route 15 (grass)"
+      ],
+      "yellow": [
+        "Kanto Route 12 (grass)",
+        "Kanto Route 13 (grass)",
+        "Kanto Route 14 (grass)",
+        "Kanto Route 15 (grass)",
+        "Cerulean Cave 1F (grass)",
+        "Cerulean Cave 2F (grass)"
+      ]
+    }
+  },
+  "Golbat": {
+    "evolvesFrom": "Zubat",
+    "evolveMethod": "Level 22",
+    "locations": {
+      "heartgold": [
+        "Union Cave B2F (grass)",
+        "Slowpoke Well B1F (grass)",
+        "Whirl Islands 1F (grass)",
+        "Whirl Islands B1F (grass)",
+        "Whirl Islands B2F (grass)",
+        "Whirl Islands B3F (grass)"
+      ],
+      "soulsilver": [
+        "Union Cave B2F (grass)",
+        "Slowpoke Well B1F (grass)",
+        "Whirl Islands 1F (grass)",
+        "Whirl Islands B1F (grass)",
+        "Whirl Islands B2F (grass)",
+        "Whirl Islands B3F (grass)"
+      ],
+      "red": [
+        "Seafoam Islands 1F (grass)",
+        "Seafoam Islands B2F (grass)",
+        "Seafoam Islands B4F (grass)",
+        "Cerulean Cave 1F (grass)",
+        "Kanto Victory Road 2 1F (grass)",
+        "Kanto Victory Road 2 2F (grass)"
+      ],
+      "blue": [
+        "Seafoam Islands 1F (grass)",
+        "Seafoam Islands B2F (grass)",
+        "Seafoam Islands B4F (grass)",
+        "Cerulean Cave 1F (grass)",
+        "Kanto Victory Road 2 1F (grass)",
+        "Kanto Victory Road 2 2F (grass)"
+      ],
+      "yellow": [
+        "Seafoam Islands 1F (grass)",
+        "Seafoam Islands B1F (grass)",
+        "Seafoam Islands B2F (grass)",
+        "Seafoam Islands B3F (grass)",
+        "Seafoam Islands B4F (grass)",
+        "Cerulean Cave 1F (grass)"
+      ]
+    }
+  },
+  "Goldeen": {
+    "locations": {
+      "heartgold": [
+        "Union Cave 1F (good rod/old rod/super rod)",
+        "Union Cave B1F (good rod/old rod/super rod)",
+        "Slowpoke Well 1F (good rod/old rod/super rod)",
+        "Slowpoke Well B1F (good rod/old rod/super rod)",
+        "Route 42 (good rod/old rod/super rod/surf)",
+        "Mt Mortar 1F (good rod/old rod/super rod/surf)"
+      ],
+      "soulsilver": [
+        "Union Cave 1F (good rod/old rod/super rod)",
+        "Union Cave B1F (good rod/old rod/super rod)",
+        "Slowpoke Well 1F (good rod/old rod/super rod)",
+        "Slowpoke Well B1F (good rod/old rod/super rod)",
+        "Route 42 (good rod/old rod/super rod/surf)",
+        "Mt Mortar 1F (good rod/old rod/super rod/surf)"
+      ],
+      "red": [
+        "Seafoam Islands B3F (good rod/super rod)",
+        "Seafoam Islands B4F (good rod/super rod)",
+        "Kanto Route 12 (good rod/super rod)",
+        "Kanto Sea Route 19 (good rod/super rod)",
+        "Kanto Sea Route 20 (good rod/super rod)",
+        "Cinnabar Island (good rod/super rod)"
+      ],
+      "blue": [
+        "Seafoam Islands B3F (good rod/super rod)",
+        "Seafoam Islands B4F (good rod/super rod)",
+        "Kanto Route 12 (good rod/super rod)",
+        "Kanto Sea Route 19 (good rod/super rod)",
+        "Kanto Sea Route 20 (good rod/super rod)",
+        "Cinnabar Island (good rod/super rod)"
+      ],
+      "yellow": [
+        "Seafoam Islands B3F (good rod)",
+        "Seafoam Islands B4F (good rod)",
+        "Kanto Route 12 (good rod)",
+        "Kanto Sea Route 19 (good rod)",
+        "Kanto Sea Route 20 (good rod)",
+        "Cinnabar Island (good rod)"
+      ]
+    }
+  },
+  "Golduck": {
+    "evolvesFrom": "Psyduck",
+    "evolveMethod": "Level 33",
+    "locations": {
+      "heartgold": [
+        "Ilex Forest (surf)",
+        "Route 35 (surf)",
+        "Seafoam Islands 1F (grass)",
+        "Seafoam Islands B1F (grass)",
+        "Seafoam Islands B2F (grass)",
+        "Seafoam Islands B3F (grass)"
+      ],
+      "soulsilver": [
+        "Ilex Forest (surf)",
+        "Route 35 (surf)",
+        "Seafoam Islands 1F (grass)",
+        "Seafoam Islands B1F (grass)",
+        "Seafoam Islands B2F (grass)",
+        "Seafoam Islands B3F (grass)"
+      ],
+      "red": [
+        "Seafoam Islands 1F (grass)"
+      ],
+      "blue": [
+        "Seafoam Islands B2F (grass)",
+        "Seafoam Islands B4F (grass)"
+      ],
+      "yellow": [
+        "Kanto Route 6 (surf)"
+      ]
+    }
+  },
+  "Granbull": {
+    "evolvesFrom": "Snubbull",
+    "evolveMethod": "Level 23"
+  },
+  "Graveler": {
+    "evolvesFrom": "Geodude",
+    "evolveMethod": "Level 25",
+    "locations": {
+      "heartgold": [
+        "Mt Mortar Upper Cave (grass)",
+        "Route 45 (grass)",
+        "Dark Cave Blackthorn City Entrance (grass)",
+        "Route 47 (inside cave) (grass)",
+        "Mt Silver 1F (grass)",
+        "Kanto Victory Road 1 1F (grass)"
+      ],
+      "soulsilver": [
+        "Mt Mortar Upper Cave (grass)",
+        "Route 45 (grass)",
+        "Dark Cave Blackthorn City Entrance (grass)",
+        "Route 47 (inside cave) (grass)",
+        "Mt Silver 1F (grass)",
+        "Kanto Victory Road 1 1F (grass)"
+      ],
+      "red": [
+        "Kanto Victory Road 2 1F (grass)",
+        "Kanto Victory Road 2 2F (grass)",
+        "Kanto Victory Road 2 3F (grass)"
+      ],
+      "blue": [
+        "Kanto Victory Road 2 1F (grass)",
+        "Kanto Victory Road 2 2F (grass)",
+        "Kanto Victory Road 2 3F (grass)"
+      ],
+      "yellow": [
+        "Cerulean Cave 1F (grass)",
+        "Cerulean Cave 2F (grass)",
+        "Cerulean Cave B1F (grass)",
+        "Kanto Victory Road 2 1F (grass)",
+        "Kanto Victory Road 2 2F (grass)",
+        "Kanto Victory Road 2 3F (grass)"
+      ]
+    }
+  },
+  "Grimer": {
+    "locations": {
+      "heartgold": [
+        "Celadon City (surf)",
+        "Kanto Route 16 (grass)",
+        "Kanto Route 17 (grass)",
+        "Kanto Route 18 (grass)",
+        "Johto Safari Zone Marshland (grass/surf)"
+      ],
+      "soulsilver": [
+        "Celadon City (surf)",
+        "Kanto Route 16 (grass)",
+        "Kanto Route 17 (grass)",
+        "Kanto Route 18 (grass)",
+        "Johto Safari Zone Marshland (grass/surf)"
+      ],
+      "red": [
+        "Pokemon Mansion 1F (grass)",
+        "Pokemon Mansion 2F (grass)",
+        "Pokemon Mansion 3F (grass)",
+        "Pokemon Mansion B1F (grass)"
+      ],
+      "blue": [
+        "Pokemon Mansion 1F (grass)",
+        "Pokemon Mansion 2F (grass)",
+        "Pokemon Mansion 3F (grass)",
+        "Pokemon Mansion B1F (grass)"
+      ],
+      "yellow": [
+        "Kanto Power Plant (grass)",
+        "Pokemon Mansion 1F (grass)",
+        "Pokemon Mansion 2F (grass)",
+        "Pokemon Mansion 3F (grass)",
+        "Pokemon Mansion B1F (grass)"
+      ]
+    }
+  },
+  "Groudon": {
+    "legendary": true,
+    "locations": {
+      "soulsilver": [
+        "Embedded Tower Groudon Room (gift)"
+      ]
+    }
+  },
+  "Grovyle": {
+    "evolvesFrom": "Treecko",
+    "evolveMethod": "Level 16"
+  },
+  "Growlithe": {
+    "locations": {
+      "heartgold": [
+        "Route 36 (grass)",
+        "Route 37 (grass)",
+        "Route 48 (grass)",
+        "Kanto Route 7 (grass)",
+        "Kanto Route 8 (grass)"
+      ],
+      "red": [
+        "Kanto Route 7 (grass)",
+        "Kanto Route 8 (grass)",
+        "Pokemon Mansion 1F (grass)",
+        "Pokemon Mansion 2F (grass)",
+        "Pokemon Mansion 3F (grass)",
+        "Pokemon Mansion B1F (grass)"
+      ],
+      "yellow": [
+        "Pokemon Mansion 1F (grass)"
+      ]
+    }
+  },
+  "Grumpig": {
+    "evolvesFrom": "Spoink",
+    "evolveMethod": "Level 32"
+  },
+  "Gulpin": {
+    "locations": {
+      "soulsilver": [
+        "Kanto Route 3 (grass)"
+      ]
+    }
+  },
+  "Gyarados": {
+    "evolvesFrom": "Magikarp",
+    "evolveMethod": "Level 20",
+    "locations": {
+      "heartgold": [
+        "Lake Of Rage (gift/good rod/super rod/surf)",
+        "Seafoam Islands B4F (super rod)",
+        "Mt Silver 1F (good rod/super rod)",
+        "Fuchsia City (good rod/super rod)",
+        "Cerulean Cave 1F (super rod)",
+        "Cerulean Cave 2F (super rod)"
+      ],
+      "soulsilver": [
+        "Lake Of Rage (gift/good rod/super rod/surf)",
+        "Seafoam Islands B4F (super rod)",
+        "Mt Silver 1F (good rod/super rod)",
+        "Fuchsia City (good rod/super rod)",
+        "Cerulean Cave 1F (super rod)",
+        "Cerulean Cave 2F (super rod)"
+      ],
+      "yellow": [
+        "Fuchsia City (super rod)"
+      ]
+    }
+  },
+  "Happiny": {
+    "breeding": "Breed a Chansey holding a Luck Incense"
+  },
+  "Hariyama": {
+    "evolvesFrom": "Makuhita",
+    "evolveMethod": "Level 24"
+  },
+  "Haunter": {
+    "evolvesFrom": "Gastly",
+    "evolveMethod": "Level 25",
+    "locations": {
+      "heartgold": [
+        "Kanto Route 8 (grass)",
+        "Johto Safari Zone Forest (grass)"
+      ],
+      "soulsilver": [
+        "Kanto Route 8 (grass)",
+        "Johto Safari Zone Forest (grass)"
+      ],
+      "red": [
+        "Pokemon Tower 3F (grass)",
+        "Pokemon Tower 4F (grass)",
+        "Pokemon Tower 5F (grass)",
+        "Pokemon Tower 6F (grass)",
+        "Pokemon Tower 7F (grass)"
+      ],
+      "blue": [
+        "Pokemon Tower 3F (grass)",
+        "Pokemon Tower 4F (grass)",
+        "Pokemon Tower 5F (grass)",
+        "Pokemon Tower 6F (grass)",
+        "Pokemon Tower 7F (grass)"
+      ],
+      "yellow": [
+        "Pokemon Tower 3F (grass)",
+        "Pokemon Tower 4F (grass)",
+        "Pokemon Tower 5F (grass)",
+        "Pokemon Tower 6F (grass)",
+        "Pokemon Tower 7F (grass)"
+      ]
+    }
+  },
+  "Heracross": {
+    "locations": {
+      "heartgold": [
+        "Route 33 (headbutt)",
+        "Route 42 (headbutt)",
+        "Route 44 (headbutt)",
+        "Route 45 (headbutt)",
+        "Route 46 (headbutt)",
+        "Route 47 (headbutt)"
+      ],
+      "soulsilver": [
+        "Route 33 (headbutt)",
+        "Route 42 (headbutt)",
+        "Route 44 (headbutt)",
+        "Route 45 (headbutt)",
+        "Route 46 (headbutt)",
+        "Route 47 (headbutt)"
+      ]
+    }
+  },
+  "Hippopotas": {
+    "locations": {
+      "heartgold": [
+        "Johto Safari Zone Desert (grass)"
+      ],
+      "soulsilver": [
+        "Johto Safari Zone Desert (grass)"
+      ]
+    }
+  },
+  "Hippowdon": {
+    "evolvesFrom": "Hippopotas",
+    "evolveMethod": "Level 34"
+  },
+  "Hitmonchan": {
+    "evolvesFrom": "Tyrogue",
+    "evolveMethod": "Level 20 (Atk<Def)",
+    "locations": {
+      "red": [
+        "Saffron City Fighting Dojo (gift)"
+      ],
+      "blue": [
+        "Saffron City Fighting Dojo (gift)"
+      ],
+      "yellow": [
+        "Saffron City Fighting Dojo (gift)"
+      ]
+    }
+  },
+  "Hitmonlee": {
+    "evolvesFrom": "Tyrogue",
+    "evolveMethod": "Level 20 (Atk>Def)",
+    "locations": {
+      "red": [
+        "Saffron City Fighting Dojo (gift)"
+      ],
+      "blue": [
+        "Saffron City Fighting Dojo (gift)"
+      ],
+      "yellow": [
+        "Saffron City Fighting Dojo (gift)"
+      ]
+    }
+  },
+  "Hitmontop": {
+    "evolvesFrom": "Tyrogue",
+    "evolveMethod": "Level 20 (Atk=Def)"
+  },
+  "Ho-Oh": {
+    "legendary": true,
+    "locations": {
+      "heartgold": [
+        "Bell Tower Roof (gift)"
+      ],
+      "soulsilver": [
+        "Bell Tower Roof (gift)"
+      ]
+    }
+  },
+  "Honchkrow": {
+    "evolvesFrom": "Murkrow",
+    "evolveMethod": "Use a Dusk Stone"
+  },
+  "Hoothoot": {
+    "locations": {
+      "heartgold": [
+        "New Bark Town (headbutt)",
+        "Route 29 (grass/headbutt)",
+        "Cherrygrove City (headbutt)",
+        "Route 30 (grass/headbutt)",
+        "Route 31 (grass/headbutt)",
+        "Violet City (headbutt)"
+      ],
+      "soulsilver": [
+        "New Bark Town (headbutt)",
+        "Route 29 (grass/headbutt)",
+        "Cherrygrove City (headbutt)",
+        "Route 30 (grass/headbutt)",
+        "Route 31 (grass/headbutt)",
+        "Violet City (headbutt)"
+      ]
+    }
+  },
+  "Hoppip": {
+    "locations": {
+      "heartgold": [
+        "Route 32 (grass)",
+        "Route 33 (grass)",
+        "Route 48 (grass)",
+        "Kanto Route 13 (grass)",
+        "Kanto Route 14 (grass)",
+        "Kanto Route 15 (grass)"
+      ],
+      "soulsilver": [
+        "Route 32 (grass)",
+        "Route 33 (grass)",
+        "Route 48 (grass)",
+        "Kanto Route 13 (grass)",
+        "Kanto Route 14 (grass)",
+        "Kanto Route 15 (grass)"
+      ]
+    }
+  },
+  "Horsea": {
+    "locations": {
+      "heartgold": [
+        "Whirl Islands 1F (good rod/super rod/surf)",
+        "Whirl Islands B2F (good rod/super rod/surf)",
+        "Seafoam Islands B4F (good rod/super rod/surf)"
+      ],
+      "soulsilver": [
+        "Whirl Islands 1F (good rod/super rod/surf)",
+        "Whirl Islands B2F (good rod/super rod/surf)",
+        "Seafoam Islands B4F (good rod/super rod/surf)"
+      ],
+      "red": [
+        "Seafoam Islands 1F (grass)",
+        "Seafoam Islands B1F (grass)",
+        "Seafoam Islands B2F (grass)",
+        "Seafoam Islands B3F (grass/super rod)",
+        "Seafoam Islands B4F (grass/super rod)",
+        "Kanto Sea Route 19 (super rod)"
+      ],
+      "blue": [
+        "Seafoam Islands B3F (super rod)",
+        "Seafoam Islands B4F (super rod)",
+        "Kanto Sea Route 19 (super rod)",
+        "Kanto Sea Route 20 (super rod)",
+        "Cinnabar Island (super rod)",
+        "Kanto Sea Route 21 (super rod)"
+      ],
+      "yellow": [
+        "Kanto Route 12 (super rod)",
+        "Vermilion City (super rod)",
+        "Kanto Route 10 (super rod)",
+        "Kanto Route 11 (super rod)",
+        "Kanto Route 13 (super rod)"
+      ]
+    }
+  },
+  "Houndoom": {
+    "evolvesFrom": "Houndour",
+    "evolveMethod": "Level 24",
+    "locations": {
+      "heartgold": [
+        "Johto Safari Zone Plains (grass)"
+      ],
+      "soulsilver": [
+        "Johto Safari Zone Plains (grass)"
+      ]
+    }
+  },
+  "Houndour": {
+    "locations": {
+      "heartgold": [
+        "Kanto Route 7 (grass)",
+        "Johto Safari Zone Savannah (grass)"
+      ],
+      "soulsilver": [
+        "Kanto Route 7 (grass)",
+        "Johto Safari Zone Savannah (grass)"
+      ]
+    }
+  },
+  "Hypno": {
+    "evolvesFrom": "Drowzee",
+    "evolveMethod": "Level 26",
+    "locations": {
+      "heartgold": [
+        "Kanto Route 11 (grass)",
+        "Johto Safari Zone Swamp (grass)"
+      ],
+      "soulsilver": [
+        "Kanto Route 11 (grass)",
+        "Johto Safari Zone Swamp (grass)"
+      ],
+      "red": [
+        "Cerulean Cave 1F (grass)"
+      ],
+      "blue": [
+        "Cerulean Cave 1F (grass)"
+      ]
+    }
+  },
+  "Igglybuff": {
+    "breeding": "Breed a Jigglypuff or Wigglytuff"
+  },
+  "Illumise": {
+    "locations": {
+      "heartgold": [
+        "National Park (grass)",
+        "Johto Safari Zone Wasteland (grass)"
+      ],
+      "soulsilver": [
+        "National Park (grass)",
+        "Johto Safari Zone Wasteland (grass)"
+      ]
+    }
+  },
+  "Ivysaur": {
+    "evolvesFrom": "Bulbasaur",
+    "evolveMethod": "Level 16"
+  },
+  "Jigglypuff": {
+    "evolvesFrom": "Igglybuff",
+    "evolveMethod": "High friendship",
+    "locations": {
+      "heartgold": [
+        "Kanto Route 3 (grass)",
+        "Kanto Route 4 (grass)",
+        "Johto Safari Zone Meadow (grass)",
+        "Johto Safari Zone Swamp (grass)"
+      ],
+      "soulsilver": [
+        "Kanto Route 3 (grass)",
+        "Kanto Route 4 (grass)",
+        "Johto Safari Zone Meadow (grass)",
+        "Johto Safari Zone Swamp (grass)"
+      ],
+      "red": [
+        "Kanto Route 3 (grass)"
+      ],
+      "blue": [
+        "Kanto Route 3 (grass)"
+      ],
+      "yellow": [
+        "Kanto Route 5 (grass)",
+        "Kanto Route 6 (grass)",
+        "Kanto Route 7 (grass)",
+        "Kanto Route 8 (grass)"
+      ]
+    }
+  },
+  "Jolteon": {
+    "evolvesFrom": "Eevee",
+    "evolveMethod": "Use a Thunder Stone"
+  },
+  "Jumpluff": {
+    "evolvesFrom": "Skiploom",
+    "evolveMethod": "Level 27",
+    "locations": {
+      "heartgold": [
+        "Johto Safari Zone Marshland (grass/surf)"
+      ],
+      "soulsilver": [
+        "Johto Safari Zone Marshland (grass/surf)"
+      ]
+    }
+  },
+  "Jynx": {
+    "evolvesFrom": "Smoochum",
+    "evolveMethod": "Level 30",
+    "locations": {
+      "heartgold": [
+        "Ice Path 1F (grass)",
+        "Ice Path B1F (grass)",
+        "Ice Path B2F (grass)",
+        "Ice Path B3F (grass)",
+        "Seafoam Islands B4F (grass)"
+      ],
+      "soulsilver": [
+        "Ice Path 1F (grass)",
+        "Ice Path B1F (grass)",
+        "Ice Path B2F (grass)",
+        "Ice Path B3F (grass)",
+        "Seafoam Islands B4F (grass)"
+      ],
+      "red": [
+        "Cerulean City (npc trade)"
+      ],
+      "blue": [
+        "Cerulean City (npc trade)"
+      ]
+    }
+  },
+  "Kabuto": {
+    "locations": {
+      "heartgold": [
+        "Pewter City Pewter Museum Of Science (gift)"
+      ],
+      "soulsilver": [
+        "Pewter City Pewter Museum Of Science (gift)"
+      ],
+      "red": [
+        "Cinnabar Island Cinnabar Lab (gift)"
+      ],
+      "blue": [
+        "Cinnabar Island Cinnabar Lab (gift)"
+      ],
+      "yellow": [
+        "Cinnabar Island Cinnabar Lab (gift)"
+      ]
+    }
+  },
+  "Kabutops": {
+    "evolvesFrom": "Kabuto",
+    "evolveMethod": "Level 40"
+  },
+  "Kadabra": {
+    "evolvesFrom": "Abra",
+    "evolveMethod": "Level 16",
+    "locations": {
+      "heartgold": [
+        "Kanto Route 8 (grass)",
+        "Cerulean Cave 2F (grass)",
+        "Cerulean Cave B1F (grass)"
+      ],
+      "soulsilver": [
+        "Kanto Route 8 (grass)",
+        "Cerulean Cave 2F (grass)",
+        "Cerulean Cave B1F (grass)"
+      ],
+      "red": [
+        "Cerulean Cave 1F (grass)",
+        "Cerulean Cave 2F (grass)"
+      ],
+      "blue": [
+        "Cerulean Cave 1F (grass)",
+        "Cerulean Cave 2F (grass)"
+      ],
+      "yellow": [
+        "Kanto Route 8 (grass)"
+      ]
+    }
+  },
+  "Kakuna": {
+    "evolvesFrom": "Weedle",
+    "evolveMethod": "Level 7",
+    "locations": {
+      "heartgold": [
+        "National Park (grass)"
+      ],
+      "soulsilver": [
+        "Route 30 (grass)",
+        "Route 31 (grass)",
+        "Ilex Forest (grass/headbutt)",
+        "National Park (grass)",
+        "Route 47 (headbutt)",
+        "Kanto Route 2 (south towards viridian city) (grass)"
+      ],
+      "red": [
+        "Kanto Route 24 (grass)",
+        "Kanto Route 25 (grass)",
+        "Viridian Forest (grass)"
+      ],
+      "blue": [
+        "Kanto Route 25 (grass)",
+        "Viridian Forest (grass)"
+      ]
+    }
+  },
+  "Kangaskhan": {
+    "locations": {
+      "heartgold": [
+        "Rock Tunnel B1F (grass)",
+        "Johto Safari Zone Wasteland (grass)"
+      ],
+      "soulsilver": [
+        "Rock Tunnel B1F (grass)",
+        "Johto Safari Zone Wasteland (grass)"
+      ],
+      "red": [
+        "Kanto Safari Zone Area 1 East (grass)",
+        "Kanto Safari Zone Area 3 West (grass)"
+      ],
+      "blue": [
+        "Kanto Safari Zone Area 1 East (grass)",
+        "Kanto Safari Zone Area 3 West (grass)"
+      ],
+      "yellow": [
+        "Kanto Safari Zone Area 2 North (grass)"
+      ]
+    }
+  },
+  "Kingler": {
+    "evolvesFrom": "Krabby",
+    "evolveMethod": "Level 28",
+    "locations": {
+      "heartgold": [
+        "Cherrygrove City (super rod)",
+        "Union Cave B2F (super rod)",
+        "Route 34 (super rod)",
+        "Olivine City (super rod)",
+        "Johto Sea Route 40 (super rod)",
+        "Whirl Islands 1F (super rod)"
+      ],
+      "soulsilver": [
+        "Cherrygrove City (super rod)",
+        "Union Cave B2F (super rod)",
+        "Route 34 (super rod)",
+        "Olivine City (super rod)",
+        "Johto Sea Route 40 (super rod)",
+        "Whirl Islands 1F (super rod)"
+      ],
+      "red": [
+        "Cerulean Cave 1F (super rod)",
+        "Cerulean Cave B1F (super rod)",
+        "Kanto Route 23 (super rod)"
+      ],
+      "blue": [
+        "Seafoam Islands B1F (grass)",
+        "Seafoam Islands B3F (grass)",
+        "Cerulean Cave 1F (super rod)",
+        "Cerulean Cave B1F (super rod)",
+        "Kanto Route 23 (super rod)"
+      ],
+      "yellow": [
+        "Seafoam Islands B1F (grass)",
+        "Seafoam Islands B2F (grass)",
+        "Seafoam Islands B3F (grass/super rod)",
+        "Seafoam Islands B4F (grass/super rod)",
+        "Kanto Route 10 (super rod)",
+        "Kanto Route 25 (super rod)"
+      ]
+    }
+  },
+  "Kirlia": {
+    "evolvesFrom": "Ralts",
+    "evolveMethod": "Level 20"
+  },
+  "Koffing": {
+    "locations": {
+      "heartgold": [
+        "Burned Tower 1F (grass)",
+        "Burned Tower B1F (grass)",
+        "Johto Safari Zone Marshland (grass)",
+        "Team Rocket Hq (gift)"
+      ],
+      "soulsilver": [
+        "Burned Tower 1F (grass)",
+        "Burned Tower B1F (grass)",
+        "Johto Safari Zone Marshland (grass)",
+        "Team Rocket Hq (gift)"
+      ],
+      "red": [
+        "Pokemon Mansion 1F (grass)",
+        "Pokemon Mansion 2F (grass)",
+        "Pokemon Mansion 3F (grass)",
+        "Pokemon Mansion B1F (grass)"
+      ],
+      "blue": [
+        "Pokemon Mansion 1F (grass)",
+        "Pokemon Mansion 2F (grass)",
+        "Pokemon Mansion 3F (grass)",
+        "Pokemon Mansion B1F (grass)"
+      ]
+    }
+  },
+  "Krabby": {
+    "locations": {
+      "heartgold": [
+        "Cherrygrove City (good rod/old rod/super rod)",
+        "Union Cave B2F (good rod/old rod/super rod)",
+        "Route 34 (good rod/old rod/super rod)",
+        "Olivine City (good rod/old rod/super rod)",
+        "Johto Sea Route 40 (good rod/old rod/super rod)",
+        "Whirl Islands 1F (good rod/grass/old rod/super rod)"
+      ],
+      "soulsilver": [
+        "Cherrygrove City (good rod/old rod/super rod)",
+        "Union Cave B2F (good rod/old rod/super rod)",
+        "Route 34 (good rod/old rod/super rod)",
+        "Olivine City (good rod/old rod/super rod)",
+        "Johto Sea Route 40 (good rod/old rod/super rod)",
+        "Whirl Islands 1F (good rod/grass/old rod/super rod)"
+      ],
+      "red": [
+        "Kanto Route 12 (super rod)",
+        "Cerulean City (super rod)",
+        "Vermilion City (super rod)",
+        "Fuchsia City (super rod)",
+        "Kanto Route 6 (super rod)",
+        "Kanto Route 11 (super rod)"
+      ],
+      "blue": [
+        "Seafoam Islands 1F (grass)",
+        "Seafoam Islands B1F (grass)",
+        "Seafoam Islands B2F (grass)",
+        "Seafoam Islands B3F (grass)",
+        "Seafoam Islands B4F (grass)",
+        "Kanto Route 12 (super rod)"
+      ],
+      "yellow": [
+        "Seafoam Islands 1F (grass)",
+        "Seafoam Islands B1F (grass)",
+        "Seafoam Islands B2F (grass)",
+        "Seafoam Islands B3F (grass/super rod)",
+        "Seafoam Islands B4F (grass/super rod)",
+        "Kanto Route 10 (super rod)"
+      ]
+    }
+  },
+  "Kricketot": {
+    "locations": {
+      "heartgold": [
+        "National Park (grass)",
+        "Viridian Forest (grass)"
+      ],
+      "soulsilver": [
+        "National Park (grass)",
+        "Viridian Forest (grass)"
+      ]
+    }
+  },
+  "Kricketune": {
+    "evolvesFrom": "Kricketot",
+    "evolveMethod": "Level 10",
+    "locations": {
+      "heartgold": [
+        "National Park (grass)"
+      ],
+      "soulsilver": [
+        "National Park (grass)"
+      ]
+    }
+  },
+  "Kyogre": {
+    "legendary": true,
+    "locations": {
+      "heartgold": [
+        "Embedded Tower Kyogre Room (gift)"
+      ]
+    }
+  },
+  "Lairon": {
+    "evolvesFrom": "Aron",
+    "evolveMethod": "Level 32",
+    "locations": {
+      "heartgold": [
+        "Johto Safari Zone Peak (grass)"
+      ],
+      "soulsilver": [
+        "Johto Safari Zone Peak (grass)"
+      ]
+    }
+  },
+  "Lanturn": {
+    "evolvesFrom": "Chinchou",
+    "evolveMethod": "Level 27",
+    "locations": {
+      "heartgold": [
+        "New Bark Town (super rod)",
+        "Johto Sea Route 41 (super rod)",
+        "Route 47 (super rod)",
+        "Kanto Sea Route 20 (super rod)",
+        "Cinnabar Island (super rod)",
+        "Vermilion City (super rod)"
+      ],
+      "soulsilver": [
+        "New Bark Town (super rod)",
+        "Johto Sea Route 41 (super rod)",
+        "Route 47 (super rod)",
+        "Kanto Sea Route 20 (super rod)",
+        "Cinnabar Island (super rod)",
+        "Vermilion City (super rod)"
+      ]
+    }
+  },
+  "Lapras": {
+    "locations": {
+      "heartgold": [
+        "Union Cave B2F (gift)",
+        "Johto Safari Zone Rocky Beach (surf)"
+      ],
+      "soulsilver": [
+        "Union Cave B2F (gift)",
+        "Johto Safari Zone Rocky Beach (surf)"
+      ],
+      "red": [
+        "Saffron City Silph Co 7F (gift)"
+      ],
+      "blue": [
+        "Saffron City Silph Co 7F (gift)"
+      ],
+      "yellow": [
+        "Saffron City Silph Co 7F (gift)"
+      ]
+    }
+  },
+  "Larvitar": {
+    "locations": {
+      "heartgold": [
+        "Mt Silver 2F (grass)",
+        "Mt Silver 1F Top (grass)",
+        "Mt Silver 4F (grass)",
+        "Mt Silver 1F (grass)",
+        "Mt Silver Mountainside (grass)",
+        "Mt Silver 3F (grass)"
+      ],
+      "soulsilver": [
+        "Mt Silver 2F (grass)",
+        "Mt Silver 1F Top (grass)",
+        "Mt Silver 4F (grass)",
+        "Mt Silver 1F (grass)",
+        "Mt Silver Mountainside (grass)",
+        "Mt Silver 3F (grass)"
+      ]
+    }
+  },
+  "Latias": {
+    "legendary": true,
+    "locations": {
+      "heartgold": [
+        "Roaming Johto (roaming grass)"
+      ]
+    }
+  },
+  "Latios": {
+    "legendary": true,
+    "locations": {
+      "soulsilver": [
+        "Roaming Johto (roaming grass)"
+      ]
+    }
+  },
+  "Ledian": {
+    "evolvesFrom": "Ledyba",
+    "evolveMethod": "Level 18",
+    "locations": {
+      "soulsilver": [
+        "Kanto Route 2 (south towards viridian city) (grass)",
+        "Kanto Route 2 (north towards pewter city) (grass)",
+        "Viridian Forest (headbutt)"
+      ]
+    }
+  },
+  "Ledyba": {
+    "locations": {
+      "soulsilver": [
+        "New Bark Town (headbutt)",
+        "Route 29 (headbutt)",
+        "Cherrygrove City (headbutt)",
+        "Route 30 (grass/headbutt)",
+        "Route 31 (grass/headbutt)",
+        "Route 34 (headbutt)"
+      ]
+    }
+  },
+  "Lickilicky": {
+    "evolvesFrom": "Lickitung",
+    "evolveMethod": "Level up knowing Rollout"
+  },
+  "Lickitung": {
+    "locations": {
+      "heartgold": [
+        "Route 44 (grass)",
+        "Johto Safari Zone Forest (grass)",
+        "Johto Safari Zone Mountain (grass)"
+      ],
+      "soulsilver": [
+        "Route 44 (grass)",
+        "Johto Safari Zone Forest (grass)",
+        "Johto Safari Zone Mountain (grass)"
+      ],
+      "red": [
+        "Kanto Route 18 (npc trade)"
+      ],
+      "blue": [
+        "Kanto Route 18 (npc trade)"
+      ],
+      "yellow": [
+        "Cerulean Cave B1F (grass)"
+      ]
+    }
+  },
+  "Lileep": {
+    "locations": {
+      "heartgold": [
+        "Pewter City Pewter Museum Of Science (gift)"
+      ],
+      "soulsilver": [
+        "Pewter City Pewter Museum Of Science (gift)"
+      ]
+    }
+  },
+  "Linoone": {
+    "evolvesFrom": "Zigzagoon",
+    "evolveMethod": "Level 20",
+    "locations": {
+      "heartgold": [
+        "Route 30 (grass)",
+        "Route 31 (grass)",
+        "Route 32 (grass)",
+        "Ruins of Alph (grass)",
+        "Route 34 (grass)",
+        "Route 35 (grass)"
+      ],
+      "soulsilver": [
+        "Route 30 (grass)",
+        "Route 31 (grass)",
+        "Route 32 (grass)",
+        "Ruins of Alph (grass)",
+        "Route 34 (grass)",
+        "Route 35 (grass)"
+      ]
+    }
+  },
+  "Lombre": {
+    "evolvesFrom": "Lotad",
+    "evolveMethod": "Level 14",
+    "locations": {
+      "heartgold": [
+        "Johto Safari Zone Wetland (grass)"
+      ],
+      "soulsilver": [
+        "Johto Safari Zone Wetland (grass)"
+      ]
+    }
+  },
+  "Lopunny": {
+    "evolvesFrom": "Buneary",
+    "evolveMethod": "High friendship"
+  },
+  "Lotad": {
+    "locations": {
+      "heartgold": [
+        "Johto Safari Zone Desert (grass)",
+        "Johto Safari Zone Plains (grass)"
+      ],
+      "soulsilver": [
+        "Johto Safari Zone Desert (grass)",
+        "Johto Safari Zone Plains (grass)"
+      ]
+    }
+  },
+  "Loudred": {
+    "evolvesFrom": "Whismur",
+    "evolveMethod": "Level 20"
+  },
+  "Lucario": {
+    "evolvesFrom": "Riolu",
+    "evolveMethod": "High friendship (day)"
+  },
+  "Ludicolo": {
+    "evolvesFrom": "Lombre",
+    "evolveMethod": "Use a Water Stone"
+  },
+  "Lugia": {
+    "legendary": true,
+    "locations": {
+      "heartgold": [
+        "Whirl Islands B3F (gift)"
+      ],
+      "soulsilver": [
+        "Whirl Islands B3F (gift)"
+      ]
+    }
+  },
+  "Lunatone": {
+    "locations": {
+      "heartgold": [
+        "Johto Safari Zone Mountain (grass)"
+      ],
+      "soulsilver": [
+        "Johto Safari Zone Mountain (grass)"
+      ]
+    }
+  },
+  "Luvdisc": {
+    "locations": {
+      "heartgold": [
+        "Kanto Route 27 (surf)"
+      ],
+      "soulsilver": [
+        "Kanto Route 27 (surf)"
+      ]
+    }
+  },
+  "Luxio": {
+    "evolvesFrom": "Shinx",
+    "evolveMethod": "Level 15",
+    "locations": {
+      "heartgold": [
+        "Johto Safari Zone Savannah (grass)"
+      ],
+      "soulsilver": [
+        "Johto Safari Zone Savannah (grass)"
+      ]
+    }
+  },
+  "Luxray": {
+    "evolvesFrom": "Luxio",
+    "evolveMethod": "Level 30"
+  },
+  "Machamp": {
+    "evolvesFrom": "Machoke",
+    "evolveMethod": "Trade"
+  },
+  "Machoke": {
+    "evolvesFrom": "Machop",
+    "evolveMethod": "Level 28",
+    "locations": {
+      "heartgold": [
+        "Mt Mortar Upper Cave (grass)",
+        "Route 47 (inside cave) (grass)",
+        "Rock Tunnel 1F (grass)",
+        "Cerulean Cave 1F (grass)",
+        "Cerulean Cave 2F (grass)",
+        "Cerulean Cave B1F (grass)"
+      ],
+      "soulsilver": [
+        "Mt Mortar Upper Cave (grass)",
+        "Route 47 (inside cave) (grass)",
+        "Rock Tunnel 1F (grass)",
+        "Cerulean Cave 1F (grass)",
+        "Cerulean Cave 2F (grass)",
+        "Cerulean Cave B1F (grass)"
+      ],
+      "red": [
+        "Kanto Victory Road 2 1F (grass)",
+        "Kanto Victory Road 2 2F (grass)",
+        "Kanto Victory Road 2 3F (grass)"
+      ],
+      "blue": [
+        "Kanto Victory Road 2 1F (grass)",
+        "Kanto Victory Road 2 2F (grass)",
+        "Kanto Victory Road 2 3F (grass)"
+      ],
+      "yellow": [
+        "Kanto Victory Road 2 2F (grass)",
+        "Kanto Victory Road 2 3F (grass)",
+        "Kanto Underground Path (npc trade)"
+      ]
+    }
+  },
+  "Machop": {
+    "locations": {
+      "heartgold": [
+        "Mt Mortar 1F (grass)",
+        "Mt Mortar Lower Cave (grass)",
+        "Mt Mortar Upper Cave (grass)",
+        "Mt Mortar B1F (grass)",
+        "Route 47 (inside cave) (grass)",
+        "Rock Tunnel 1F (grass)"
+      ],
+      "soulsilver": [
+        "Mt Mortar 1F (grass)",
+        "Mt Mortar Lower Cave (grass)",
+        "Mt Mortar Upper Cave (grass)",
+        "Mt Mortar B1F (grass)",
+        "Route 47 (inside cave) (grass)",
+        "Rock Tunnel 1F (grass)"
+      ],
+      "red": [
+        "Rock Tunnel B1F (grass)",
+        "Rock Tunnel B2F (grass)",
+        "Kanto Victory Road 2 1F (grass)",
+        "Kanto Victory Road 2 2F (grass)",
+        "Kanto Victory Road 2 3F (grass)"
+      ],
+      "blue": [
+        "Rock Tunnel B1F (grass)",
+        "Rock Tunnel B2F (grass)",
+        "Kanto Victory Road 2 1F (grass)",
+        "Kanto Victory Road 2 2F (grass)",
+        "Kanto Victory Road 2 3F (grass)"
+      ],
+      "yellow": [
+        "Rock Tunnel B1F (grass)",
+        "Kanto Route 10 (grass)",
+        "Rock Tunnel B2F (grass)"
+      ]
+    }
+  },
+  "Magby": {
+    "breeding": "Breed a Magmar"
+  },
+  "Magcargo": {
+    "evolvesFrom": "Slugma",
+    "evolveMethod": "Level 38"
+  },
+  "Magikarp": {
+    "locations": {
+      "heartgold": [
+        "New Bark Town (good rod/old rod)",
+        "Cherrygrove City (good rod/old rod)",
+        "Route 30 (good rod/old rod/super rod)",
+        "Route 31 (good rod/old rod/super rod)",
+        "Violet City (good rod/old rod/super rod)",
+        "Route 32 (good rod/old rod/super rod)"
+      ],
+      "soulsilver": [
+        "New Bark Town (good rod/old rod)",
+        "Cherrygrove City (good rod/old rod)",
+        "Route 30 (good rod/old rod/super rod)",
+        "Route 31 (good rod/old rod/super rod)",
+        "Violet City (good rod/old rod/super rod)",
+        "Route 32 (good rod/old rod/super rod)"
+      ],
+      "red": [
+        "Seafoam Islands B3F (old rod)",
+        "Seafoam Islands B4F (old rod)",
+        "Kanto Route 12 (old rod/super rod)",
+        "Kanto Sea Route 19 (old rod)",
+        "Kanto Sea Route 20 (old rod)",
+        "Cinnabar Island (old rod)"
+      ],
+      "blue": [
+        "Seafoam Islands B3F (old rod)",
+        "Seafoam Islands B4F (old rod)",
+        "Kanto Route 12 (old rod/super rod)",
+        "Kanto Sea Route 19 (old rod)",
+        "Kanto Sea Route 20 (old rod)",
+        "Cinnabar Island (old rod)"
+      ],
+      "yellow": [
+        "Seafoam Islands B3F (old rod)",
+        "Seafoam Islands B4F (old rod)",
+        "Kanto Route 12 (old rod)",
+        "Kanto Sea Route 19 (old rod)",
+        "Kanto Sea Route 20 (old rod)",
+        "Cinnabar Island (old rod)"
+      ]
+    }
+  },
+  "Magmar": {
+    "evolvesFrom": "Magby",
+    "evolveMethod": "Level 30",
+    "locations": {
+      "heartgold": [
+        "Burned Tower B1F (grass)",
+        "Johto Safari Zone Peak (grass)"
+      ],
+      "soulsilver": [
+        "Burned Tower B1F (grass)",
+        "Johto Safari Zone Peak (grass)"
+      ],
+      "blue": [
+        "Pokemon Mansion 3F (grass)",
+        "Pokemon Mansion B1F (grass)"
+      ]
+    }
+  },
+  "Magnemite": {
+    "locations": {
+      "heartgold": [
+        "Route 38 (grass)",
+        "Route 39 (grass)",
+        "Kanto Route 6 (grass)",
+        "Kanto Route 11 (grass)",
+        "Johto Safari Zone Peak (grass)",
+        "Johto Safari Zone Wasteland (grass)"
+      ],
+      "soulsilver": [
+        "Route 38 (grass)",
+        "Route 39 (grass)",
+        "Kanto Route 6 (grass)",
+        "Kanto Route 11 (grass)",
+        "Johto Safari Zone Peak (grass)",
+        "Johto Safari Zone Wasteland (grass)"
+      ],
+      "red": [
+        "Kanto Power Plant (grass)"
+      ],
+      "blue": [
+        "Kanto Power Plant (grass)"
+      ],
+      "yellow": [
+        "Kanto Route 10 (grass)",
+        "Kanto Power Plant (grass)"
+      ]
+    }
+  },
+  "Magneton": {
+    "evolvesFrom": "Magnemite",
+    "evolveMethod": "Level 30",
+    "locations": {
+      "heartgold": [
+        "Cerulean Cave 1F (grass)",
+        "Cerulean Cave 2F (grass)",
+        "Cerulean Cave B1F (grass)",
+        "Johto Safari Zone Peak (grass)",
+        "Johto Safari Zone Mountain (grass)"
+      ],
+      "soulsilver": [
+        "Cerulean Cave 1F (grass)",
+        "Cerulean Cave 2F (grass)",
+        "Cerulean Cave B1F (grass)",
+        "Johto Safari Zone Peak (grass)",
+        "Johto Safari Zone Mountain (grass)"
+      ],
+      "red": [
+        "Cerulean Cave 1F (grass)",
+        "Kanto Power Plant (grass)"
+      ],
+      "blue": [
+        "Cerulean Cave 1F (grass)",
+        "Kanto Power Plant (grass)"
+      ],
+      "yellow": [
+        "Kanto Power Plant (grass)"
+      ]
+    }
+  },
+  "Makuhita": {
+    "locations": {
+      "heartgold": [
+        "Union Cave 1F (grass)",
+        "Union Cave B1F (grass)",
+        "Union Cave B2F (grass)",
+        "Slowpoke Well 1F (grass)",
+        "Slowpoke Well B1F (grass)",
+        "Whirl Islands 1F (grass)"
+      ],
+      "soulsilver": [
+        "Union Cave 1F (grass)",
+        "Union Cave B1F (grass)",
+        "Union Cave B2F (grass)",
+        "Slowpoke Well 1F (grass)",
+        "Slowpoke Well B1F (grass)",
+        "Whirl Islands 1F (grass)"
+      ]
+    }
+  },
+  "Mamoswine": {
+    "evolvesFrom": "Piloswine",
+    "evolveMethod": "Level up knowing Ancient Power"
+  },
+  "Manectric": {
+    "evolvesFrom": "Electrike",
+    "evolveMethod": "Level 26",
+    "locations": {
+      "heartgold": [
+        "Johto Safari Zone Plains (grass)",
+        "Johto Safari Zone Rocky Beach (grass)",
+        "Johto Safari Zone Wasteland (grass)"
+      ],
+      "soulsilver": [
+        "Johto Safari Zone Plains (grass)",
+        "Johto Safari Zone Rocky Beach (grass)",
+        "Johto Safari Zone Wasteland (grass)"
+      ]
+    }
+  },
+  "Mankey": {
+    "locations": {
+      "heartgold": [
+        "Route 42 (grass)",
+        "Kanto Route 9 (grass)"
+      ],
+      "red": [
+        "Kanto Route 5 (grass)",
+        "Kanto Route 6 (grass)",
+        "Kanto Route 7 (grass)",
+        "Kanto Route 8 (grass)"
+      ],
+      "yellow": [
+        "Kanto Route 3 (grass)",
+        "Kanto Route 4 (grass)",
+        "Kanto Route 22 (grass)",
+        "Kanto Route 23 (grass)"
+      ]
+    }
+  },
+  "Mantine": {
+    "evolvesFrom": "Mantyke",
+    "evolveMethod": "Level up",
+    "locations": {
+      "heartgold": [
+        "Johto Sea Route 41 (surf)"
+      ]
+    }
+  },
+  "Mantyke": {
+    "breeding": "Breed a Mantine holding a Sea Incense"
+  },
+  "Mareep": {
+    "locations": {
+      "heartgold": [
+        "Route 32 (grass)",
+        "Route 42 (grass)",
+        "Route 43 (grass)",
+        "Violet City Pokemon Center (egg gift)",
+        "Johto Safari Zone Rocky Beach (grass)"
+      ],
+      "soulsilver": [
+        "Route 32 (grass)",
+        "Route 42 (grass)",
+        "Route 43 (grass)",
+        "Violet City Pokemon Center (egg gift)",
+        "Johto Safari Zone Rocky Beach (grass)"
+      ]
+    }
+  },
+  "Marill": {
+    "evolvesFrom": "Azurill",
+    "evolveMethod": "High friendship",
+    "locations": {
+      "heartgold": [
+        "Mt Mortar 1F (grass)",
+        "Johto Safari Zone Meadow (grass/surf)"
+      ],
+      "soulsilver": [
+        "Mt Mortar 1F (grass)",
+        "Johto Safari Zone Meadow (grass/surf)"
+      ]
+    }
+  },
+  "Marowak": {
+    "evolvesFrom": "Cubone",
+    "evolveMethod": "Level 28",
+    "locations": {
+      "heartgold": [
+        "Rock Tunnel B1F (grass)",
+        "Johto Safari Zone Desert (grass)"
+      ],
+      "soulsilver": [
+        "Rock Tunnel B1F (grass)",
+        "Johto Safari Zone Desert (grass)"
+      ],
+      "red": [
+        "Cerulean Cave 2F (grass)",
+        "Cerulean Cave B1F (grass)",
+        "Kanto Victory Road 2 1F (grass)",
+        "Kanto Victory Road 2 2F (grass)"
+      ],
+      "blue": [
+        "Cerulean Cave 2F (grass)",
+        "Cerulean Cave B1F (grass)",
+        "Kanto Victory Road 2 1F (grass)",
+        "Kanto Victory Road 2 2F (grass)"
+      ],
+      "yellow": [
+        "Kanto Safari Zone Area 1 East (grass)",
+        "Kanto Safari Zone Area 3 West (grass)"
+      ]
+    }
+  },
+  "Marshtomp": {
+    "evolvesFrom": "Mudkip",
+    "evolveMethod": "Level 16"
+  },
+  "Masquerain": {
+    "evolvesFrom": "Surskit",
+    "evolveMethod": "Level 22",
+    "locations": {
+      "heartgold": [
+        "Johto Safari Zone Meadow (surf)"
+      ],
+      "soulsilver": [
+        "Johto Safari Zone Meadow (surf)"
+      ]
+    }
+  },
+  "Mawile": {
+    "locations": {
+      "soulsilver": [
+        "Kanto Route 9 (grass)"
+      ]
+    }
+  },
+  "Medicham": {
+    "evolvesFrom": "Meditite",
+    "evolveMethod": "Level 37",
+    "locations": {
+      "heartgold": [
+        "Johto Safari Zone Wasteland (grass)"
+      ],
+      "soulsilver": [
+        "Johto Safari Zone Wasteland (grass)"
+      ]
+    }
+  },
+  "Meditite": {
+    "locations": {
+      "heartgold": [
+        "Sprout Tower 2F (grass)",
+        "Sprout Tower 3F (grass)",
+        "Burned Tower 1F (grass)",
+        "Burned Tower B1F (grass)",
+        "Bell Tower 2F (grass)",
+        "Bell Tower 3F (grass)"
+      ],
+      "soulsilver": [
+        "Sprout Tower 2F (grass)",
+        "Sprout Tower 3F (grass)",
+        "Burned Tower 1F (grass)",
+        "Burned Tower B1F (grass)",
+        "Bell Tower 2F (grass)",
+        "Bell Tower 3F (grass)"
+      ]
+    }
+  },
+  "Meganium": {
+    "evolvesFrom": "Bayleef",
+    "evolveMethod": "Level 32"
+  },
+  "Meowth": {
+    "locations": {
+      "soulsilver": [
+        "Route 38 (grass)",
+        "Route 39 (grass)",
+        "Kanto Route 5 (grass)",
+        "Kanto Route 6 (grass)",
+        "Kanto Route 7 (grass)",
+        "Kanto Route 8 (grass)"
+      ],
+      "blue": [
+        "Kanto Route 5 (grass)",
+        "Kanto Route 6 (grass)",
+        "Kanto Route 7 (grass)",
+        "Kanto Route 8 (grass)"
+      ]
+    }
+  },
+  "Metagross": {
+    "evolvesFrom": "Metang",
+    "evolveMethod": "Level 45"
+  },
+  "Metang": {
+    "evolvesFrom": "Beldum",
+    "evolveMethod": "Level 20",
+    "locations": {
+      "heartgold": [
+        "Johto Safari Zone Mountain (grass)"
+      ],
+      "soulsilver": [
+        "Johto Safari Zone Mountain (grass)"
+      ]
+    }
+  },
+  "Metapod": {
+    "evolvesFrom": "Caterpie",
+    "evolveMethod": "Level 7",
+    "locations": {
+      "heartgold": [
+        "Route 30 (grass)",
+        "Route 31 (grass)",
+        "Ilex Forest (grass/headbutt)",
+        "National Park (grass)",
+        "Route 47 (headbutt)",
+        "Kanto Route 2 (south towards viridian city) (grass)"
+      ],
+      "soulsilver": [
+        "National Park (grass)"
+      ],
+      "red": [
+        "Kanto Route 25 (grass)",
+        "Viridian Forest (grass)"
+      ],
+      "blue": [
+        "Kanto Route 24 (grass)",
+        "Kanto Route 25 (grass)",
+        "Viridian Forest (grass)"
+      ],
+      "yellow": [
+        "Viridian Forest (grass)"
+      ]
+    }
+  },
+  "Mewtwo": {
+    "legendary": true,
+    "locations": {
+      "heartgold": [
+        "Cerulean Cave B1F (gift)"
+      ],
+      "soulsilver": [
+        "Cerulean Cave B1F (gift)"
+      ],
+      "red": [
+        "Cerulean Cave B1F (gift)"
+      ],
+      "blue": [
+        "Cerulean Cave B1F (gift)"
+      ],
+      "yellow": [
+        "Cerulean Cave B1F (gift)"
+      ]
+    }
+  },
+  "Mightyena": {
+    "evolvesFrom": "Poochyena",
+    "evolveMethod": "Level 18"
+  },
+  "Miltank": {
+    "locations": {
+      "heartgold": [
+        "Route 38 (grass)",
+        "Route 39 (grass)",
+        "Route 47 (grass)"
+      ],
+      "soulsilver": [
+        "Route 38 (grass)",
+        "Route 39 (grass)",
+        "Route 47 (grass)"
+      ]
+    }
+  },
+  "Mime Jr": {
+    "breeding": "Breed a Mr. Mime holding an Odd Incense"
+  },
+  "Mime Jr.": {
+    "breeding": "Breed a Mr. Mime holding an Odd Incense"
+  },
+  "Minun": {
+    "locations": {
+      "heartgold": [
+        "Route 29 (grass)",
+        "Route 33 (grass)",
+        "National Park (grass)",
+        "Route 36 (grass)",
+        "Route 37 (grass)",
+        "Route 38 (grass)"
+      ],
+      "soulsilver": [
+        "Route 29 (grass)",
+        "Route 33 (grass)",
+        "National Park (grass)",
+        "Route 36 (grass)",
+        "Route 37 (grass)",
+        "Route 38 (grass)"
+      ]
+    }
+  },
+  "Misdreavus": {
+    "locations": {
+      "heartgold": [
+        "Mt Silver 2F (grass)",
+        "Mt Silver 1F Top (grass)",
+        "Mt Silver 4F (grass)",
+        "Route 47 (inside cave) (grass)",
+        "Mt Silver 3F (grass)",
+        "Mt Silver Top (grass)"
+      ],
+      "soulsilver": [
+        "Mt Silver 2F (grass)",
+        "Mt Silver 1F Top (grass)",
+        "Mt Silver 4F (grass)",
+        "Route 47 (inside cave) (grass)",
+        "Mt Silver 3F (grass)",
+        "Mt Silver Top (grass)"
+      ]
+    }
+  },
+  "Mismagius": {
+    "evolvesFrom": "Misdreavus",
+    "evolveMethod": "Use a Dusk Stone"
+  },
+  "Moltres": {
+    "legendary": true,
+    "locations": {
+      "heartgold": [
+        "Mt Silver Top (gift)"
+      ],
+      "soulsilver": [
+        "Mt Silver Top (gift)"
+      ],
+      "red": [
+        "Kanto Victory Road 2 2F (gift)"
+      ],
+      "blue": [
+        "Kanto Victory Road 2 2F (gift)"
+      ],
+      "yellow": [
+        "Kanto Victory Road 2 2F (gift)"
+      ]
+    }
+  },
+  "Mothim": {
+    "evolvesFrom": "Burmy",
+    "evolveMethod": "Level 20"
+  },
+  "Mr Mime": {
+    "evolvesFrom": "Mime Jr.",
+    "evolveMethod": "Level up knowing Mimic",
+    "locations": {
+      "heartgold": [
+        "Kanto Sea Route 21 (grass)",
+        "Johto Safari Zone Forest (grass)",
+        "Celadon City Prize Corner (gift)"
+      ],
+      "soulsilver": [
+        "Kanto Sea Route 21 (grass)",
+        "Johto Safari Zone Forest (grass)",
+        "Celadon City Prize Corner (gift)"
+      ],
+      "red": [
+        "Kanto Route 2 (north towards pewter city) (npc trade)"
+      ],
+      "blue": [
+        "Kanto Route 2 (north towards pewter city) (npc trade)"
+      ],
+      "yellow": [
+        "Kanto Route 2 (north towards pewter city) (npc trade)"
+      ]
+    }
+  },
+  "Mr. Mime": {
+    "evolvesFrom": "Mime Jr.",
+    "evolveMethod": "Level up knowing Mimic",
+    "locations": {
+      "heartgold": [
+        "Kanto Sea Route 21 (grass)",
+        "Johto Safari Zone Forest (grass)",
+        "Celadon City Prize Corner (gift)"
+      ],
+      "soulsilver": [
+        "Kanto Sea Route 21 (grass)",
+        "Johto Safari Zone Forest (grass)",
+        "Celadon City Prize Corner (gift)"
+      ],
+      "red": [
+        "Kanto Route 2 (north towards pewter city) (npc trade)"
+      ],
+      "blue": [
+        "Kanto Route 2 (north towards pewter city) (npc trade)"
+      ],
+      "yellow": [
+        "Kanto Route 2 (north towards pewter city) (npc trade)"
+      ]
+    }
+  },
+  "Mr.Mime": {
+    "evolvesFrom": "Mime Jr.",
+    "evolveMethod": "Level up knowing Mimic",
+    "locations": {
+      "heartgold": [
+        "Kanto Sea Route 21 (grass)",
+        "Johto Safari Zone Forest (grass)",
+        "Celadon City Prize Corner (gift)"
+      ],
+      "soulsilver": [
+        "Kanto Sea Route 21 (grass)",
+        "Johto Safari Zone Forest (grass)",
+        "Celadon City Prize Corner (gift)"
+      ],
+      "red": [
+        "Kanto Route 2 (north towards pewter city) (npc trade)"
+      ],
+      "blue": [
+        "Kanto Route 2 (north towards pewter city) (npc trade)"
+      ],
+      "yellow": [
+        "Kanto Route 2 (north towards pewter city) (npc trade)"
+      ]
+    }
+  },
+  "Mudkip": {
+    "locations": {
+      "heartgold": [
+        "Saffron City Silph Co (gift)"
+      ],
+      "soulsilver": [
+        "Saffron City Silph Co (gift)"
+      ]
+    }
+  },
+  "Muk": {
+    "evolvesFrom": "Grimer",
+    "evolveMethod": "Level 38",
+    "locations": {
+      "heartgold": [
+        "Celadon City (surf)",
+        "Kanto Route 16 (grass)",
+        "Kanto Route 17 (grass)",
+        "Kanto Route 18 (grass)",
+        "Johto Safari Zone Marshland (grass/surf)"
+      ],
+      "soulsilver": [
+        "Celadon City (surf)",
+        "Kanto Route 16 (grass)",
+        "Kanto Route 17 (grass)",
+        "Kanto Route 18 (grass)",
+        "Johto Safari Zone Marshland (grass/surf)"
+      ],
+      "red": [
+        "Pokemon Mansion 1F (grass)",
+        "Pokemon Mansion 2F (grass)",
+        "Pokemon Mansion 3F (grass)",
+        "Pokemon Mansion B1F (grass)"
+      ],
+      "blue": [
+        "Pokemon Mansion 1F (grass)",
+        "Pokemon Mansion 2F (grass)",
+        "Pokemon Mansion 3F (grass)",
+        "Pokemon Mansion B1F (grass)"
+      ],
+      "yellow": [
+        "Kanto Power Plant (grass)",
+        "Pokemon Mansion 2F (grass)",
+        "Pokemon Mansion 3F (grass)",
+        "Pokemon Mansion B1F (grass)",
+        "Cinnabar Island Cinnabar Lab (npc trade)"
+      ]
+    }
+  },
+  "Munchlax": {
+    "breeding": "Breed a Snorlax holding a Full Incense"
+  },
+  "Murkrow": {
+    "locations": {
+      "heartgold": [
+        "Kanto Route 7 (grass)",
+        "Kanto Route 16 (grass)",
+        "Johto Safari Zone Swamp (grass/surf)"
+      ],
+      "soulsilver": [
+        "Kanto Route 7 (grass)",
+        "Kanto Route 16 (grass)",
+        "Johto Safari Zone Swamp (grass/surf)"
+      ]
+    }
+  },
+  "Natu": {
+    "locations": {
+      "heartgold": [
+        "Ruins of Alph (grass)",
+        "Mt Silver Outside (headbutt)",
+        "Mt Silver Mountainside (headbutt)",
+        "Kanto Route 28 (headbutt)"
+      ],
+      "soulsilver": [
+        "Ruins of Alph (grass)",
+        "Mt Silver Outside (headbutt)",
+        "Mt Silver Mountainside (headbutt)",
+        "Kanto Route 28 (headbutt)"
+      ]
+    }
+  },
+  "Nidoking": {
+    "evolvesFrom": "Nidorino",
+    "evolveMethod": "Use a Moon Stone"
+  },
+  "Nidoqueen": {
+    "evolvesFrom": "Nidorina",
+    "evolveMethod": "Use a Moon Stone"
+  },
+  "Nidoran F": {
+    "locations": {
+      "heartgold": [
+        "Route 35 (grass)",
+        "Route 36 (grass)",
+        "Johto Safari Zone Savannah (grass)"
+      ],
+      "soulsilver": [
+        "Route 35 (grass)",
+        "Route 36 (grass)",
+        "Johto Safari Zone Savannah (grass)"
+      ],
+      "red": [
+        "Kanto Route 22 (grass)",
+        "Kanto Safari Zone Area 1 East (grass)",
+        "Kanto Safari Zone Area 3 West (grass)",
+        "Kanto Underground Path (npc trade)"
+      ],
+      "blue": [
+        "Kanto Route 22 (grass)",
+        "Kanto Safari Zone Middle (grass)",
+        "Kanto Safari Zone Area 1 East (grass)",
+        "Kanto Safari Zone Area 2 North (grass)",
+        "Kanto Safari Zone Area 3 West (grass)",
+        "Kanto Underground Path (npc trade)"
+      ],
+      "yellow": [
+        "Kanto Route 2 (south towards viridian city) (grass)",
+        "Kanto Route 9 (grass)",
+        "Kanto Route 10 (grass)",
+        "Kanto Route 22 (grass)",
+        "Kanto Safari Zone Middle (grass)",
+        "Kanto Safari Zone Area 1 East (grass)"
+      ]
+    }
+  },
+  "Nidoran Female": {
+    "locations": {
+      "heartgold": [
+        "Route 35 (grass)",
+        "Route 36 (grass)",
+        "Johto Safari Zone Savannah (grass)"
+      ],
+      "soulsilver": [
+        "Route 35 (grass)",
+        "Route 36 (grass)",
+        "Johto Safari Zone Savannah (grass)"
+      ],
+      "red": [
+        "Kanto Route 22 (grass)",
+        "Kanto Safari Zone Area 1 East (grass)",
+        "Kanto Safari Zone Area 3 West (grass)",
+        "Kanto Underground Path (npc trade)"
+      ],
+      "blue": [
+        "Kanto Route 22 (grass)",
+        "Kanto Safari Zone Middle (grass)",
+        "Kanto Safari Zone Area 1 East (grass)",
+        "Kanto Safari Zone Area 2 North (grass)",
+        "Kanto Safari Zone Area 3 West (grass)",
+        "Kanto Underground Path (npc trade)"
+      ],
+      "yellow": [
+        "Kanto Route 2 (south towards viridian city) (grass)",
+        "Kanto Route 9 (grass)",
+        "Kanto Route 10 (grass)",
+        "Kanto Route 22 (grass)",
+        "Kanto Safari Zone Middle (grass)",
+        "Kanto Safari Zone Area 1 East (grass)"
+      ]
+    }
+  },
+  "Nidoran M": {
+    "locations": {
+      "heartgold": [
+        "Route 35 (grass)",
+        "Route 36 (grass)"
+      ],
+      "soulsilver": [
+        "Route 35 (grass)",
+        "Route 36 (grass)"
+      ],
+      "red": [
+        "Kanto Route 22 (grass)",
+        "Kanto Safari Zone Middle (grass)",
+        "Kanto Safari Zone Area 1 East (grass)",
+        "Kanto Safari Zone Area 2 North (grass)",
+        "Kanto Safari Zone Area 3 West (grass)"
+      ],
+      "blue": [
+        "Kanto Route 22 (grass)",
+        "Kanto Safari Zone Area 1 East (grass)",
+        "Kanto Safari Zone Area 3 West (grass)"
+      ],
+      "yellow": [
+        "Kanto Route 2 (south towards viridian city) (grass)",
+        "Kanto Route 9 (grass)",
+        "Kanto Route 10 (grass)",
+        "Kanto Route 22 (grass)",
+        "Kanto Safari Zone Middle (grass)",
+        "Kanto Safari Zone Area 1 East (grass)"
+      ]
+    }
+  },
+  "Nidoran Male": {
+    "locations": {
+      "heartgold": [
+        "Route 35 (grass)",
+        "Route 36 (grass)"
+      ],
+      "soulsilver": [
+        "Route 35 (grass)",
+        "Route 36 (grass)"
+      ],
+      "red": [
+        "Kanto Route 22 (grass)",
+        "Kanto Safari Zone Middle (grass)",
+        "Kanto Safari Zone Area 1 East (grass)",
+        "Kanto Safari Zone Area 2 North (grass)",
+        "Kanto Safari Zone Area 3 West (grass)"
+      ],
+      "blue": [
+        "Kanto Route 22 (grass)",
+        "Kanto Safari Zone Area 1 East (grass)",
+        "Kanto Safari Zone Area 3 West (grass)"
+      ],
+      "yellow": [
+        "Kanto Route 2 (south towards viridian city) (grass)",
+        "Kanto Route 9 (grass)",
+        "Kanto Route 10 (grass)",
+        "Kanto Route 22 (grass)",
+        "Kanto Safari Zone Middle (grass)",
+        "Kanto Safari Zone Area 1 East (grass)"
+      ]
+    }
+  },
+  "Nidoran-F": {
+    "locations": {
+      "heartgold": [
+        "Route 35 (grass)",
+        "Route 36 (grass)",
+        "Johto Safari Zone Savannah (grass)"
+      ],
+      "soulsilver": [
+        "Route 35 (grass)",
+        "Route 36 (grass)",
+        "Johto Safari Zone Savannah (grass)"
+      ],
+      "red": [
+        "Kanto Route 22 (grass)",
+        "Kanto Safari Zone Area 1 East (grass)",
+        "Kanto Safari Zone Area 3 West (grass)",
+        "Kanto Underground Path (npc trade)"
+      ],
+      "blue": [
+        "Kanto Route 22 (grass)",
+        "Kanto Safari Zone Middle (grass)",
+        "Kanto Safari Zone Area 1 East (grass)",
+        "Kanto Safari Zone Area 2 North (grass)",
+        "Kanto Safari Zone Area 3 West (grass)",
+        "Kanto Underground Path (npc trade)"
+      ],
+      "yellow": [
+        "Kanto Route 2 (south towards viridian city) (grass)",
+        "Kanto Route 9 (grass)",
+        "Kanto Route 10 (grass)",
+        "Kanto Route 22 (grass)",
+        "Kanto Safari Zone Middle (grass)",
+        "Kanto Safari Zone Area 1 East (grass)"
+      ]
+    }
+  },
+  "Nidoran-M": {
+    "locations": {
+      "heartgold": [
+        "Route 35 (grass)",
+        "Route 36 (grass)"
+      ],
+      "soulsilver": [
+        "Route 35 (grass)",
+        "Route 36 (grass)"
+      ],
+      "red": [
+        "Kanto Route 22 (grass)",
+        "Kanto Safari Zone Middle (grass)",
+        "Kanto Safari Zone Area 1 East (grass)",
+        "Kanto Safari Zone Area 2 North (grass)",
+        "Kanto Safari Zone Area 3 West (grass)"
+      ],
+      "blue": [
+        "Kanto Route 22 (grass)",
+        "Kanto Safari Zone Area 1 East (grass)",
+        "Kanto Safari Zone Area 3 West (grass)"
+      ],
+      "yellow": [
+        "Kanto Route 2 (south towards viridian city) (grass)",
+        "Kanto Route 9 (grass)",
+        "Kanto Route 10 (grass)",
+        "Kanto Route 22 (grass)",
+        "Kanto Safari Zone Middle (grass)",
+        "Kanto Safari Zone Area 1 East (grass)"
+      ]
+    }
+  },
+  "NidoranF": {
+    "locations": {
+      "heartgold": [
+        "Route 35 (grass)",
+        "Route 36 (grass)",
+        "Johto Safari Zone Savannah (grass)"
+      ],
+      "soulsilver": [
+        "Route 35 (grass)",
+        "Route 36 (grass)",
+        "Johto Safari Zone Savannah (grass)"
+      ],
+      "red": [
+        "Kanto Route 22 (grass)",
+        "Kanto Safari Zone Area 1 East (grass)",
+        "Kanto Safari Zone Area 3 West (grass)",
+        "Kanto Underground Path (npc trade)"
+      ],
+      "blue": [
+        "Kanto Route 22 (grass)",
+        "Kanto Safari Zone Middle (grass)",
+        "Kanto Safari Zone Area 1 East (grass)",
+        "Kanto Safari Zone Area 2 North (grass)",
+        "Kanto Safari Zone Area 3 West (grass)",
+        "Kanto Underground Path (npc trade)"
+      ],
+      "yellow": [
+        "Kanto Route 2 (south towards viridian city) (grass)",
+        "Kanto Route 9 (grass)",
+        "Kanto Route 10 (grass)",
+        "Kanto Route 22 (grass)",
+        "Kanto Safari Zone Middle (grass)",
+        "Kanto Safari Zone Area 1 East (grass)"
+      ]
+    }
+  },
+  "NidoranM": {
+    "locations": {
+      "heartgold": [
+        "Route 35 (grass)",
+        "Route 36 (grass)"
+      ],
+      "soulsilver": [
+        "Route 35 (grass)",
+        "Route 36 (grass)"
+      ],
+      "red": [
+        "Kanto Route 22 (grass)",
+        "Kanto Safari Zone Middle (grass)",
+        "Kanto Safari Zone Area 1 East (grass)",
+        "Kanto Safari Zone Area 2 North (grass)",
+        "Kanto Safari Zone Area 3 West (grass)"
+      ],
+      "blue": [
+        "Kanto Route 22 (grass)",
+        "Kanto Safari Zone Area 1 East (grass)",
+        "Kanto Safari Zone Area 3 West (grass)"
+      ],
+      "yellow": [
+        "Kanto Route 2 (south towards viridian city) (grass)",
+        "Kanto Route 9 (grass)",
+        "Kanto Route 10 (grass)",
+        "Kanto Route 22 (grass)",
+        "Kanto Safari Zone Middle (grass)",
+        "Kanto Safari Zone Area 1 East (grass)"
+      ]
+    }
+  },
+  "Nidoran♀": {
+    "locations": {
+      "heartgold": [
+        "Route 35 (grass)",
+        "Route 36 (grass)",
+        "Johto Safari Zone Savannah (grass)"
+      ],
+      "soulsilver": [
+        "Route 35 (grass)",
+        "Route 36 (grass)",
+        "Johto Safari Zone Savannah (grass)"
+      ],
+      "red": [
+        "Kanto Route 22 (grass)",
+        "Kanto Safari Zone Area 1 East (grass)",
+        "Kanto Safari Zone Area 3 West (grass)",
+        "Kanto Underground Path (npc trade)"
+      ],
+      "blue": [
+        "Kanto Route 22 (grass)",
+        "Kanto Safari Zone Middle (grass)",
+        "Kanto Safari Zone Area 1 East (grass)",
+        "Kanto Safari Zone Area 2 North (grass)",
+        "Kanto Safari Zone Area 3 West (grass)",
+        "Kanto Underground Path (npc trade)"
+      ],
+      "yellow": [
+        "Kanto Route 2 (south towards viridian city) (grass)",
+        "Kanto Route 9 (grass)",
+        "Kanto Route 10 (grass)",
+        "Kanto Route 22 (grass)",
+        "Kanto Safari Zone Middle (grass)",
+        "Kanto Safari Zone Area 1 East (grass)"
+      ]
+    }
+  },
+  "Nidoran♂": {
+    "locations": {
+      "heartgold": [
+        "Route 35 (grass)",
+        "Route 36 (grass)"
+      ],
+      "soulsilver": [
+        "Route 35 (grass)",
+        "Route 36 (grass)"
+      ],
+      "red": [
+        "Kanto Route 22 (grass)",
+        "Kanto Safari Zone Middle (grass)",
+        "Kanto Safari Zone Area 1 East (grass)",
+        "Kanto Safari Zone Area 2 North (grass)",
+        "Kanto Safari Zone Area 3 West (grass)"
+      ],
+      "blue": [
+        "Kanto Route 22 (grass)",
+        "Kanto Safari Zone Area 1 East (grass)",
+        "Kanto Safari Zone Area 3 West (grass)"
+      ],
+      "yellow": [
+        "Kanto Route 2 (south towards viridian city) (grass)",
+        "Kanto Route 9 (grass)",
+        "Kanto Route 10 (grass)",
+        "Kanto Route 22 (grass)",
+        "Kanto Safari Zone Middle (grass)",
+        "Kanto Safari Zone Area 1 East (grass)"
+      ]
+    }
+  },
+  "Nidorina": {
+    "evolvesFrom": "Nidoran-F",
+    "evolveMethod": "Level 16",
+    "locations": {
+      "heartgold": [
+        "Kanto Route 13 (grass)",
+        "Kanto Route 14 (grass)",
+        "Kanto Route 15 (grass)",
+        "Johto Safari Zone Savannah (grass)"
+      ],
+      "soulsilver": [
+        "Kanto Route 13 (grass)",
+        "Kanto Route 14 (grass)",
+        "Kanto Route 15 (grass)",
+        "Johto Safari Zone Savannah (grass)"
+      ],
+      "red": [
+        "Kanto Route 11 (npc trade)",
+        "Kanto Safari Zone Middle (grass)",
+        "Kanto Safari Zone Area 2 North (grass)",
+        "Celadon City Prize Corner (gift)"
+      ],
+      "blue": [
+        "Kanto Route 11 (npc trade)",
+        "Kanto Safari Zone Middle (grass)",
+        "Kanto Safari Zone Area 1 East (grass)",
+        "Kanto Safari Zone Area 2 North (grass)",
+        "Kanto Safari Zone Area 3 West (grass)"
+      ],
+      "yellow": [
+        "Kanto Route 9 (grass)",
+        "Kanto Route 23 (grass)",
+        "Kanto Safari Zone Area 1 East (grass)",
+        "Kanto Safari Zone Area 2 North (grass)"
+      ]
+    }
+  },
+  "Nidorino": {
+    "evolvesFrom": "Nidoran-M",
+    "evolveMethod": "Level 16",
+    "locations": {
+      "heartgold": [
+        "Kanto Route 13 (grass)",
+        "Kanto Route 14 (grass)",
+        "Kanto Route 15 (grass)",
+        "Johto Safari Zone Savannah (grass)"
+      ],
+      "soulsilver": [
+        "Kanto Route 13 (grass)",
+        "Kanto Route 14 (grass)",
+        "Kanto Route 15 (grass)",
+        "Johto Safari Zone Savannah (grass)"
+      ],
+      "red": [
+        "Kanto Safari Zone Middle (grass)",
+        "Kanto Safari Zone Area 1 East (grass)",
+        "Kanto Safari Zone Area 2 North (grass)",
+        "Kanto Safari Zone Area 3 West (grass)"
+      ],
+      "blue": [
+        "Kanto Safari Zone Middle (grass)",
+        "Kanto Safari Zone Area 2 North (grass)",
+        "Celadon City Prize Corner (gift)"
+      ],
+      "yellow": [
+        "Kanto Route 9 (grass)",
+        "Kanto Route 23 (grass)",
+        "Kanto Safari Zone Middle (grass)",
+        "Kanto Safari Zone Area 3 West (grass)"
+      ]
+    }
+  },
+  "Nincada": {
+    "locations": {
+      "heartgold": [
+        "National Park (grass)"
+      ],
+      "soulsilver": [
+        "National Park (grass)"
+      ]
+    }
+  },
+  "Ninetales": {
+    "evolvesFrom": "Vulpix",
+    "evolveMethod": "Use a Fire Stone"
+  },
+  "Ninjask": {
+    "evolvesFrom": "Nincada",
+    "evolveMethod": "Level 20"
+  },
+  "Noctowl": {
+    "evolvesFrom": "Hoothoot",
+    "evolveMethod": "Level 20",
+    "locations": {
+      "heartgold": [
+        "Ilex Forest (headbutt)",
+        "Route 43 (grass)",
+        "Route 47 (grass)",
+        "Kanto Route 2 (south towards viridian city) (grass)",
+        "Kanto Route 8 (grass)",
+        "Kanto Route 13 (grass)"
+      ],
+      "soulsilver": [
+        "Ilex Forest (headbutt)",
+        "Route 43 (grass)",
+        "Route 47 (grass)",
+        "Kanto Route 2 (south towards viridian city) (grass)",
+        "Kanto Route 8 (grass)",
+        "Kanto Route 13 (grass)"
+      ]
+    }
+  },
+  "Nosepass": {
+    "locations": {
+      "heartgold": [
+        "Johto Safari Zone Meadow (grass)"
+      ],
+      "soulsilver": [
+        "Johto Safari Zone Meadow (grass)"
+      ]
+    }
+  },
+  "Numel": {
+    "locations": {
+      "heartgold": [
+        "Ilex Forest (grass)",
+        "Viridian Forest (grass)"
+      ],
+      "soulsilver": [
+        "Ilex Forest (grass)",
+        "Viridian Forest (grass)"
+      ]
+    }
+  },
+  "Nuzleaf": {
+    "evolvesFrom": "Seedot",
+    "evolveMethod": "Level 14",
+    "locations": {
+      "heartgold": [
+        "Johto Safari Zone Meadow (grass)"
+      ],
+      "soulsilver": [
+        "Johto Safari Zone Meadow (grass)"
+      ]
+    }
+  },
+  "Octillery": {
+    "evolvesFrom": "Remoraid",
+    "evolveMethod": "Level 25"
+  },
+  "Oddish": {
+    "locations": {
+      "heartgold": [
+        "Ilex Forest (grass)",
+        "Kanto Route 5 (grass)",
+        "Kanto Route 6 (grass)",
+        "Kanto Route 24 (grass)",
+        "Kanto Route 25 (grass)",
+        "Johto Safari Zone Marshland (grass)"
+      ],
+      "soulsilver": [
+        "Ilex Forest (grass)",
+        "Kanto Route 5 (grass)",
+        "Kanto Route 6 (grass)",
+        "Kanto Route 24 (grass)",
+        "Kanto Route 25 (grass)",
+        "Johto Safari Zone Marshland (grass)"
+      ],
+      "red": [
+        "Kanto Route 12 (grass)",
+        "Kanto Route 5 (grass)",
+        "Kanto Route 6 (grass)",
+        "Kanto Route 7 (grass)",
+        "Kanto Route 13 (grass)",
+        "Kanto Route 14 (grass)"
+      ],
+      "yellow": [
+        "Kanto Route 12 (grass)",
+        "Kanto Route 13 (grass)",
+        "Kanto Route 14 (grass)",
+        "Kanto Route 15 (grass)",
+        "Kanto Route 24 (grass)",
+        "Kanto Route 25 (grass)"
+      ]
+    }
+  },
+  "Omanyte": {
+    "locations": {
+      "heartgold": [
+        "Pewter City Pewter Museum Of Science (gift)"
+      ],
+      "soulsilver": [
+        "Pewter City Pewter Museum Of Science (gift)"
+      ],
+      "red": [
+        "Cinnabar Island Cinnabar Lab (gift)"
+      ],
+      "blue": [
+        "Cinnabar Island Cinnabar Lab (gift)"
+      ],
+      "yellow": [
+        "Cinnabar Island Cinnabar Lab (gift)"
+      ]
+    }
+  },
+  "Omastar": {
+    "evolvesFrom": "Omanyte",
+    "evolveMethod": "Level 40"
+  },
+  "Onix": {
+    "locations": {
+      "heartgold": [
+        "Union Cave 1F (grass)",
+        "Union Cave B1F (grass)",
+        "Union Cave B2F (grass)",
+        "Route 47 (inside cave) (grass)",
+        "Mt Silver 1F (grass)",
+        "Mt Silver Mountainside (grass)"
+      ],
+      "soulsilver": [
+        "Union Cave 1F (grass)",
+        "Union Cave B1F (grass)",
+        "Union Cave B2F (grass)",
+        "Route 47 (inside cave) (grass)",
+        "Mt Silver 1F (grass)",
+        "Mt Silver Mountainside (grass)"
+      ],
+      "red": [
+        "Rock Tunnel B1F (grass)",
+        "Rock Tunnel B2F (grass)",
+        "Kanto Victory Road 2 1F (grass)",
+        "Kanto Victory Road 2 2F (grass)",
+        "Kanto Victory Road 2 3F (grass)"
+      ],
+      "blue": [
+        "Rock Tunnel B1F (grass)",
+        "Rock Tunnel B2F (grass)",
+        "Kanto Victory Road 2 1F (grass)",
+        "Kanto Victory Road 2 2F (grass)",
+        "Kanto Victory Road 2 3F (grass)"
+      ],
+      "yellow": [
+        "Rock Tunnel B2F (grass)",
+        "Kanto Victory Road 2 1F (grass)",
+        "Kanto Victory Road 2 2F (grass)",
+        "Kanto Victory Road 2 3F (grass)"
+      ]
+    }
+  },
+  "Pachirisu": {
+    "locations": {
+      "heartgold": [
+        "Johto Safari Zone Swamp (grass)",
+        "Johto Safari Zone Wetland (grass)"
+      ],
+      "soulsilver": [
+        "Johto Safari Zone Swamp (grass)",
+        "Johto Safari Zone Wetland (grass)"
+      ]
+    }
+  },
+  "Paras": {
+    "locations": {
+      "heartgold": [
+        "Ilex Forest (grass)",
+        "National Park (grass)",
+        "Mt Moon 1F (grass)",
+        "Mt Moon 2F (grass)",
+        "Johto Safari Zone Peak (grass)",
+        "Johto Safari Zone Swamp (grass)"
+      ],
+      "soulsilver": [
+        "Ilex Forest (grass)",
+        "National Park (grass)",
+        "Mt Moon 1F (grass)",
+        "Mt Moon 2F (grass)",
+        "Johto Safari Zone Peak (grass)",
+        "Johto Safari Zone Swamp (grass)"
+      ],
+      "red": [
+        "Mt Moon 1F (grass)",
+        "Mt Moon B1F (grass)",
+        "Mt Moon B2F (grass)",
+        "Kanto Safari Zone Area 1 East (grass)",
+        "Kanto Safari Zone Area 2 North (grass)"
+      ],
+      "blue": [
+        "Mt Moon 1F (grass)",
+        "Mt Moon B1F (grass)",
+        "Mt Moon B2F (grass)",
+        "Kanto Safari Zone Area 1 East (grass)",
+        "Kanto Safari Zone Area 2 North (grass)"
+      ],
+      "yellow": [
+        "Mt Moon B1F (grass)",
+        "Mt Moon B2F (grass)",
+        "Kanto Safari Zone Middle (grass)"
+      ]
+    }
+  },
+  "Parasect": {
+    "evolvesFrom": "Paras",
+    "evolveMethod": "Level 24",
+    "locations": {
+      "heartgold": [
+        "Cerulean Cave 1F (grass)",
+        "Cerulean Cave 2F (grass)",
+        "Cerulean Cave B1F (grass)",
+        "Johto Safari Zone Swamp (grass)"
+      ],
+      "soulsilver": [
+        "Cerulean Cave 1F (grass)",
+        "Cerulean Cave 2F (grass)",
+        "Cerulean Cave B1F (grass)",
+        "Johto Safari Zone Swamp (grass)"
+      ],
+      "red": [
+        "Cerulean Cave 1F (grass)",
+        "Cerulean Cave B1F (grass)",
+        "Kanto Safari Zone Middle (grass)",
+        "Kanto Safari Zone Area 1 East (grass)"
+      ],
+      "blue": [
+        "Cerulean Cave 1F (grass)",
+        "Cerulean Cave B1F (grass)",
+        "Kanto Safari Zone Middle (grass)",
+        "Kanto Safari Zone Area 1 East (grass)"
+      ],
+      "yellow": [
+        "Kanto Route 18 (npc trade)",
+        "Cerulean Cave 1F (grass)",
+        "Kanto Safari Zone Middle (grass)"
+      ]
+    }
+  },
+  "Pelipper": {
+    "evolvesFrom": "Wingull",
+    "evolveMethod": "Level 25"
+  },
+  "Persian": {
+    "evolvesFrom": "Meowth",
+    "evolveMethod": "Level 28",
+    "locations": {
+      "soulsilver": [
+        "Kanto Route 7 (grass)",
+        "Cerulean Cave 1F (grass)"
+      ]
+    }
+  },
+  "Phanpy": {
+    "locations": {
+      "heartgold": [
+        "Route 45 (grass)",
+        "Mt Silver 1F Top (grass)",
+        "Mt Silver 1F (grass)",
+        "Mt Silver Mountainside (grass)",
+        "Mt Silver 3F (grass)"
+      ]
+    }
+  },
+  "Pichu": {
+    "breeding": "Breed a Pikachu or Raichu"
+  },
+  "Pidgeot": {
+    "evolvesFrom": "Pidgeotto",
+    "evolveMethod": "Level 36"
+  },
+  "Pidgeotto": {
+    "evolvesFrom": "Pidgey",
+    "evolveMethod": "Level 18",
+    "locations": {
+      "heartgold": [
+        "Route 37 (grass)",
+        "Route 43 (grass)",
+        "Kanto Route 2 (south towards viridian city) (grass)",
+        "Kanto Route 8 (grass)",
+        "Kanto Route 13 (grass)",
+        "Kanto Route 14 (grass)"
+      ],
+      "soulsilver": [
+        "Route 37 (grass)",
+        "Route 43 (grass)",
+        "Kanto Route 2 (south towards viridian city) (grass)",
+        "Kanto Route 8 (grass)",
+        "Kanto Route 13 (grass)",
+        "Kanto Route 14 (grass)"
+      ],
+      "red": [
+        "Kanto Route 14 (grass)",
+        "Kanto Route 15 (grass)",
+        "Kanto Sea Route 21 (grass)"
+      ],
+      "blue": [
+        "Kanto Route 14 (grass)",
+        "Kanto Route 15 (grass)",
+        "Kanto Sea Route 21 (grass)"
+      ],
+      "yellow": [
+        "Kanto Route 12 (grass)",
+        "Kanto Route 5 (grass)",
+        "Kanto Route 6 (grass)",
+        "Kanto Route 7 (grass)",
+        "Kanto Route 8 (grass)",
+        "Kanto Route 11 (grass)"
+      ]
+    }
+  },
+  "Pidgey": {
+    "locations": {
+      "heartgold": [
+        "Route 29 (grass)",
+        "Route 30 (grass)",
+        "Route 31 (grass)",
+        "Route 35 (grass)",
+        "National Park (grass)",
+        "Route 36 (grass)"
+      ],
+      "soulsilver": [
+        "Route 29 (grass)",
+        "Route 30 (grass)",
+        "Route 31 (grass)",
+        "Route 35 (grass)",
+        "National Park (grass)",
+        "Route 36 (grass)"
+      ],
+      "red": [
+        "Kanto Route 12 (grass)",
+        "Kanto Route 1 (grass)",
+        "Kanto Route 2 (south towards viridian city) (grass)",
+        "Kanto Route 3 (grass)",
+        "Kanto Route 5 (grass)",
+        "Kanto Route 6 (grass)"
+      ],
+      "blue": [
+        "Kanto Route 12 (grass)",
+        "Kanto Route 1 (grass)",
+        "Kanto Route 2 (south towards viridian city) (grass)",
+        "Kanto Route 3 (grass)",
+        "Kanto Route 5 (grass)",
+        "Kanto Route 6 (grass)"
+      ],
+      "yellow": [
+        "Kanto Route 12 (grass)",
+        "Kanto Route 1 (grass)",
+        "Kanto Route 2 (south towards viridian city) (grass)",
+        "Kanto Route 5 (grass)",
+        "Kanto Route 6 (grass)",
+        "Kanto Route 7 (grass)"
+      ]
+    }
+  },
+  "Pikachu": {
+    "evolvesFrom": "Pichu",
+    "evolveMethod": "High friendship",
+    "locations": {
+      "heartgold": [
+        "Viridian Forest (grass)"
+      ],
+      "soulsilver": [
+        "Viridian Forest (grass)"
+      ],
+      "red": [
+        "Viridian Forest (grass)",
+        "Kanto Power Plant (grass)"
+      ],
+      "blue": [
+        "Viridian Forest (grass)",
+        "Kanto Power Plant (grass)"
+      ],
+      "yellow": [
+        "Pallet Town (gift)"
+      ]
+    }
+  },
+  "Piloswine": {
+    "evolvesFrom": "Swinub",
+    "evolveMethod": "Level 33"
+  },
+  "Pineco": {
+    "locations": {
+      "heartgold": [
+        "New Bark Town (headbutt)",
+        "Route 29 (headbutt)",
+        "Cherrygrove City (headbutt)",
+        "Route 30 (headbutt)",
+        "Route 31 (headbutt)",
+        "Violet City (headbutt)"
+      ],
+      "soulsilver": [
+        "New Bark Town (headbutt)",
+        "Route 29 (headbutt)",
+        "Cherrygrove City (headbutt)",
+        "Route 30 (headbutt)",
+        "Route 31 (headbutt)",
+        "Violet City (headbutt)"
+      ]
+    }
+  },
+  "Pinsir": {
+    "locations": {
+      "heartgold": [
+        "National Park (grass)"
+      ],
+      "soulsilver": [
+        "National Park (grass)"
+      ],
+      "blue": [
+        "Kanto Safari Zone Middle (grass)",
+        "Kanto Safari Zone Area 1 East (grass)",
+        "Celadon City Prize Corner (gift)"
+      ],
+      "yellow": [
+        "Kanto Safari Zone Area 2 North (grass)",
+        "Kanto Safari Zone Area 3 West (grass)",
+        "Celadon City Prize Corner (gift)"
+      ]
+    }
+  },
+  "Plusle": {
+    "locations": {
+      "heartgold": [
+        "Route 29 (grass)",
+        "Route 33 (grass)",
+        "National Park (grass)",
+        "Route 36 (grass)",
+        "Route 37 (grass)",
+        "Route 38 (grass)"
+      ],
+      "soulsilver": [
+        "Route 29 (grass)",
+        "Route 33 (grass)",
+        "National Park (grass)",
+        "Route 36 (grass)",
+        "Route 37 (grass)",
+        "Route 38 (grass)"
+      ]
+    }
+  },
+  "Poliwag": {
+    "locations": {
+      "heartgold": [
+        "Route 30 (good rod/old rod/super rod/surf)",
+        "Route 31 (good rod/old rod/super rod/surf)",
+        "Violet City (good rod/old rod/super rod/surf)",
+        "Ruins of Alph (good rod/old rod/super rod)",
+        "Ilex Forest (good rod/old rod/super rod)",
+        "Route 35 (good rod/old rod/super rod)"
+      ],
+      "soulsilver": [
+        "Route 30 (good rod/old rod/super rod/surf)",
+        "Route 31 (good rod/old rod/super rod/surf)",
+        "Violet City (good rod/old rod/super rod/surf)",
+        "Ruins of Alph (good rod/old rod/super rod)",
+        "Ilex Forest (good rod/old rod/super rod)",
+        "Route 35 (good rod/old rod/super rod)"
+      ],
+      "red": [
+        "Seafoam Islands B3F (good rod)",
+        "Seafoam Islands B4F (good rod)",
+        "Kanto Route 12 (good rod)",
+        "Kanto Sea Route 19 (good rod)",
+        "Kanto Sea Route 20 (good rod)",
+        "Cinnabar Island (good rod)"
+      ],
+      "blue": [
+        "Seafoam Islands B3F (good rod)",
+        "Seafoam Islands B4F (good rod)",
+        "Kanto Route 12 (good rod)",
+        "Kanto Sea Route 19 (good rod)",
+        "Kanto Sea Route 20 (good rod)",
+        "Cinnabar Island (good rod)"
+      ],
+      "yellow": [
+        "Seafoam Islands B3F (good rod)",
+        "Seafoam Islands B4F (good rod)",
+        "Kanto Route 12 (good rod)",
+        "Kanto Sea Route 19 (good rod)",
+        "Kanto Sea Route 20 (good rod)",
+        "Cinnabar Island (good rod)"
+      ]
+    }
+  },
+  "Poliwhirl": {
+    "evolvesFrom": "Poliwag",
+    "evolveMethod": "Level 25",
+    "locations": {
+      "heartgold": [
+        "Route 30 (surf)",
+        "Route 31 (surf)",
+        "Violet City (surf)",
+        "Ecruteak City (surf)",
+        "Route 44 (surf)",
+        "Mt Silver Outside (surf)"
+      ],
+      "soulsilver": [
+        "Route 30 (surf)",
+        "Route 31 (surf)",
+        "Violet City (surf)",
+        "Ecruteak City (surf)",
+        "Route 44 (surf)",
+        "Mt Silver Outside (surf)"
+      ],
+      "red": [
+        "Celadon City (super rod)",
+        "Kanto Route 10 (super rod)"
+      ],
+      "blue": [
+        "Celadon City (super rod)",
+        "Kanto Route 10 (super rod)"
+      ],
+      "yellow": [
+        "Kanto Route 22 (super rod)",
+        "Kanto Route 23 (super rod)"
+      ]
+    }
+  },
+  "Poliwrath": {
+    "evolvesFrom": "Poliwhirl",
+    "evolveMethod": "Use a Water Stone"
+  },
+  "Ponyta": {
+    "locations": {
+      "heartgold": [
+        "Mt Silver Outside (grass)",
+        "Kanto Route 26 (grass)",
+        "Kanto Route 27 (grass)",
+        "Kanto Route 28 (grass)",
+        "Kanto Route 22 (grass)",
+        "Johto Safari Zone Plains (grass)"
+      ],
+      "soulsilver": [
+        "Mt Silver Outside (grass)",
+        "Kanto Route 26 (grass)",
+        "Kanto Route 27 (grass)",
+        "Kanto Route 28 (grass)",
+        "Kanto Route 22 (grass)",
+        "Johto Safari Zone Plains (grass)"
+      ],
+      "red": [
+        "Pokemon Mansion 1F (grass)",
+        "Pokemon Mansion 2F (grass)",
+        "Pokemon Mansion 3F (grass)",
+        "Pokemon Mansion B1F (grass)"
+      ],
+      "blue": [
+        "Pokemon Mansion 1F (grass)",
+        "Pokemon Mansion 2F (grass)",
+        "Pokemon Mansion 3F (grass)",
+        "Pokemon Mansion B1F (grass)"
+      ],
+      "yellow": [
+        "Kanto Route 17 (grass)"
+      ]
+    }
+  },
+  "Poochyena": {
+    "locations": {
+      "heartgold": [
+        "Kanto Route 1 (grass)"
+      ],
+      "soulsilver": [
+        "Kanto Route 1 (grass)"
+      ]
+    }
+  },
+  "Porygon": {
+    "locations": {
+      "heartgold": [
+        "Celadon City Prize Corner (gift)"
+      ],
+      "soulsilver": [
+        "Celadon City Prize Corner (gift)"
+      ],
+      "red": [
+        "Celadon City Prize Corner (gift)"
+      ],
+      "blue": [
+        "Celadon City Prize Corner (gift)"
+      ],
+      "yellow": [
+        "Celadon City Prize Corner (gift)"
+      ]
+    }
+  },
+  "Primeape": {
+    "evolvesFrom": "Mankey",
+    "evolveMethod": "Level 28",
+    "locations": {
+      "heartgold": [
+        "Kanto Route 9 (grass)",
+        "Cerulean Cave 1F (grass)"
+      ],
+      "yellow": [
+        "Kanto Route 23 (grass)"
+      ]
+    }
+  },
+  "Psyduck": {
+    "locations": {
+      "heartgold": [
+        "Ilex Forest (surf)",
+        "Route 35 (surf)",
+        "Seafoam Islands 1F (grass)",
+        "Seafoam Islands B1F (grass)",
+        "Seafoam Islands B2F (grass)",
+        "Seafoam Islands B3F (grass)"
+      ],
+      "soulsilver": [
+        "Ilex Forest (surf)",
+        "Route 35 (surf)",
+        "Seafoam Islands 1F (grass)",
+        "Seafoam Islands B1F (grass)",
+        "Seafoam Islands B2F (grass)",
+        "Seafoam Islands B3F (grass)"
+      ],
+      "red": [
+        "Seafoam Islands 1F (grass)",
+        "Cerulean City (super rod)",
+        "Kanto Route 24 (super rod)",
+        "Kanto Route 25 (super rod)",
+        "Kanto Safari Zone Middle (super rod)",
+        "Kanto Safari Zone Area 1 East (super rod)"
+      ],
+      "blue": [
+        "Seafoam Islands 1F (grass)",
+        "Seafoam Islands B1F (grass)",
+        "Seafoam Islands B2F (grass)",
+        "Seafoam Islands B3F (grass)",
+        "Seafoam Islands B4F (grass)",
+        "Cerulean City (super rod)"
+      ],
+      "yellow": [
+        "Kanto Route 6 (surf)"
+      ]
+    }
+  },
+  "Pupitar": {
+    "evolvesFrom": "Larvitar",
+    "evolveMethod": "Level 30",
+    "locations": {
+      "heartgold": [
+        "Mt Silver 3F (grass)"
+      ],
+      "soulsilver": [
+        "Mt Silver 3F (grass)"
+      ]
+    }
+  },
+  "Quagsire": {
+    "evolvesFrom": "Wooper",
+    "evolveMethod": "Level 20",
+    "locations": {
+      "heartgold": [
+        "Route 32 (surf)",
+        "Ruins of Alph (surf)",
+        "Union Cave 1F (surf)",
+        "Union Cave B1F (surf)",
+        "Union Cave B2F (surf)",
+        "Mt Silver 2F (grass)"
+      ],
+      "soulsilver": [
+        "Route 32 (surf)",
+        "Ruins of Alph (surf)",
+        "Union Cave 1F (surf)",
+        "Union Cave B1F (surf)",
+        "Union Cave B2F (surf)",
+        "Mt Silver 2F (grass)"
+      ]
+    }
+  },
+  "Quilava": {
+    "evolvesFrom": "Cyndaquil",
+    "evolveMethod": "Level 14"
+  },
+  "Qwilfish": {
+    "locations": {
+      "heartgold": [
+        "Route 32 (good rod/old rod/super rod)",
+        "Kanto Route 12 (super rod)",
+        "Kanto Route 13 (super rod)"
+      ],
+      "soulsilver": [
+        "Route 32 (good rod/old rod/super rod)",
+        "Kanto Route 12 (super rod)",
+        "Kanto Route 13 (super rod)"
+      ]
+    }
+  },
+  "Raichu": {
+    "evolvesFrom": "Pikachu",
+    "evolveMethod": "Use a Thunder Stone",
+    "locations": {
+      "red": [
+        "Cerulean Cave 1F (grass)",
+        "Cerulean Cave B1F (grass)"
+      ],
+      "blue": [
+        "Cerulean Cave 1F (grass)",
+        "Cerulean Cave B1F (grass)",
+        "Kanto Power Plant (grass)"
+      ]
+    }
+  },
+  "Raikou": {
+    "legendary": true,
+    "locations": {
+      "heartgold": [
+        "Roaming Johto (roaming grass)"
+      ],
+      "soulsilver": [
+        "Roaming Johto (roaming grass)"
+      ]
+    }
+  },
+  "Ralts": {
+    "locations": {
+      "heartgold": [
+        "Route 34 (grass)"
+      ],
+      "soulsilver": [
+        "Route 34 (grass)"
+      ]
+    }
+  },
+  "Rapidash": {
+    "evolvesFrom": "Ponyta",
+    "evolveMethod": "Level 40",
+    "locations": {
+      "heartgold": [
+        "Mt Silver Outside (grass)",
+        "Kanto Route 28 (grass)"
+      ],
+      "soulsilver": [
+        "Mt Silver Outside (grass)",
+        "Kanto Route 28 (grass)"
+      ]
+    }
+  },
+  "Raticate": {
+    "evolvesFrom": "Rattata",
+    "evolveMethod": "Level 20",
+    "locations": {
+      "heartgold": [
+        "Union Cave B2F (grass)",
+        "Burned Tower 1F (grass)",
+        "Route 38 (grass)",
+        "Route 39 (grass)",
+        "Mt Mortar Upper Cave (grass)",
+        "Mt Mortar B1F (grass)"
+      ],
+      "soulsilver": [
+        "Union Cave B2F (grass)",
+        "Burned Tower 1F (grass)",
+        "Route 38 (grass)",
+        "Route 39 (grass)",
+        "Mt Mortar Upper Cave (grass)",
+        "Mt Mortar B1F (grass)"
+      ],
+      "red": [
+        "Kanto Route 16 (grass)",
+        "Kanto Route 17 (grass)",
+        "Kanto Route 18 (grass)",
+        "Kanto Sea Route 21 (grass)"
+      ],
+      "blue": [
+        "Kanto Route 16 (grass)",
+        "Kanto Route 17 (grass)",
+        "Kanto Route 18 (grass)",
+        "Kanto Sea Route 21 (grass)"
+      ],
+      "yellow": [
+        "Kanto Route 9 (grass)",
+        "Kanto Route 10 (grass)",
+        "Kanto Route 11 (grass)",
+        "Kanto Route 16 (grass)",
+        "Kanto Route 18 (grass)",
+        "Kanto Sea Route 21 (grass)"
+      ]
+    }
+  },
+  "Rattata": {
+    "locations": {
+      "heartgold": [
+        "Route 29 (grass)",
+        "Route 30 (grass)",
+        "Route 31 (grass)",
+        "Sprout Tower 2F (grass)",
+        "Sprout Tower 3F (grass)",
+        "Route 32 (grass)"
+      ],
+      "soulsilver": [
+        "Route 29 (grass)",
+        "Route 30 (grass)",
+        "Route 31 (grass)",
+        "Sprout Tower 2F (grass)",
+        "Sprout Tower 3F (grass)",
+        "Route 32 (grass)"
+      ],
+      "red": [
+        "Kanto Route 1 (grass)",
+        "Kanto Route 2 (south towards viridian city) (grass)",
+        "Kanto Route 4 (grass)",
+        "Kanto Route 9 (grass)",
+        "Kanto Route 16 (grass)",
+        "Kanto Sea Route 21 (grass)"
+      ],
+      "blue": [
+        "Kanto Route 1 (grass)",
+        "Kanto Route 2 (south towards viridian city) (grass)",
+        "Kanto Route 4 (grass)",
+        "Kanto Route 9 (grass)",
+        "Kanto Route 16 (grass)",
+        "Kanto Sea Route 21 (grass)"
+      ],
+      "yellow": [
+        "Kanto Route 1 (grass)",
+        "Kanto Route 2 (south towards viridian city) (grass)",
+        "Kanto Route 3 (grass)",
+        "Kanto Route 4 (grass)",
+        "Kanto Route 5 (grass)",
+        "Kanto Route 6 (grass)"
+      ]
+    }
+  },
+  "Relicanth": {
+    "locations": {
+      "heartgold": [
+        "Kanto Route 12 (good rod/old rod/super rod)"
+      ],
+      "soulsilver": [
+        "Kanto Route 12 (good rod/old rod/super rod)"
+      ]
+    }
+  },
+  "Remoraid": {
+    "locations": {
+      "heartgold": [
+        "Route 44 (good rod/old rod/super rod)"
+      ],
+      "soulsilver": [
+        "Route 44 (good rod/old rod/super rod)"
+      ]
+    }
+  },
+  "Rhydon": {
+    "evolvesFrom": "Rhyhorn",
+    "evolveMethod": "Level 42",
+    "locations": {
+      "heartgold": [
+        "Johto Safari Zone Savannah (grass)"
+      ],
+      "soulsilver": [
+        "Johto Safari Zone Savannah (grass)"
+      ],
+      "red": [
+        "Cerulean Cave 2F (grass)",
+        "Cerulean Cave B1F (grass)"
+      ],
+      "blue": [
+        "Cerulean Cave 2F (grass)",
+        "Cerulean Cave B1F (grass)"
+      ],
+      "yellow": [
+        "Cerulean Cave 2F (grass)",
+        "Cerulean Cave B1F (grass)",
+        "Cinnabar Island Cinnabar Lab (npc trade)"
+      ]
+    }
+  },
+  "Rhyhorn": {
+    "locations": {
+      "heartgold": [
+        "Kanto Victory Road 1 1F (grass)",
+        "Kanto Victory Road 1 2F (grass)",
+        "Kanto Victory Road 1 3F (grass)",
+        "Johto Safari Zone Savannah (grass)"
+      ],
+      "soulsilver": [
+        "Kanto Victory Road 1 1F (grass)",
+        "Kanto Victory Road 1 2F (grass)",
+        "Kanto Victory Road 1 3F (grass)",
+        "Johto Safari Zone Savannah (grass)"
+      ],
+      "red": [
+        "Kanto Safari Zone Middle (grass)",
+        "Kanto Safari Zone Area 2 North (grass)"
+      ],
+      "blue": [
+        "Kanto Safari Zone Middle (grass)",
+        "Kanto Safari Zone Area 2 North (grass)"
+      ],
+      "yellow": [
+        "Cerulean Cave 2F (grass)",
+        "Cerulean Cave B1F (grass)",
+        "Kanto Safari Zone Middle (grass)",
+        "Kanto Safari Zone Area 2 North (grass)"
+      ]
+    }
+  },
+  "Riolu": {
+    "locations": {
+      "heartgold": [
+        "Johto Safari Zone Meadow (grass)"
+      ],
+      "soulsilver": [
+        "Johto Safari Zone Meadow (grass)"
+      ]
+    }
+  },
+  "Roselia": {
+    "evolvesFrom": "Budew",
+    "evolveMethod": "High friendship (day)",
+    "locations": {
+      "heartgold": [
+        "Johto Safari Zone Marshland (grass)"
+      ],
+      "soulsilver": [
+        "Johto Safari Zone Marshland (grass)"
+      ]
+    }
+  },
+  "Roserade": {
+    "evolvesFrom": "Roselia",
+    "evolveMethod": "Use a Shiny Stone"
+  },
+  "Sableye": {
+    "locations": {
+      "heartgold": [
+        "Kanto Route 9 (grass)"
+      ]
+    }
+  },
+  "Salamence": {
+    "evolvesFrom": "Shelgon",
+    "evolveMethod": "Level 50"
+  },
+  "Sandshrew": {
+    "locations": {
+      "heartgold": [
+        "Union Cave 1F (grass)",
+        "Union Cave B1F (grass)",
+        "Mt Moon 1F (grass)",
+        "Mt Moon 2F (grass)",
+        "Johto Safari Zone Desert (grass)"
+      ],
+      "soulsilver": [
+        "Johto Safari Zone Desert (grass)",
+        "Goldenrod City Game Corner (gift)"
+      ],
+      "blue": [
+        "Kanto Route 4 (grass)",
+        "Kanto Route 8 (grass)",
+        "Kanto Route 9 (grass)",
+        "Kanto Route 10 (grass)",
+        "Kanto Route 11 (grass)",
+        "Kanto Route 23 (grass)"
+      ],
+      "yellow": [
+        "Mt Moon 1F (grass)",
+        "Kanto Route 3 (grass)",
+        "Kanto Route 4 (grass)"
+      ]
+    }
+  },
+  "Sandslash": {
+    "evolvesFrom": "Sandshrew",
+    "evolveMethod": "Level 22",
+    "locations": {
+      "heartgold": [
+        "Kanto Route 26 (grass)",
+        "Kanto Route 27 (grass)",
+        "Mt Moon 1F (grass)",
+        "Mt Moon 2F (grass)",
+        "Johto Safari Zone Desert (grass)"
+      ],
+      "soulsilver": [
+        "Johto Safari Zone Desert (grass)"
+      ],
+      "blue": [
+        "Cerulean Cave 1F (grass)",
+        "Cerulean Cave B1F (grass)",
+        "Kanto Route 23 (grass)"
+      ],
+      "yellow": [
+        "Cerulean Cave 1F (grass)",
+        "Cerulean Cave 2F (grass)"
+      ]
+    }
+  },
+  "Sceptile": {
+    "evolvesFrom": "Grovyle",
+    "evolveMethod": "Level 36"
+  },
+  "Scyther": {
+    "locations": {
+      "heartgold": [
+        "National Park (grass)"
+      ],
+      "soulsilver": [
+        "National Park (grass)"
+      ],
+      "red": [
+        "Kanto Safari Zone Middle (grass)",
+        "Kanto Safari Zone Area 1 East (grass)",
+        "Celadon City Prize Corner (gift)"
+      ],
+      "yellow": [
+        "Kanto Safari Zone Area 1 East (grass)",
+        "Kanto Safari Zone Area 2 North (grass)",
+        "Celadon City Prize Corner (gift)"
+      ]
+    }
+  },
+  "Seadra": {
+    "evolvesFrom": "Horsea",
+    "evolveMethod": "Level 32",
+    "locations": {
+      "heartgold": [
+        "Whirl Islands 1F (super rod)",
+        "Whirl Islands B2F (super rod/surf)",
+        "Seafoam Islands B4F (super rod)"
+      ],
+      "soulsilver": [
+        "Whirl Islands 1F (super rod)",
+        "Whirl Islands B2F (super rod/surf)",
+        "Seafoam Islands B4F (super rod)"
+      ],
+      "red": [
+        "Seafoam Islands B1F (grass)",
+        "Seafoam Islands B3F (grass)",
+        "Cerulean Cave 1F (super rod)",
+        "Cerulean Cave B1F (super rod)",
+        "Kanto Route 23 (super rod)"
+      ],
+      "blue": [
+        "Cerulean Cave 1F (super rod)",
+        "Cerulean Cave B1F (super rod)",
+        "Kanto Route 23 (super rod)"
+      ],
+      "yellow": [
+        "Kanto Route 12 (super rod)",
+        "Kanto Route 13 (super rod)"
+      ]
+    }
+  },
+  "Seaking": {
+    "evolvesFrom": "Goldeen",
+    "evolveMethod": "Level 33",
+    "locations": {
+      "heartgold": [
+        "Union Cave 1F (super rod)",
+        "Union Cave B1F (super rod)",
+        "Slowpoke Well 1F (super rod)",
+        "Slowpoke Well B1F (super rod)",
+        "Route 42 (super rod/surf)",
+        "Mt Mortar 1F (super rod/surf)"
+      ],
+      "soulsilver": [
+        "Union Cave 1F (super rod)",
+        "Union Cave B1F (super rod)",
+        "Slowpoke Well 1F (super rod)",
+        "Slowpoke Well B1F (super rod)",
+        "Route 42 (super rod/surf)",
+        "Mt Mortar 1F (super rod/surf)"
+      ],
+      "red": [
+        "Fuchsia City (super rod)",
+        "Cerulean Cave 1F (super rod)",
+        "Cerulean Cave B1F (super rod)",
+        "Kanto Route 23 (super rod)"
+      ],
+      "blue": [
+        "Fuchsia City (super rod)",
+        "Cerulean Cave 1F (super rod)",
+        "Cerulean Cave B1F (super rod)",
+        "Kanto Route 23 (super rod)"
+      ],
+      "yellow": [
+        "Cerulean City (super rod)",
+        "Kanto Route 24 (super rod)",
+        "Cerulean Cave 1F (super rod)",
+        "Cerulean Cave B1F (super rod)"
+      ]
+    }
+  },
+  "Sealeo": {
+    "evolvesFrom": "Spheal",
+    "evolveMethod": "Level 32",
+    "locations": {
+      "heartgold": [
+        "Johto Safari Zone Mountain (grass)"
+      ],
+      "soulsilver": [
+        "Johto Safari Zone Mountain (grass)"
+      ]
+    }
+  },
+  "Seedot": {
+    "locations": {
+      "heartgold": [
+        "Viridian Forest (headbutt)",
+        "Johto Safari Zone Meadow (grass)"
+      ],
+      "soulsilver": [
+        "Viridian Forest (headbutt)",
+        "Johto Safari Zone Meadow (grass)"
+      ]
+    }
+  },
+  "Seel": {
+    "locations": {
+      "heartgold": [
+        "Whirl Islands 1F (grass)",
+        "Whirl Islands B1F (grass)",
+        "Whirl Islands B2F (grass)",
+        "Whirl Islands B3F (grass)",
+        "Route 47 (surf)",
+        "Seafoam Islands B1F (grass)"
+      ],
+      "soulsilver": [
+        "Whirl Islands 1F (grass)",
+        "Whirl Islands B1F (grass)",
+        "Whirl Islands B2F (grass)",
+        "Whirl Islands B3F (grass)",
+        "Route 47 (surf)",
+        "Seafoam Islands B1F (grass)"
+      ],
+      "red": [
+        "Seafoam Islands 1F (grass)",
+        "Seafoam Islands B1F (grass)",
+        "Seafoam Islands B2F (grass)",
+        "Seafoam Islands B3F (grass)",
+        "Seafoam Islands B4F (grass)",
+        "Cinnabar Island Cinnabar Lab (npc trade)"
+      ],
+      "blue": [
+        "Seafoam Islands 1F (grass)",
+        "Seafoam Islands B1F (grass)",
+        "Seafoam Islands B2F (grass)",
+        "Seafoam Islands B3F (grass)",
+        "Seafoam Islands B4F (grass)",
+        "Cinnabar Island Cinnabar Lab (npc trade)"
+      ],
+      "yellow": [
+        "Seafoam Islands B1F (grass)",
+        "Seafoam Islands B2F (grass)",
+        "Seafoam Islands B3F (grass)",
+        "Seafoam Islands B4F (grass)"
+      ]
+    }
+  },
+  "Sentret": {
+    "locations": {
+      "heartgold": [
+        "Route 29 (grass)",
+        "Kanto Route 1 (grass)",
+        "Johto Safari Zone Swamp (grass)",
+        "Johto Safari Zone Wetland (grass)"
+      ],
+      "soulsilver": [
+        "Route 29 (grass)",
+        "Kanto Route 1 (grass)",
+        "Johto Safari Zone Swamp (grass)",
+        "Johto Safari Zone Wetland (grass)"
+      ]
+    }
+  },
+  "Seviper": {
+    "locations": {
+      "heartgold": [
+        "Johto Safari Zone Marshland (grass)"
+      ],
+      "soulsilver": [
+        "Johto Safari Zone Marshland (grass)"
+      ]
+    }
+  },
+  "Shedinja": {
+    "evolvesFrom": "Nincada",
+    "evolveMethod": "Level up with a free party slot & spare Poké Ball"
+  },
+  "Shelgon": {
+    "evolvesFrom": "Bagon",
+    "evolveMethod": "Level 30",
+    "locations": {
+      "heartgold": [
+        "Johto Safari Zone Wetland (grass)"
+      ],
+      "soulsilver": [
+        "Johto Safari Zone Wetland (grass)"
+      ]
+    }
+  },
+  "Shellder": {
+    "locations": {
+      "heartgold": [
+        "New Bark Town (good rod/super rod)",
+        "Johto Sea Route 41 (good rod/super rod)",
+        "Route 47 (good rod/super rod)",
+        "Kanto Sea Route 20 (good rod/super rod)",
+        "Cinnabar Island (good rod/super rod)",
+        "Vermilion City (good rod/super rod)"
+      ],
+      "soulsilver": [
+        "New Bark Town (good rod/super rod)",
+        "Johto Sea Route 41 (good rod/super rod)",
+        "Route 47 (good rod/super rod)",
+        "Kanto Sea Route 20 (good rod/super rod)",
+        "Cinnabar Island (good rod/super rod)",
+        "Vermilion City (good rod/super rod)"
+      ],
+      "red": [
+        "Seafoam Islands 1F (grass)",
+        "Seafoam Islands B1F (grass)",
+        "Seafoam Islands B2F (grass)",
+        "Seafoam Islands B3F (grass/super rod)",
+        "Seafoam Islands B4F (grass/super rod)",
+        "Kanto Sea Route 19 (super rod)"
+      ],
+      "blue": [
+        "Seafoam Islands B1F (grass)",
+        "Seafoam Islands B2F (grass)",
+        "Seafoam Islands B3F (super rod)",
+        "Seafoam Islands B4F (super rod)",
+        "Kanto Sea Route 19 (super rod)",
+        "Kanto Sea Route 20 (super rod)"
+      ],
+      "yellow": [
+        "Kanto Route 17 (super rod)",
+        "Kanto Route 18 (super rod)",
+        "Vermilion City Ss Anne Dock (super rod)"
+      ]
+    }
+  },
+  "Shiftry": {
+    "evolvesFrom": "Nuzleaf",
+    "evolveMethod": "Use a Leaf Stone"
+  },
+  "Shinx": {
+    "locations": {
+      "heartgold": [
+        "Route 29 (grass)",
+        "Route 33 (grass)",
+        "National Park (grass)",
+        "Route 36 (grass)",
+        "Route 37 (grass)",
+        "Route 38 (grass)"
+      ],
+      "soulsilver": [
+        "Route 29 (grass)",
+        "Route 33 (grass)",
+        "National Park (grass)",
+        "Route 36 (grass)",
+        "Route 37 (grass)",
+        "Route 38 (grass)"
+      ]
+    }
+  },
+  "Shroomish": {
+    "locations": {
+      "heartgold": [
+        "Viridian Forest (headbutt)",
+        "Johto Safari Zone Savannah (grass)"
+      ],
+      "soulsilver": [
+        "Viridian Forest (headbutt)",
+        "Johto Safari Zone Savannah (grass)"
+      ]
+    }
+  },
+  "Shuckle": {
+    "locations": {
+      "heartgold": [
+        "Cianwood City (rock smash)",
+        "Vermilion City (rock smash)",
+        "Cianwood City Kirks House (gift)",
+        "Johto Safari Zone Marshland (grass)"
+      ],
+      "soulsilver": [
+        "Cianwood City (rock smash)",
+        "Vermilion City (rock smash)",
+        "Cianwood City Kirks House (gift)",
+        "Johto Safari Zone Marshland (grass)"
+      ]
+    }
+  },
+  "Shuppet": {
+    "locations": {
+      "heartgold": [
+        "Johto Safari Zone Forest (grass)"
+      ],
+      "soulsilver": [
+        "Johto Safari Zone Forest (grass)"
+      ]
+    }
+  },
+  "Silcoon": {
+    "evolvesFrom": "Wurmple",
+    "evolveMethod": "Level 7",
+    "locations": {
+      "heartgold": [
+        "National Park (grass)"
+      ],
+      "soulsilver": [
+        "National Park (grass)"
+      ]
+    }
+  },
+  "Skarmory": {
+    "locations": {
+      "soulsilver": [
+        "Route 45 (grass)"
+      ]
+    }
+  },
+  "Skiploom": {
+    "evolvesFrom": "Hoppip",
+    "evolveMethod": "Level 18",
+    "locations": {
+      "heartgold": [
+        "Kanto Route 14 (grass)",
+        "Johto Safari Zone Meadow (grass/surf)"
+      ],
+      "soulsilver": [
+        "Kanto Route 14 (grass)",
+        "Johto Safari Zone Meadow (grass/surf)"
+      ]
+    }
+  },
+  "Skorupi": {
+    "locations": {
+      "heartgold": [
+        "Johto Safari Zone Wasteland (grass)"
+      ],
+      "soulsilver": [
+        "Johto Safari Zone Wasteland (grass)"
+      ]
+    }
+  },
+  "Slaking": {
+    "evolvesFrom": "Vigoroth",
+    "evolveMethod": "Level 36"
+  },
+  "Slakoth": {
+    "locations": {
+      "heartgold": [
+        "Kanto Route 25 (headbutt)"
+      ],
+      "soulsilver": [
+        "Kanto Route 25 (headbutt)"
+      ]
+    }
+  },
+  "Slowbro": {
+    "evolvesFrom": "Slowpoke",
+    "evolveMethod": "Level 37",
+    "locations": {
+      "heartgold": [
+        "Slowpoke Well B1F (surf)",
+        "Seafoam Islands B4F (surf)",
+        "Johto Safari Zone Peak (grass)",
+        "Johto Safari Zone Rocky Beach (grass)"
+      ],
+      "soulsilver": [
+        "Slowpoke Well B1F (surf)",
+        "Seafoam Islands B4F (surf)",
+        "Johto Safari Zone Peak (grass)",
+        "Johto Safari Zone Rocky Beach (grass)"
+      ],
+      "red": [
+        "Seafoam Islands B2F (grass)",
+        "Seafoam Islands B4F (grass)",
+        "Cerulean Cave 1F (super rod)",
+        "Cerulean Cave B1F (super rod)",
+        "Kanto Route 23 (super rod)"
+      ],
+      "blue": [
+        "Seafoam Islands 1F (grass)",
+        "Cerulean Cave 1F (super rod)",
+        "Cerulean Cave B1F (super rod)",
+        "Kanto Route 23 (super rod)"
+      ],
+      "yellow": [
+        "Seafoam Islands B2F (grass)",
+        "Kanto Route 12 (surf)",
+        "Kanto Route 13 (surf)"
+      ]
+    }
+  },
+  "Slowpoke": {
+    "locations": {
+      "heartgold": [
+        "Slowpoke Well 1F (grass/surf)",
+        "Slowpoke Well B1F (grass/surf)",
+        "Tohjo Falls (grass/surf)",
+        "Johto Safari Zone Rocky Beach (grass)"
+      ],
+      "soulsilver": [
+        "Slowpoke Well 1F (grass/surf)",
+        "Slowpoke Well B1F (grass/surf)",
+        "Tohjo Falls (grass/surf)",
+        "Johto Safari Zone Rocky Beach (grass)"
+      ],
+      "red": [
+        "Seafoam Islands 1F (grass)",
+        "Seafoam Islands B1F (grass)",
+        "Seafoam Islands B2F (grass)",
+        "Seafoam Islands B3F (grass)",
+        "Seafoam Islands B4F (grass)",
+        "Celadon City (super rod)"
+      ],
+      "blue": [
+        "Seafoam Islands 1F (grass)",
+        "Celadon City (super rod)",
+        "Kanto Route 10 (super rod)",
+        "Kanto Safari Zone Middle (super rod)",
+        "Kanto Safari Zone Area 1 East (super rod)",
+        "Kanto Safari Zone Area 2 North (super rod)"
+      ],
+      "yellow": [
+        "Seafoam Islands 1F (grass)",
+        "Seafoam Islands B1F (grass)",
+        "Seafoam Islands B2F (grass)",
+        "Kanto Route 12 (surf)",
+        "Kanto Route 13 (surf)"
+      ]
+    }
+  },
+  "Slugma": {
+    "locations": {
+      "heartgold": [
+        "Kanto Route 16 (grass)",
+        "Kanto Route 17 (grass)",
+        "Kanto Route 18 (grass)",
+        "Violet City Pokemon Center (egg gift)"
+      ],
+      "soulsilver": [
+        "Kanto Route 16 (grass)",
+        "Kanto Route 17 (grass)",
+        "Kanto Route 18 (grass)",
+        "Violet City Pokemon Center (egg gift)"
+      ]
+    }
+  },
+  "Smeargle": {
+    "locations": {
+      "heartgold": [
+        "Ruins of Alph (grass)",
+        "Johto Safari Zone Plains (grass)"
+      ],
+      "soulsilver": [
+        "Ruins of Alph (grass)",
+        "Johto Safari Zone Plains (grass)"
+      ]
+    }
+  },
+  "Smoochum": {
+    "breeding": "Breed a Jynx"
+  },
+  "Sneasel": {
+    "locations": {
+      "heartgold": [
+        "Mt Silver 1F Top (grass)",
+        "Mt Silver 4F (grass)",
+        "Mt Silver Outside (grass)",
+        "Mt Silver Top (grass)",
+        "Kanto Route 28 (grass)"
+      ],
+      "soulsilver": [
+        "Mt Silver 1F Top (grass)",
+        "Mt Silver 4F (grass)",
+        "Mt Silver Outside (grass)",
+        "Mt Silver Top (grass)",
+        "Kanto Route 28 (grass)"
+      ]
+    }
+  },
+  "Snorlax": {
+    "evolvesFrom": "Munchlax",
+    "evolveMethod": "High friendship",
+    "locations": {
+      "heartgold": [
+        "Kanto Route 12 (pokeflute)",
+        "Kanto Route 11 (pokeflute)"
+      ],
+      "soulsilver": [
+        "Kanto Route 12 (pokeflute)",
+        "Kanto Route 11 (pokeflute)"
+      ],
+      "red": [
+        "Kanto Route 12 (pokeflute)",
+        "Kanto Route 16 (pokeflute)"
+      ],
+      "blue": [
+        "Kanto Route 12 (pokeflute)",
+        "Kanto Route 16 (pokeflute)"
+      ],
+      "yellow": [
+        "Kanto Route 12 (pokeflute)",
+        "Kanto Route 16 (pokeflute)"
+      ]
+    }
+  },
+  "Snubbull": {
+    "locations": {
+      "heartgold": [
+        "Route 38 (grass)"
+      ],
+      "soulsilver": [
+        "Route 38 (grass)"
+      ]
+    }
+  },
+  "Solrock": {
+    "locations": {
+      "heartgold": [
+        "Johto Safari Zone Wasteland (grass)"
+      ],
+      "soulsilver": [
+        "Johto Safari Zone Wasteland (grass)"
+      ]
+    }
+  },
+  "Spearow": {
+    "locations": {
+      "heartgold": [
+        "Route 33 (grass/headbutt)",
+        "Route 42 (grass/headbutt)",
+        "Route 44 (headbutt)",
+        "Route 45 (headbutt)",
+        "Route 46 (grass/headbutt)",
+        "Route 47 (grass)"
+      ],
+      "soulsilver": [
+        "Route 33 (grass/headbutt)",
+        "Route 42 (grass/headbutt)",
+        "Route 44 (headbutt)",
+        "Route 45 (headbutt)",
+        "Route 46 (grass/headbutt)",
+        "Route 47 (grass)"
+      ],
+      "red": [
+        "Kanto Route 3 (grass)",
+        "Kanto Route 4 (grass)",
+        "Kanto Route 9 (grass)",
+        "Kanto Route 10 (grass)",
+        "Kanto Route 11 (grass)",
+        "Kanto Route 16 (grass)"
+      ],
+      "blue": [
+        "Kanto Route 3 (grass)",
+        "Kanto Route 4 (grass)",
+        "Kanto Route 9 (grass)",
+        "Kanto Route 10 (grass)",
+        "Kanto Route 11 (grass)",
+        "Kanto Route 16 (grass)"
+      ],
+      "yellow": [
+        "Kanto Route 3 (grass)",
+        "Kanto Route 4 (grass)",
+        "Kanto Route 9 (grass)",
+        "Kanto Route 16 (grass)",
+        "Kanto Route 18 (grass)",
+        "Kanto Route 22 (grass)"
+      ]
+    }
+  },
+  "Spheal": {
+    "locations": {
+      "heartgold": [
+        "Johto Safari Zone Peak (grass)"
+      ],
+      "soulsilver": [
+        "Johto Safari Zone Peak (grass)"
+      ]
+    }
+  },
+  "Spinarak": {
+    "locations": {
+      "heartgold": [
+        "New Bark Town (headbutt)",
+        "Route 29 (headbutt)",
+        "Cherrygrove City (headbutt)",
+        "Route 30 (grass/headbutt)",
+        "Route 31 (grass/headbutt)",
+        "Route 34 (headbutt)"
+      ]
+    }
+  },
+  "Spinda": {
+    "locations": {
+      "heartgold": [
+        "Sprout Tower 2F (grass)",
+        "Sprout Tower 3F (grass)",
+        "Burned Tower 1F (grass)",
+        "Burned Tower B1F (grass)",
+        "Bell Tower 2F (grass)",
+        "Bell Tower 3F (grass)"
+      ],
+      "soulsilver": [
+        "Sprout Tower 2F (grass)",
+        "Sprout Tower 3F (grass)",
+        "Burned Tower 1F (grass)",
+        "Burned Tower B1F (grass)",
+        "Bell Tower 2F (grass)",
+        "Bell Tower 3F (grass)"
+      ]
+    }
+  },
+  "Spoink": {
+    "locations": {
+      "heartgold": [
+        "Ilex Forest (grass)",
+        "Viridian Forest (grass)"
+      ],
+      "soulsilver": [
+        "Ilex Forest (grass)",
+        "Viridian Forest (grass)"
+      ]
+    }
+  },
+  "Squirtle": {
+    "locations": {
+      "heartgold": [
+        "Pallet Town (gift)"
+      ],
+      "soulsilver": [
+        "Pallet Town (gift)"
+      ],
+      "red": [
+        "Pallet Town (gift)"
+      ],
+      "blue": [
+        "Pallet Town (gift)"
+      ],
+      "yellow": [
+        "Vermilion City (gift)"
+      ]
+    }
+  },
+  "Stantler": {
+    "locations": {
+      "heartgold": [
+        "Route 36 (grass)",
+        "Route 37 (grass)",
+        "Johto Safari Zone Plains (grass)"
+      ],
+      "soulsilver": [
+        "Route 36 (grass)",
+        "Route 37 (grass)",
+        "Johto Safari Zone Plains (grass)"
+      ]
+    }
+  },
+  "Staraptor": {
+    "evolvesFrom": "Staravia",
+    "evolveMethod": "Level 34"
+  },
+  "Staravia": {
+    "evolvesFrom": "Starly",
+    "evolveMethod": "Level 14"
+  },
+  "Starly": {
+    "locations": {
+      "heartgold": [
+        "Pewter City (headbutt)"
+      ],
+      "soulsilver": [
+        "Pewter City (headbutt)"
+      ]
+    }
+  },
+  "Starmie": {
+    "evolvesFrom": "Staryu",
+    "evolveMethod": "Use a Water Stone"
+  },
+  "Staryu": {
+    "locations": {
+      "heartgold": [
+        "Cherrygrove City (good rod/super rod)",
+        "Union Cave B2F (good rod/super rod)",
+        "Route 34 (good rod/super rod)",
+        "Olivine City (good rod/super rod)",
+        "Johto Sea Route 40 (good rod/super rod)",
+        "Cianwood City (good rod/super rod)"
+      ],
+      "soulsilver": [
+        "Cherrygrove City (good rod/super rod)",
+        "Union Cave B2F (good rod/super rod)",
+        "Route 34 (good rod/super rod)",
+        "Olivine City (good rod/super rod)",
+        "Johto Sea Route 40 (good rod/super rod)",
+        "Cianwood City (good rod/super rod)"
+      ],
+      "red": [
+        "Seafoam Islands B1F (grass)",
+        "Seafoam Islands B2F (grass)",
+        "Seafoam Islands B3F (super rod)",
+        "Seafoam Islands B4F (super rod)",
+        "Kanto Sea Route 19 (super rod)",
+        "Kanto Sea Route 20 (super rod)"
+      ],
+      "blue": [
+        "Seafoam Islands 1F (grass)",
+        "Seafoam Islands B1F (grass)",
+        "Seafoam Islands B2F (grass)",
+        "Seafoam Islands B3F (grass/super rod)",
+        "Seafoam Islands B4F (grass/super rod)",
+        "Kanto Sea Route 19 (super rod)"
+      ],
+      "yellow": [
+        "Seafoam Islands B3F (super rod/surf)",
+        "Seafoam Islands B4F (super rod/surf)",
+        "Kanto Sea Route 19 (super rod)",
+        "Kanto Sea Route 20 (super rod)",
+        "Cinnabar Island (super rod)",
+        "Pallet Town (super rod)"
+      ]
+    }
+  },
+  "Steelix": {
+    "evolvesFrom": "Onix",
+    "evolveMethod": "Trade holding Metal Coat",
+    "locations": {
+      "heartgold": [
+        "Mt Silver 2F (grass)",
+        "Route 47 (inside cave) (grass)"
+      ],
+      "soulsilver": [
+        "Mt Silver 2F (grass)",
+        "Route 47 (inside cave) (grass)"
+      ]
+    }
+  },
+  "Sudowoodo": {
+    "evolvesFrom": "Bonsly",
+    "evolveMethod": "Level up knowing Mimic",
+    "locations": {
+      "heartgold": [
+        "Route 36 (squirt bottle)"
+      ],
+      "soulsilver": [
+        "Route 36 (squirt bottle)"
+      ]
+    }
+  },
+  "Suicune": {
+    "legendary": true,
+    "locations": {
+      "heartgold": [
+        "Kanto Route 25 (gift)"
+      ],
+      "soulsilver": [
+        "Kanto Route 25 (gift)"
+      ]
+    }
+  },
+  "Sunflora": {
+    "evolvesFrom": "Sunkern",
+    "evolveMethod": "Use a Sun Stone"
+  },
+  "Sunkern": {
+    "locations": {
+      "heartgold": [
+        "National Park (grass)",
+        "Kanto Route 24 (grass)",
+        "Johto Safari Zone Meadow (grass)"
+      ],
+      "soulsilver": [
+        "National Park (grass)",
+        "Kanto Route 24 (grass)",
+        "Johto Safari Zone Meadow (grass)"
+      ]
+    }
+  },
+  "Surskit": {
+    "locations": {
+      "heartgold": [
+        "Johto Safari Zone Plains (grass)",
+        "Johto Safari Zone Forest (grass)",
+        "Johto Safari Zone Wetland (grass)"
+      ],
+      "soulsilver": [
+        "Johto Safari Zone Plains (grass)",
+        "Johto Safari Zone Forest (grass)",
+        "Johto Safari Zone Wetland (grass)"
+      ]
+    }
+  },
+  "Swablu": {
+    "locations": {
+      "heartgold": [
+        "Route 45 (grass)"
+      ],
+      "soulsilver": [
+        "Route 45 (grass)"
+      ]
+    }
+  },
+  "Swalot": {
+    "evolvesFrom": "Gulpin",
+    "evolveMethod": "Level 26"
+  },
+  "Swampert": {
+    "evolvesFrom": "Marshtomp",
+    "evolveMethod": "Level 36"
+  },
+  "Swellow": {
+    "evolvesFrom": "Taillow",
+    "evolveMethod": "Level 22"
+  },
+  "Swinub": {
+    "locations": {
+      "heartgold": [
+        "Ice Path 1F (grass)",
+        "Ice Path B1F (grass)",
+        "Ice Path B2F (grass)",
+        "Ice Path B3F (grass)"
+      ],
+      "soulsilver": [
+        "Ice Path 1F (grass)",
+        "Ice Path B1F (grass)",
+        "Ice Path B2F (grass)",
+        "Ice Path B3F (grass)"
+      ]
+    }
+  },
+  "Taillow": {
+    "locations": {
+      "heartgold": [
+        "Cherrygrove City (headbutt)"
+      ],
+      "soulsilver": [
+        "Cherrygrove City (headbutt)"
+      ]
+    }
+  },
+  "Tangela": {
+    "locations": {
+      "heartgold": [
+        "Route 44 (grass)",
+        "Mt Silver Outside (grass)",
+        "Kanto Route 12 (headbutt)",
+        "Fuchsia City (headbutt)",
+        "Kanto Route 28 (grass)",
+        "Kanto Route 13 (headbutt)"
+      ],
+      "soulsilver": [
+        "Route 44 (grass)",
+        "Mt Silver Outside (grass)",
+        "Kanto Route 12 (headbutt)",
+        "Fuchsia City (headbutt)",
+        "Kanto Route 28 (grass)",
+        "Kanto Route 13 (headbutt)"
+      ],
+      "red": [
+        "Kanto Sea Route 21 (grass)",
+        "Cinnabar Island Cinnabar Lab (npc trade)"
+      ],
+      "blue": [
+        "Kanto Sea Route 21 (grass)",
+        "Cinnabar Island Cinnabar Lab (npc trade)"
+      ],
+      "yellow": [
+        "Kanto Safari Zone Middle (grass)",
+        "Kanto Safari Zone Area 3 West (grass)"
+      ]
+    }
+  },
+  "Tangrowth": {
+    "evolvesFrom": "Tangela",
+    "evolveMethod": "Level up knowing Ancient Power"
+  },
+  "Tauros": {
+    "locations": {
+      "heartgold": [
+        "Route 38 (grass)",
+        "Route 39 (grass)",
+        "Route 48 (grass)",
+        "Johto Safari Zone Savannah (grass)"
+      ],
+      "soulsilver": [
+        "Route 38 (grass)",
+        "Route 39 (grass)",
+        "Route 48 (grass)",
+        "Johto Safari Zone Savannah (grass)"
+      ],
+      "red": [
+        "Kanto Safari Zone Area 2 North (grass)",
+        "Kanto Safari Zone Area 3 West (grass)"
+      ],
+      "blue": [
+        "Kanto Safari Zone Area 2 North (grass)",
+        "Kanto Safari Zone Area 3 West (grass)"
+      ],
+      "yellow": [
+        "Kanto Safari Zone Area 1 East (grass)",
+        "Kanto Safari Zone Area 3 West (grass)"
+      ]
+    }
+  },
+  "Teddiursa": {
+    "locations": {
+      "soulsilver": [
+        "Route 45 (grass)",
+        "Mt Silver 1F Top (grass)",
+        "Mt Silver 1F (grass)",
+        "Mt Silver Mountainside (grass)",
+        "Mt Silver 3F (grass)"
+      ]
+    }
+  },
+  "Tentacool": {
+    "locations": {
+      "heartgold": [
+        "New Bark Town (good rod/old rod/surf)",
+        "Cherrygrove City (surf)",
+        "Route 32 (good rod/old rod/super rod/surf)",
+        "Union Cave B2F (surf)",
+        "Route 34 (surf)",
+        "Olivine City (surf)"
+      ],
+      "soulsilver": [
+        "New Bark Town (good rod/old rod/surf)",
+        "Cherrygrove City (surf)",
+        "Route 32 (good rod/old rod/super rod/surf)",
+        "Union Cave B2F (surf)",
+        "Route 34 (surf)",
+        "Olivine City (surf)"
+      ],
+      "red": [
+        "Kanto Route 12 (super rod)",
+        "Kanto Sea Route 19 (surf)",
+        "Kanto Sea Route 20 (surf)",
+        "Viridian City (super rod)",
+        "Pallet Town (super rod)",
+        "Kanto Route 13 (super rod)"
+      ],
+      "blue": [
+        "Kanto Route 12 (super rod)",
+        "Kanto Sea Route 19 (surf)",
+        "Kanto Sea Route 20 (surf)",
+        "Viridian City (super rod)",
+        "Pallet Town (super rod)",
+        "Kanto Route 13 (super rod)"
+      ],
+      "yellow": [
+        "Seafoam Islands B3F (surf)",
+        "Seafoam Islands B4F (surf)",
+        "Kanto Sea Route 19 (super rod/surf)",
+        "Kanto Sea Route 20 (super rod/surf)",
+        "Cinnabar Island (super rod)",
+        "Vermilion City (super rod)"
+      ]
+    }
+  },
+  "Tentacruel": {
+    "evolvesFrom": "Tentacool",
+    "evolveMethod": "Level 30",
+    "locations": {
+      "heartgold": [
+        "New Bark Town (super rod/surf)",
+        "Cherrygrove City (surf)",
+        "Route 32 (surf)",
+        "Union Cave B2F (surf)",
+        "Route 34 (surf)",
+        "Olivine City (surf)"
+      ],
+      "soulsilver": [
+        "New Bark Town (super rod/surf)",
+        "Cherrygrove City (surf)",
+        "Route 32 (surf)",
+        "Union Cave B2F (surf)",
+        "Route 34 (surf)",
+        "Olivine City (surf)"
+      ],
+      "yellow": [
+        "Kanto Sea Route 19 (super rod)",
+        "Kanto Sea Route 20 (super rod)",
+        "Kanto Sea Route 21 (super rod)"
+      ]
+    }
+  },
+  "Togekiss": {
+    "evolvesFrom": "Togetic",
+    "evolveMethod": "Use a Shiny Stone"
+  },
+  "Togepi": {
+    "locations": {
+      "heartgold": [
+        "Violet City Poke Mart (egg gift)"
+      ],
+      "soulsilver": [
+        "Violet City Poke Mart (egg gift)"
+      ]
+    }
+  },
+  "Togetic": {
+    "evolvesFrom": "Togepi",
+    "evolveMethod": "High friendship"
+  },
+  "Torchic": {
+    "locations": {
+      "heartgold": [
+        "Saffron City Silph Co (gift)"
+      ],
+      "soulsilver": [
+        "Saffron City Silph Co (gift)"
+      ]
+    }
+  },
+  "Torkoal": {
+    "locations": {
+      "heartgold": [
+        "Johto Safari Zone Savannah (grass)"
+      ],
+      "soulsilver": [
+        "Johto Safari Zone Savannah (grass)"
+      ]
+    }
+  },
+  "Totodile": {
+    "locations": {
+      "heartgold": [
+        "New Bark Town (gift)"
+      ],
+      "soulsilver": [
+        "New Bark Town (gift)"
+      ]
+    }
+  },
+  "Toxicroak": {
+    "evolvesFrom": "Croagunk",
+    "evolveMethod": "Level 37"
+  },
+  "Trapinch": {
+    "locations": {
+      "heartgold": [
+        "Johto Safari Zone Desert (grass)"
+      ],
+      "soulsilver": [
+        "Johto Safari Zone Desert (grass)"
+      ]
+    }
+  },
+  "Treecko": {
+    "locations": {
+      "heartgold": [
+        "Saffron City Silph Co (gift)"
+      ],
+      "soulsilver": [
+        "Saffron City Silph Co (gift)"
+      ]
+    }
+  },
+  "Typhlosion": {
+    "evolvesFrom": "Quilava",
+    "evolveMethod": "Level 36"
+  },
+  "Tyranitar": {
+    "evolvesFrom": "Pupitar",
+    "evolveMethod": "Level 55"
+  },
+  "Tyrogue": {
+    "locations": {
+      "heartgold": [
+        "Mt Mortar B1F (gift)"
+      ],
+      "soulsilver": [
+        "Mt Mortar B1F (gift)"
+      ]
+    }
+  },
+  "Umbreon": {
+    "evolvesFrom": "Eevee",
+    "evolveMethod": "High friendship (night)"
+  },
+  "Unown": {
+    "locations": {
+      "heartgold": [
+        "Ruins Of Alph Interior A (grass)",
+        "Ruins Of Alph Interior B (grass)",
+        "Ruins Of Alph Interior C (grass)",
+        "Ruins Of Alph Interior D (grass)"
+      ],
+      "soulsilver": [
+        "Ruins Of Alph Interior A (grass)",
+        "Ruins Of Alph Interior B (grass)",
+        "Ruins Of Alph Interior C (grass)",
+        "Ruins Of Alph Interior D (grass)"
+      ]
+    }
+  },
+  "Ursaring": {
+    "evolvesFrom": "Teddiursa",
+    "evolveMethod": "Level 30",
+    "locations": {
+      "soulsilver": [
+        "Mt Silver 2F (grass)",
+        "Mt Silver 1F Top (grass)",
+        "Mt Silver 4F (grass)",
+        "Mt Silver Outside (grass)",
+        "Mt Silver 1F (grass)",
+        "Mt Silver Mountainside (grass)"
+      ]
+    }
+  },
+  "Vaporeon": {
+    "evolvesFrom": "Eevee",
+    "evolveMethod": "Use a Water Stone"
+  },
+  "Venomoth": {
+    "evolvesFrom": "Venonat",
+    "evolveMethod": "Level 31",
+    "locations": {
+      "heartgold": [
+        "Kanto Route 24 (grass)",
+        "Kanto Route 25 (grass)"
+      ],
+      "soulsilver": [
+        "Kanto Route 24 (grass)",
+        "Kanto Route 25 (grass)"
+      ],
+      "red": [
+        "Cerulean Cave 1F (grass)",
+        "Cerulean Cave 2F (grass)",
+        "Kanto Victory Road 2 3F (grass)",
+        "Kanto Safari Zone Area 2 North (grass)",
+        "Kanto Safari Zone Area 3 West (grass)"
+      ],
+      "blue": [
+        "Cerulean Cave 1F (grass)",
+        "Cerulean Cave 2F (grass)",
+        "Kanto Victory Road 2 3F (grass)",
+        "Kanto Safari Zone Area 2 North (grass)",
+        "Kanto Safari Zone Area 3 West (grass)"
+      ],
+      "yellow": [
+        "Kanto Route 14 (grass)",
+        "Kanto Route 15 (grass)",
+        "Cerulean Cave 1F (grass)"
+      ]
+    }
+  },
+  "Venonat": {
+    "locations": {
+      "heartgold": [
+        "National Park (grass)",
+        "Route 43 (grass/headbutt)",
+        "Lake Of Rage (headbutt)",
+        "Kanto Route 24 (grass)",
+        "Kanto Route 25 (grass)"
+      ],
+      "soulsilver": [
+        "National Park (grass)",
+        "Route 43 (grass/headbutt)",
+        "Lake Of Rage (headbutt)",
+        "Kanto Route 24 (grass)",
+        "Kanto Route 25 (grass)"
+      ],
+      "red": [
+        "Kanto Route 12 (grass)",
+        "Kanto Route 13 (grass)",
+        "Kanto Route 14 (grass)",
+        "Kanto Route 15 (grass)",
+        "Kanto Safari Zone Middle (grass)",
+        "Kanto Safari Zone Area 3 West (grass)"
+      ],
+      "blue": [
+        "Kanto Route 12 (grass)",
+        "Kanto Route 13 (grass)",
+        "Kanto Route 14 (grass)",
+        "Kanto Route 15 (grass)",
+        "Kanto Safari Zone Middle (grass)",
+        "Kanto Safari Zone Area 3 West (grass)"
+      ],
+      "yellow": [
+        "Kanto Route 14 (grass)",
+        "Kanto Route 15 (grass)",
+        "Kanto Route 24 (grass)",
+        "Kanto Route 25 (grass)"
+      ]
+    }
+  },
+  "Venusaur": {
+    "evolvesFrom": "Ivysaur",
+    "evolveMethod": "Level 32"
+  },
+  "Vespiquen": {
+    "evolvesFrom": "Combee",
+    "evolveMethod": "Level 21"
+  },
+  "Vibrava": {
+    "evolvesFrom": "Trapinch",
+    "evolveMethod": "Level 35",
+    "locations": {
+      "heartgold": [
+        "Johto Safari Zone Desert (grass)"
+      ],
+      "soulsilver": [
+        "Johto Safari Zone Desert (grass)"
+      ]
+    }
+  },
+  "Victreebel": {
+    "evolvesFrom": "Weepinbell",
+    "evolveMethod": "Use a Leaf Stone"
+  },
+  "Vigoroth": {
+    "evolvesFrom": "Slakoth",
+    "evolveMethod": "Level 18",
+    "locations": {
+      "heartgold": [
+        "Johto Safari Zone Peak (grass)"
+      ],
+      "soulsilver": [
+        "Johto Safari Zone Peak (grass)"
+      ]
+    }
+  },
+  "Vileplume": {
+    "evolvesFrom": "Gloom",
+    "evolveMethod": "Use a Leaf Stone"
+  },
+  "Volbeat": {
+    "locations": {
+      "heartgold": [
+        "National Park (grass)",
+        "Johto Safari Zone Mountain (grass)"
+      ],
+      "soulsilver": [
+        "National Park (grass)",
+        "Johto Safari Zone Mountain (grass)"
+      ]
+    }
+  },
+  "Voltorb": {
+    "locations": {
+      "heartgold": [
+        "Kanto Route 10 (grass)",
+        "Johto Safari Zone Swamp (grass)",
+        "Team Rocket Hq (gift)"
+      ],
+      "soulsilver": [
+        "Kanto Route 10 (grass)",
+        "Johto Safari Zone Swamp (grass)",
+        "Team Rocket Hq (gift)"
+      ],
+      "red": [
+        "Kanto Route 10 (grass)",
+        "Kanto Power Plant (gift/grass)"
+      ],
+      "blue": [
+        "Kanto Route 10 (grass)",
+        "Kanto Power Plant (gift/grass)"
+      ],
+      "yellow": [
+        "Kanto Power Plant (gift/grass)"
+      ]
+    }
+  },
+  "Vulpix": {
+    "locations": {
+      "soulsilver": [
+        "Route 36 (grass)",
+        "Route 37 (grass)",
+        "Route 48 (grass)",
+        "Kanto Route 7 (grass)",
+        "Kanto Route 8 (grass)"
+      ],
+      "blue": [
+        "Kanto Route 7 (grass)",
+        "Kanto Route 8 (grass)",
+        "Pokemon Mansion 1F (grass)",
+        "Pokemon Mansion 2F (grass)",
+        "Pokemon Mansion 3F (grass)",
+        "Pokemon Mansion B1F (grass)"
+      ],
+      "yellow": [
+        "Celadon City Prize Corner (gift)"
+      ]
+    }
+  },
+  "Walrein": {
+    "evolvesFrom": "Sealeo",
+    "evolveMethod": "Level 44"
+  },
+  "Wartortle": {
+    "evolvesFrom": "Squirtle",
+    "evolveMethod": "Level 16"
+  },
+  "Weavile": {
+    "evolvesFrom": "Sneasel",
+    "evolveMethod": "Level up (night)"
+  },
+  "Weedle": {
+    "locations": {
+      "heartgold": [
+        "National Park (grass)"
+      ],
+      "soulsilver": [
+        "Route 30 (grass)",
+        "Route 31 (grass)",
+        "Ilex Forest (grass/headbutt)",
+        "National Park (grass)",
+        "Kanto Route 2 (south towards viridian city) (grass)",
+        "Kanto Route 2 (north towards pewter city) (grass)"
+      ],
+      "red": [
+        "Kanto Route 2 (south towards viridian city) (grass)",
+        "Kanto Route 24 (grass)",
+        "Kanto Route 25 (grass)",
+        "Viridian Forest (grass)"
+      ],
+      "blue": [
+        "Kanto Route 25 (grass)",
+        "Viridian Forest (grass)"
+      ]
+    }
+  },
+  "Weepinbell": {
+    "evolvesFrom": "Bellsprout",
+    "evolveMethod": "Level 21",
+    "locations": {
+      "heartgold": [
+        "Route 44 (grass)",
+        "Kanto Route 24 (grass)",
+        "Kanto Route 25 (grass)",
+        "Johto Safari Zone Swamp (grass)"
+      ],
+      "soulsilver": [
+        "Route 44 (grass)",
+        "Kanto Route 24 (grass)",
+        "Kanto Route 25 (grass)",
+        "Johto Safari Zone Swamp (grass)"
+      ],
+      "blue": [
+        "Kanto Route 12 (grass)",
+        "Kanto Route 13 (grass)",
+        "Kanto Route 14 (grass)",
+        "Kanto Route 15 (grass)"
+      ],
+      "yellow": [
+        "Kanto Route 12 (grass)",
+        "Kanto Route 13 (grass)",
+        "Kanto Route 14 (grass)",
+        "Kanto Route 15 (grass)",
+        "Cerulean Cave 1F (grass)",
+        "Cerulean Cave 2F (grass)"
+      ]
+    }
+  },
+  "Weezing": {
+    "evolvesFrom": "Koffing",
+    "evolveMethod": "Level 35",
+    "locations": {
+      "heartgold": [
+        "Johto Safari Zone Marshland (grass)"
+      ],
+      "soulsilver": [
+        "Johto Safari Zone Marshland (grass)"
+      ],
+      "red": [
+        "Pokemon Mansion 1F (grass)",
+        "Pokemon Mansion 2F (grass)",
+        "Pokemon Mansion 3F (grass)",
+        "Pokemon Mansion B1F (grass)"
+      ],
+      "blue": [
+        "Pokemon Mansion 1F (grass)",
+        "Pokemon Mansion 2F (grass)",
+        "Pokemon Mansion 3F (grass)",
+        "Pokemon Mansion B1F (grass)"
+      ]
+    }
+  },
+  "Whiscash": {
+    "evolvesFrom": "Barboach",
+    "evolveMethod": "Level 30",
+    "locations": {
+      "heartgold": [
+        "Violet City (good rod/old rod/super rod)"
+      ],
+      "soulsilver": [
+        "Violet City (good rod/old rod/super rod)"
+      ]
+    }
+  },
+  "Whismur": {
+    "locations": {
+      "heartgold": [
+        "Route 30 (grass)",
+        "Route 31 (grass)",
+        "Route 32 (grass)",
+        "Ruins of Alph (grass)",
+        "Route 34 (grass)",
+        "Route 35 (grass)"
+      ],
+      "soulsilver": [
+        "Route 30 (grass)",
+        "Route 31 (grass)",
+        "Route 32 (grass)",
+        "Ruins of Alph (grass)",
+        "Route 34 (grass)",
+        "Route 35 (grass)"
+      ]
+    }
+  },
+  "Wigglytuff": {
+    "evolvesFrom": "Jigglypuff",
+    "evolveMethod": "Use a Moon Stone",
+    "locations": {
+      "red": [
+        "Cerulean Cave 2F (grass)"
+      ],
+      "blue": [
+        "Cerulean Cave 2F (grass)"
+      ],
+      "yellow": [
+        "Celadon City Prize Corner (gift)"
+      ]
+    }
+  },
+  "Wingull": {
+    "locations": {
+      "heartgold": [
+        "Vermilion City (surf)",
+        "Vermilion City Ss Anne Dock (surf)"
+      ],
+      "soulsilver": [
+        "Vermilion City (surf)",
+        "Vermilion City Ss Anne Dock (surf)"
+      ]
+    }
+  },
+  "Wobbuffet": {
+    "evolvesFrom": "Wynaut",
+    "evolveMethod": "Level 15",
+    "locations": {
+      "heartgold": [
+        "Dark Cave Blackthorn City Entrance (grass)",
+        "Cerulean Cave 1F (grass)",
+        "Cerulean Cave 2F (grass)",
+        "Cerulean Cave B1F (grass)",
+        "Johto Safari Zone Peak (grass)"
+      ],
+      "soulsilver": [
+        "Dark Cave Blackthorn City Entrance (grass)",
+        "Cerulean Cave 1F (grass)",
+        "Cerulean Cave 2F (grass)",
+        "Cerulean Cave B1F (grass)",
+        "Johto Safari Zone Peak (grass)"
+      ]
+    }
+  },
+  "Wooper": {
+    "locations": {
+      "heartgold": [
+        "Route 32 (grass)",
+        "Ruins of Alph (surf)",
+        "Union Cave 1F (surf)",
+        "Union Cave B1F (surf)",
+        "Route 47 (cave gate) (surf)",
+        "Route 47 (inside cave) (grass)"
+      ],
+      "soulsilver": [
+        "Route 32 (grass)",
+        "Ruins of Alph (surf)",
+        "Union Cave 1F (surf)",
+        "Union Cave B1F (surf)",
+        "Route 47 (cave gate) (surf)",
+        "Route 47 (inside cave) (grass)"
+      ]
+    }
+  },
+  "Wormadam": {
+    "evolvesFrom": "Burmy",
+    "evolveMethod": "Level 20"
+  },
+  "Wurmple": {
+    "locations": {
+      "heartgold": [
+        "National Park (grass)",
+        "Kanto Route 12 (headbutt)",
+        "Viridian City (headbutt)",
+        "Fuchsia City (headbutt)",
+        "Pallet Town (headbutt)",
+        "Kanto Route 1 (headbutt)"
+      ],
+      "soulsilver": [
+        "National Park (grass)",
+        "Kanto Route 12 (headbutt)",
+        "Viridian City (headbutt)",
+        "Fuchsia City (headbutt)",
+        "Pallet Town (headbutt)",
+        "Kanto Route 1 (headbutt)"
+      ]
+    }
+  },
+  "Wynaut": {
+    "breeding": "Breed a Wobbuffet"
+  },
+  "Xatu": {
+    "evolvesFrom": "Natu",
+    "evolveMethod": "Level 25"
+  },
+  "Yanma": {
+    "locations": {
+      "heartgold": [
+        "Route 35 (grass)"
+      ],
+      "soulsilver": [
+        "Route 35 (grass)"
+      ]
+    }
+  },
+  "Yanmega": {
+    "evolvesFrom": "Yanma",
+    "evolveMethod": "Level up knowing Ancient Power"
+  },
+  "Zangoose": {
+    "locations": {
+      "heartgold": [
+        "Johto Safari Zone Peak (grass)",
+        "Johto Safari Zone Plains (grass)"
+      ],
+      "soulsilver": [
+        "Johto Safari Zone Peak (grass)",
+        "Johto Safari Zone Plains (grass)"
+      ]
+    }
+  },
+  "Zapdos": {
+    "legendary": true,
+    "locations": {
+      "heartgold": [
+        "Kanto Route 10 (gift)"
+      ],
+      "soulsilver": [
+        "Kanto Route 10 (gift)"
+      ],
+      "red": [
+        "Kanto Power Plant (gift)"
+      ],
+      "blue": [
+        "Kanto Power Plant (gift)"
+      ],
+      "yellow": [
+        "Kanto Power Plant (gift)"
+      ]
+    }
+  },
+  "Zigzagoon": {
+    "locations": {
+      "heartgold": [
+        "Sprout Tower 2F (grass)",
+        "Sprout Tower 3F (grass)",
+        "Burned Tower 1F (grass)",
+        "Burned Tower B1F (grass)",
+        "Bell Tower 2F (grass)",
+        "Bell Tower 3F (grass)"
+      ],
+      "soulsilver": [
+        "Sprout Tower 2F (grass)",
+        "Sprout Tower 3F (grass)",
+        "Burned Tower 1F (grass)",
+        "Burned Tower B1F (grass)",
+        "Bell Tower 2F (grass)",
+        "Bell Tower 3F (grass)"
+      ]
+    }
+  },
+  "Zubat": {
+    "locations": {
+      "heartgold": [
+        "Route 32 (grass)",
+        "Union Cave 1F (grass)",
+        "Union Cave B1F (grass)",
+        "Union Cave B2F (grass)",
+        "Route 33 (grass)",
+        "Slowpoke Well 1F (grass)"
+      ],
+      "soulsilver": [
+        "Route 32 (grass)",
+        "Union Cave 1F (grass)",
+        "Union Cave B1F (grass)",
+        "Union Cave B2F (grass)",
+        "Route 33 (grass)",
+        "Slowpoke Well 1F (grass)"
+      ],
+      "red": [
+        "Seafoam Islands 1F (grass)",
+        "Mt Moon 1F (grass)",
+        "Rock Tunnel B1F (grass)",
+        "Mt Moon B1F (grass)",
+        "Mt Moon B2F (grass)",
+        "Rock Tunnel B2F (grass)"
+      ],
+      "blue": [
+        "Seafoam Islands 1F (grass)",
+        "Mt Moon 1F (grass)",
+        "Rock Tunnel B1F (grass)",
+        "Mt Moon B1F (grass)",
+        "Mt Moon B2F (grass)",
+        "Rock Tunnel B2F (grass)"
+      ],
+      "yellow": [
+        "Seafoam Islands 1F (grass)",
+        "Seafoam Islands B1F (grass)",
+        "Seafoam Islands B2F (grass)",
+        "Seafoam Islands B3F (grass)",
+        "Seafoam Islands B4F (grass)",
+        "Mt Moon 1F (grass)"
+      ]
+    }
+  }
+}

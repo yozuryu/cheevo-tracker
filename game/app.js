@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { createRoot } from 'react-dom/client';
-import { Trophy, Crown, Medal, Lock, ExternalLink, AlertCircle, AlertTriangle, Flame, Feather, Gamepad2, Tag, Code, Calendar, BookOpen, MessageSquare, Loader, X } from 'lucide-react';
+import { Trophy, Crown, Medal, Lock, ExternalLink, AlertCircle, AlertTriangle, Flame, Feather, Gamepad2, Tag, Code, Calendar, BookOpen, MessageSquare, Loader, X, MapPin, ArrowUpCircle, Egg, Sparkles, ChevronDown, CheckCircle2, Compass } from 'lucide-react';
 import { MEDIA_URL, SITE_URL, TILDE_TAG_COLORS } from '../profile/utils/constants.js';
 import { getMediaUrl, parseTitle, formatDate, formatTimeAgo } from '../profile/utils/helpers.js';
 import { getCredentials, clearCredentials, getGameInfoAndUserProgress, getGameHashes, getGameProgression, getGameExtended, getActiveClaims, getGameRankAndScore, getComments, getGameLeaderboards, getUserGameLeaderboards, getLeaderboardEntries, getGame, fetchSocial, getSocialProfileMap } from '../profile/utils/ra-api.js';
 import { Topbar, Footer } from '../assets/ui.js';
+import { findPocSubset, buildPocCheckpoints } from './utils/poc.js';
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
@@ -139,6 +140,74 @@ function AchievementRow({ ach, totalPlayersCasual, totalPlayersHardcore, extAch,
   );
 }
 
+// ── Professor Oak Challenge rows ────────────────────────────────────────────────
+
+function getPocHint(name, reference, version) {
+  const ref = reference?.[name];
+  if (!ref) return null;
+  if (ref.evolvesFrom) return { icon: 'evolve', text: `Evolves from ${ref.evolvesFrom} — ${ref.evolveMethod}` };
+  const locs = ref.locations?.[version];
+  if (locs && locs.length) return { icon: 'location', text: locs.slice(0, 3).join('; ') };
+  if (ref.breeding) return { icon: 'breed', text: ref.breeding };
+  if (ref.legendary || ref.mythical) return { icon: 'legendary', text: 'Legendary encounter — check the guide for details' };
+  return null;
+}
+
+const POC_HINT_STYLE = {
+  evolve:    { Icon: ArrowUpCircle, color: '#8f98a0' },
+  location:  { Icon: MapPin,        color: '#66c0f4' },
+  breed:     { Icon: Egg,           color: '#ff9800' },
+  legendary: { Icon: Sparkles,      color: '#e5b143' },
+};
+
+function PocHintLine({ icon, text }) {
+  const { Icon, color } = POC_HINT_STYLE[icon] || POC_HINT_STYLE.location;
+  return (
+    <p className="flex items-start gap-1.5 text-[9px] text-[#8f98a0] leading-snug">
+      <Icon size={10} className="shrink-0 mt-[1px]" style={{ color }} />
+      <span>{text}</span>
+    </p>
+  );
+}
+
+function PocEntryRow({ entry, reference, version }) {
+  const unlocked = !!entry.ach.dateEarned;
+  const displayName = entry.names.join(' / ');
+  const structuredHints = entry.isChoice
+    ? entry.names.map(n => ({ name: n, hint: getPocHint(n, reference, version) })).filter(x => x.hint)
+    : [{ name: entry.names[0], hint: getPocHint(entry.names[0], reference, version) }].filter(x => x.hint);
+
+  return (
+    <div className={`flex items-start gap-2.5 px-3 py-2 ${unlocked ? 'bg-[#202d39]' : ''}`}>
+      <a href={`../achievement/?id=${entry.ach.id}`}
+        className="relative shrink-0 w-8 h-8 rounded-[2px] border border-[#101214] overflow-hidden bg-black hover:scale-105 transition-transform block">
+        <img
+          src={`${MEDIA_URL}/Badge/${entry.ach.badgeName || '00001'}.png`}
+          alt={displayName}
+          className={`w-full h-full object-cover ${!unlocked ? 'grayscale brightness-40' : ''}`}
+        />
+      </a>
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-1.5 flex-wrap mb-0.5">
+          <span className={`text-[11px] font-medium ${unlocked ? 'text-[#e5b143]' : 'text-[#c6d4df]'}`}>{displayName}</span>
+          {unlocked && <CheckCircle2 size={11} className="shrink-0" style={{ color: '#e5b143' }} />}
+        </div>
+        {!unlocked && (
+          structuredHints.length > 0 ? (
+            <div className="flex flex-col gap-1 mt-0.5">
+              {structuredHints.map(({ name, hint }) => (
+                <PocHintLine key={name} icon={hint.icon} text={entry.isChoice ? `${name}: ${hint.text}` : hint.text} />
+              ))}
+            </div>
+          ) : (
+            <p className="text-[9px] text-[#546270] italic mt-0.5">{entry.ach.description}</p>
+          )
+        )}
+      </div>
+    </div>
+  );
+}
+
 // ── Main app ──────────────────────────────────────────────────────────────────
 
 function GameApp() {
@@ -151,7 +220,7 @@ function GameApp() {
   const [error, setError]       = useState(null);
   const [tab, setTab]           = useState(() => {
     const t = params.get('tab');
-    return ['achievements', 'details', 'leaderboards', 'community', 'hashes'].includes(t) ? t : 'achievements';
+    return ['achievements', 'details', 'leaderboards', 'community', 'hashes', 'poc'].includes(t) ? t : 'achievements';
   });
   const [filter, setFilter]     = useState('all');          // all | unlocked | locked
   const [typeFilter, setTypeFilter] = useState('all');      // all | progression | win_condition | missable
@@ -183,8 +252,11 @@ function GameApp() {
   const [friendGameData, setFriendGameData]       = useState(null);
   const [loadingFriendData, setLoadingFriendData] = useState(false);
   const [showFriendPicker, setShowFriendPicker]   = useState(false);
+  const [pocReference, setPocReference]             = useState(null);
+  const [expandedCheckpoint, setExpandedCheckpoint] = useState(null);
 
   const creds = getCredentials();
+  const pocSubset = findPocSubset(gameId);
 
   useEffect(() => {
     if (!creds) { handleAuthError(); return; }
@@ -349,6 +421,14 @@ function GameApp() {
       .finally(() => setLoadingInfoExtra(false));
   }, [tab, gameId]);
 
+  useEffect(() => {
+    if (tab !== 'poc' || !pocSubset || pocReference !== null) return;
+    fetch('./data/poc-pokemon.json')
+      .then(r => r.json())
+      .then(setPocReference)
+      .catch(() => setPocReference({}));
+  }, [tab, pocSubset, pocReference]);
+
   function switchTab(id) {
     setTab(id);
     const url = new URL(window.location.href);
@@ -356,8 +436,21 @@ function GameApp() {
     history.replaceState(null, '', url.toString());
   }
 
+  useEffect(() => {
+    if (expandedCheckpoint === null && currentCheckpointKey) setExpandedCheckpoint(currentCheckpointKey);
+  }, [currentCheckpointKey]);
+
   const parsed   = useMemo(() => game ? parseTitle(game.title) : null, [game]);
   const achList  = useMemo(() => game ? Object.values(game.achievements) : [], [game]);
+
+  const pocCheckpoints = useMemo(
+    () => (game && pocSubset) ? buildPocCheckpoints(achList) : [],
+    [game, pocSubset, achList]
+  );
+  const currentCheckpointKey = useMemo(() => {
+    const active = pocCheckpoints.find(cp => !cp.markerAch || !cp.markerAch.dateEarned);
+    return active ? active.key : (pocCheckpoints[pocCheckpoints.length - 1]?.key ?? null);
+  }, [pocCheckpoints]);
 
   const friendAchMap = useMemo(() => {
     if (!friendGameData?.achievements) return new Map();
@@ -588,6 +681,7 @@ function GameApp() {
                 { id: 'leaderboards',  label: 'Leaderboards'  },
                 { id: 'community',     label: 'Community'     },
                 { id: 'hashes',        label: 'Hashes'        },
+                ...(pocSubset ? [{ id: 'poc', label: 'Professor Oak' }] : []),
               ].map(t => (
                 <button key={t.id} type="button" onClick={() => switchTab(t.id)}
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-sm text-[11px] font-semibold uppercase tracking-wider border transition-colors shrink-0 ${
@@ -1172,6 +1266,102 @@ function GameApp() {
                   ))}
                 </div>
               )}
+            </div>
+          )}
+
+          {/* ── Professor Oak Challenge tab ── */}
+          {tab === 'poc' && pocSubset && (
+            <div className="flex-1 max-w-4xl mx-auto w-full px-4 md:px-8 py-4">
+
+              {/* Sibling version links */}
+              {pocSubset.siblings.length > 0 && (
+                <div className="flex items-center gap-1.5 mb-3 flex-wrap">
+                  <span className="text-[8px] uppercase tracking-wider text-[#546270]">Also see</span>
+                  {pocSubset.siblings.map(s => (
+                    <a key={s.id} href={`?id=${s.id}&tab=poc`}
+                      className="text-[9px] font-semibold uppercase tracking-wider px-2 py-[3px] rounded-sm border bg-[#101214] text-[#8f98a0] border-[#323f4c] hover:text-[#c6d4df] hover:border-[#546270] transition-colors">
+                      {s.label}
+                    </a>
+                  ))}
+                </div>
+              )}
+
+              {/* Rules blurb */}
+              <div className="flex items-start gap-2.5 px-3 py-2.5 mb-4 bg-[rgba(102,192,244,0.06)] border border-[#2a475e] rounded-[2px]">
+                <Compass size={14} className="shrink-0 mt-0.5" style={{ color: '#66c0f4' }} />
+                <div className="flex-1 min-w-0">
+                  <p className="text-[11px] text-[#c6d4df] leading-snug">
+                    Catch (and evolve to the required stage) every available Pokémon in this version before each checkpoint below — no trading in unavailable Pokémon, no version exclusives from the other game, no glitches.
+                  </p>
+                  {game.forumTopicId && (
+                    <a href={`${SITE_URL}/viewtopic.php?t=${game.forumTopicId}`} target="_blank" rel="noreferrer"
+                      className="inline-flex items-center gap-1 mt-1.5 text-[10px] text-[#66c0f4] hover:text-[#8ed2fa] transition-colors">
+                      <MessageSquare size={10} /> Full rules on the forum thread
+                    </a>
+                  )}
+                </div>
+              </div>
+
+              {(() => {
+                const totalAch    = achList.length;
+                const unlockedAch = unlockedCount;
+                const pct = totalAch > 0 ? (unlockedAch / totalAch) * 100 : 0;
+                const version = pocSubset.version;
+
+                return (
+                  <>
+                    {/* Overall progress */}
+                    <div className="flex items-center gap-2 mb-4">
+                      <div className="flex-1 bg-[#101214] h-[5px] rounded-full overflow-hidden">
+                        <div className="h-full rounded-full transition-all" style={{ width: `${pct}%`, background: pct === 100 ? '#e5b143' : '#66c0f4' }} />
+                      </div>
+                      <span className="text-[10px] font-semibold shrink-0" style={{ color: pct === 100 ? '#e5b143' : '#66c0f4' }}>
+                        {unlockedAch} / {totalAch}
+                      </span>
+                    </div>
+
+                    {/* Checkpoint accordion */}
+                    <div className="flex flex-col gap-1.5">
+                      {pocCheckpoints.map(cp => {
+                        const caught = cp.entries.filter(e => e.ach.dateEarned).length;
+                        const cleared = !!cp.markerAch?.dateEarned;
+                        const isOpen = expandedCheckpoint === cp.key;
+                        return (
+                          <div key={cp.key} className="bg-[#1b2838] border border-[#2a475e] rounded-[2px] overflow-hidden">
+                            <button type="button" onClick={() => setExpandedCheckpoint(isOpen ? null : cp.key)}
+                              className="w-full flex items-center gap-2.5 px-3 py-2.5 hover:bg-[#202d39] transition-colors text-left">
+                              {cleared
+                                ? <CheckCircle2 size={14} className="shrink-0" style={{ color: '#e5b143' }} />
+                                : <span className="shrink-0 w-[14px] h-[14px] rounded-full border border-[#546270]" />}
+                              <div className="flex-1 min-w-0">
+                                <span className="text-[12px] font-medium text-[#c6d4df]">{cp.leader}</span>
+                                {cp.title !== cp.leader && <span className="text-[9px] text-[#546270] ml-1.5">{cp.title}</span>}
+                              </div>
+                              {cp.entries.length > 0 && (
+                                <span className="text-[9px] font-semibold shrink-0" style={{ color: caught === cp.entries.length ? '#e5b143' : '#66c0f4' }}>
+                                  {caught} / {cp.entries.length}
+                                </span>
+                              )}
+                              <ChevronDown size={13} className="shrink-0 text-[#546270] transition-transform" style={{ transform: isOpen ? 'rotate(180deg)' : 'none' }} />
+                            </button>
+
+                            {isOpen && (
+                              <div className="border-t border-[#2a475e] divide-y divide-[#1b2838]">
+                                {cp.entries.map(entry => (
+                                  <PocEntryRow key={entry.ach.id} entry={entry} reference={pocReference} version={version} />
+                                ))}
+                                {cp.entries.length === 0 && (
+                                  <div className="py-3 text-center text-[10px] text-[#546270]">No new species required for this checkpoint.</div>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </>
+                );
+              })()}
             </div>
           )}
         </>
