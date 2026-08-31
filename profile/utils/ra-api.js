@@ -1553,6 +1553,33 @@ export async function fetchConsoleGames(username, apiKey, consoleId, forceRefres
   return result;
 }
 
+const COMPLETION_MAP_TTL = 60 * 60 * 1000;
+
+/**
+ * Completion progress for every game the user has touched, keyed by gameId.
+ * Powers the library-coverage strip on the console page.
+ * Cached in localStorage for 1 hour under ra_completion_{username}.
+ */
+export async function fetchCompletionMap(username, apiKey, forceRefresh = false) {
+  const cacheKey = `ra_completion_${username}`;
+  if (!forceRefresh) {
+    const cached = lcacheGet(cacheKey, COMPLETION_MAP_TTL);
+    if (cached) return cached;
+  }
+
+  const results = await getUserCompletionProgress(username, apiKey);
+  const map = {};
+  results.forEach(r => {
+    map[r.gameId] = {
+      numAwarded:  r.numAwarded,
+      maxPossible: r.maxPossible,
+      award:       r.highestAwardKind,
+    };
+  });
+  lcacheSet(cacheKey, map);
+  return map;
+}
+
 /**
  * Fetches detailed game metadata + per-achievement user progress for a single game.
  * Includes UserTotalPlaytime (seconds). Cached for 5 minutes under ra_game_{username}_{gameId}.

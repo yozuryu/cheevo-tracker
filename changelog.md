@@ -1,5 +1,57 @@
 # Changelog
 
+## v26.08.30 — Stats Tab + Contextual Analytics
+
+### RetroAchievements API
+
+- Added `fetchCompletionMap(username, apiKey)` to `ra-api.js` — wraps the existing `getUserCompletionProgress` wrapper and returns a `{ [gameId]: { numAwarded, maxPossible, award } }` map, cached in `localStorage` under `ra_completion_{username}` for 1 hour. Single endpoint, so the console page gets user progress without paying for the full 5-call `fetchProfile`.
+- `transformData` now carries the raw `awardedAt` timestamp through to each `gameAwards` entry alongside the already-formatted `date` — the mastery timeline needs a real date to bucket by month, and `formatDate` output can't be re-parsed reliably.
+
+### Structure
+
+- Updated `docs/pages/profile.md` — added the Stats tab (props, tile/card derivations, DST-safe streak arithmetic, timeline sizing rules) and a Completion Progress view-filter table.
+- Updated `docs/pages/console.md` — added the coverage strip section and the third mount fetch.
+- Updated `docs/pages/game.md` — added the difficulty curve section with the band table and the ordinal-ramp rationale.
+- Updated `docs/architecture.md` — added `fetchCompletionMap` to the composites and caching tables, and corrected the mobile nav section, which still described two nav tabs when the bar has had six slots plus a menu sheet for a while.
+- Updated `profile/utils/ra-api.md` — documented `fetchCompletionMap` under App Composites.
+- Chart palettes are now checked with the `dataviz` skill's `validate_palette.js` against the `#1b2838` card surface before shipping. `#66c0f4` / `#e5b143` sit outside the validator's dark lightness band but clear CVD separation, normal-vision separation and contrast by wide margins, so they stay for design-system consistency; ordered scales take the validated single-hue ramp instead of a set of accent hues. Noted in `docs/pages/profile.md`.
+
+### Profile
+
+- Added a **Stats** tab (`?tab=stats`). Every figure is derived from data already in memory — the mount fetch (games, awards) and the achievement chunks the Activity tab loads — so opening it costs no extra API calls beyond the chunk load it shares with Activity.
+  Four tiles: current streak, longest streak, active days in the last 90, and points this month against the median month in the loaded window. Then three cards: **Mastery timeline** (lifetime masteries/beaten per month, from award dates), **Consoles** (achievements unlocked and games mastered per system, top 10 plus a rolled-up remainder), and **Rarity profile** (unlocks banded by RetroPoints ÷ points, RA's own difficulty weighting).
+- Added a **Point acquisition** chart to the Stats tab — points per week as columns with a 4-week trailing mean as a line overlay, sharing one axis. Weekly rather than monthly resolves the actual play bursts; ~52 columns over the loaded window, with the x-axis ticking the first week of each month since there is no room to label every column. A cumulative line was the obvious second series but would have needed a second y-scale; dual-axis plots invent a correlation that isn't in the data, so the overlay is a rolling mean in the same unit. Hovering a column dims the others and swaps the legend for a month readout; only the peak column carries a direct label. The oldest month bucket is dropped because the 364-day fetch window clips it.
+- Rarity profile and the game page's difficulty curve now use **their own palette** — grey `#8f98a0`, blue `#66c0f4` (the app's bar blue), orange `#e8813c`, pale yellow `#f5e08f`, deep red `#c94040`. The three warm tiers are hue-wheel neighbours, so they separate by **lightness** rather than hue: at comparable saturation they measure ΔE 8–11 against each other and collapse under red-green CVD, while spread across lightness they clear it (CVD ΔE 12.4 deutan, contrast all ≥ 3:1). Shades are pulled away from meanings the app already owns — the pale yellow is far from the `#e5b143` gold that means *mastered*, the deep red far from the `#ff6b6b` that means *error*. Nothing here encodes the order; the labels, counts and percentages do. The one sub-floor pair is grey↔blue at ΔE 13.9, the same pair already accepted on the Consoles card.
+- The band colours replace an original set that had Uncommon `#57cbde` and Rare `#66c0f4` at ΔE 5.2 under normal vision — two adjacent bands nobody could tell apart, colourblind or not. An interim single-hue ramp fixed that; the loot palette keeps the separation while carrying semantics the ramp could not.
+- Mastery timeline bars gained the 2px surface gap between stacked mastered/beaten segments and a 4px rounded cap, so the two segments read as separate fills rather than one bar.
+- Mastery timeline columns now dim on hover and swap the legend row for a month readout, matching the acquisition chart. Replaces the `title` tooltip, which needed a hover-and-wait and gave no visual feedback.
+- Consoles card bars are now stacked and **counted in games** — bar length is games played on that console, split into mastered (gold `#e5b143`), beaten (grey `#8f98a0`) and in-progress (`#66c0f4`) segments, so a segment's width is the same number printed beside it. Mastered and beaten counts show with Trophy/Medal icons; previously only the mastered count appeared, so 5 beaten games across PlayStation, NES/Famicom and Game Boy Color were invisible. Rows now sort by games played, and achievements unlocked is no longer encoded on this card.
+- Console bar segments reordered to **in progress → beaten → mastered**, left to right, with the legend flipped to match. A stacked bar is only precisely comparable across rows for the segment anchored at the baseline; only 3 of 12 consoles have a mastered game, so the previous mastered-first order left nine bars starting on a different colour and nothing comparable at the baseline. Every row has in-progress games, so blue anchors all twelve. Left-to-right now reads as the progression with gold terminating the bar, matching the blue-to-gold progress bars elsewhere in the app.
+- Segments were first weighted by achievements *earned in* mastered/beaten games. The arithmetic was right but it read as broken — a single 80-achievement mastery filled 83% of a PlayStation Portable bar labelled "1 mastered", and NES/Famicom showed 97% beaten for 2 of 3 games. Bar length and segments now share one unit.
+- Mastery timeline's Beaten fill moved from `#546270` to the `#8f98a0` grey the status table defines, so both charts use one award language.
+- Noted in `docs/rules.md` that grey↔`#66c0f4` measures ΔE 13.9 under normal vision, below the `dataviz` validator's 15 floor. Grey has almost no chroma so no blue at a similar lightness clears it; the status colors stay as documented and every chart segment carries its own count and icon as secondary encoding.
+- Also noted that the game page's award badge is a separate surface — `AWARD_CONFIG` uses `#c6d4df` for beaten-hardcore and `#8f98a0` for beaten-softcore, while the status colors govern everywhere else.
+- Streak arithmetic reads the heatmap's local day keys as UTC day numbers so runs stay exact across DST boundaries. A quiet today doesn't break the current streak — counting starts from yesterday.
+- Mastery timeline fills empty months, pads short histories back to a 24-month span, and always runs the axis to the current month so a drought since the last award is visible rather than cropped off.
+- Completion Progress tab gained a **View** control — `All` / `Nearly there` / `In progress` / `Abandoned`. The three progression buckets partition started-but-unfinished games: every such game lands in exactly one, first match wins.
+  `Nearly there` is `rawProgress >= 75`, sorted by fewest achievements remaining — the "what can I finish tonight" list. `In progress` is anything else with activity in the last 30 days, most recent first. `Abandoned` is the rest. The `Mastered` toggle only applies to `All`, since the buckets exclude mastered games by definition.
+- `Nearly there` deliberately outranks `Abandoned` rather than being filtered by recency — a game left at 80% seven months ago is the one most worth resurrecting, and burying it in the abandoned pile defeats the purpose of the list.
+- Percentage gates the bucket, achievements-remaining sorts within it. A pure `remaining <= N` rule surfaces tiny 6-achievement sets with a single unlock (17% done, 5 left) as "nearly there"; a pure percentage rule tops the list with an 81%-of-93 set that still has 18 to go. Gating on 75% and sorting by remaining ascending avoids both failure modes.
+
+### Game Page
+
+- Added a **difficulty curve** strip above the Achievements tab controls — the set bucketed into five rarity bands by each achievement's share of the game's total players, with your unlocked portion filled in per band. Computed from `numAwarded` and `numDistinctPlayersCasual` already on the page; no extra request.
+- Difficulty curve columns are capped at 46px and centred on a shared baseline over an 80px plot, rather than stretched to fill the card. Stretching rendered 157×40px slabs — wider than they were tall, 6.5× the ≤24px mark-spec cap, and with no readable silhouette, which is the whole point of a curve. Empty bands drew as 157×1px hairlines that read as dividers.
+- The column row uses `items-start`, not `items-end`. Every plot is a fixed 80px so aligning tops aligns the baselines; `items-end` let the wrapped "Ultra rare" label make its column taller and shunt that bar up off the baseline. Verified at 1280 / 360 / 320px with no horizontal overflow.
+
+### Console Page
+
+- Added a **Coverage** strip above the search box on a console's game list — how many of that system's achievement sets you've started, with mastered games as a separate gold segment. Fed by `fetchCompletionMap`; failure leaves the strip hidden rather than breaking the page.
+
+### Navigation
+
+- **Stats** is reachable from the mobile menu sheet. The bottom nav is full at six slots (Profile, Progress, Activity, Backlog, Social, Menu) and a seventh would make the 8px labels unreadable at 360px, so the sheet is the mobile entry point; on desktop it's a seventh tab in the profile tab bar. Deliberately left out of the floating pill for the same width reason.
+
 ## v26.07.13 — Professor Oak Challenge Guide
 
 ### Structure

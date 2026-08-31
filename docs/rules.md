@@ -59,6 +59,15 @@ Blue:              #66c0f4
 | In Progress | `#66c0f4` (blue) |
 | Not started / border | `#323f4c` |
 
+Note: the game page's award *badge* is a different surface — `AWARD_CONFIG` in `game/app.js`
+uses `#c6d4df` for beaten-hardcore and `#8f98a0` for beaten-softcore. The status colors above
+govern everywhere else.
+
+**Charts use these colors unchanged.** Note that gray↔`#66c0f4` measures ΔE 13.9 under normal
+vision, below the 15 floor the `dataviz` skill's `validate_palette.js` enforces — gray has almost
+no chroma, so no blue at a similar lightness separates from it. Where both appear in one chart,
+give every segment its own visible count and icon so identity never rests on color alone.
+
 ### Tilde tag colors
 
 | Tag | Color |

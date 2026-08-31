@@ -13,6 +13,7 @@
 | Series Progress | Layers | `?tab=series` | Hidden if no series with `showProgress` |
 | Activity | Activity | `?tab=activity` | Lazy-loads achievement chunks on scroll |
 | Watchlist | Star | `?tab=watchlist` | Triggers `fetchWatchlist` on first open |
+| Stats | PieChart | `?tab=stats` | Own profile only. Desktop tab bar + mobile menu sheet — deliberately **not** in the floating pill |
 
 Tab state persists in URL query param. Floating pill (mobile) appears when tab bar scrolls off screen; animated via `slideUpPill`/`slideDownPill` CSS keyframes.
 
@@ -32,6 +33,7 @@ Tab state persists in URL query param. Floating pill (mobile) appears when tab b
 |---|---|---|
 | Watchlist tab opens (first time) | `fetchWatchlist()` | `wantToPlayList` |
 | Activity tab scroll (sentinel ref) | `fetchAchievementsChunk(u, k, idx)` idx 1–3 | `achievementChunks` |
+| Stats tab opens (first time) | `loadAchievements()` — same call the Activity tab makes, shared state | `achievements` |
 | Game modal opens (achievements not yet loaded) | `fetchGameDetails(u, k, gameId)` | `gamesData.detailedGameProgress[gameId]` |
 | Friends view opens (first time, own session) | `fetchFriendsActivity()` | `friendsActivity`, `friendsActivityStatus` |
 
@@ -79,6 +81,146 @@ rawData = {
 ```
 
 Passed to `transformData()` → `{ profile, games, backlog }`.
+
+## Completion Progress — Progression Buckets
+
+`progressFilter` state (`'all' | 'nearly' | 'inprogress' | 'abandoned'`) drives a segmented
+control above the Mastered toggle. All views run after the shared base filter (has unlocks, has
+an achievement set, matches `progressSearch`).
+
+The three progression buckets **partition** started-but-unfinished games — every such game lands
+in exactly one, and their counts sum to the unfinished total. Precedence is first-match-wins in
+the order below.
+
+| View | Filter | Sort |
+|---|---|---|
+| `nearly` | `!isMastered && rawProgress >= 75` | achievements remaining asc, then `rawProgress` desc |
+| `inprogress` | not nearly, `lastPlayedStr` within 30 days | `lastPlayedStr` desc |
+| `abandoned` | not nearly, `lastPlayedStr` older than 30 days **or missing** | `lastPlayedStr` desc |
+| `all` | `showMastered \|\| !isMastered` | `rawProgress` desc |
+
+Two deliberate choices:
+
+- **`nearly` is recency-neutral** — it outranks `abandoned`, so a game left at 80% seven months
+  ago stays on the finish-line list instead of vanishing into the abandoned pile.
+- **Percentage is the gate, remaining is the sort.** A pure `remaining <= N` rule surfaces tiny
+  6-achievement sets where the user has one unlock (17% complete, 5 left); a pure percentage rule
+  puts an 81%-of-93 set with 18 to go at the top. Gating on 75% and sorting by remaining ascending
+  avoids both.
+
+`lastPlayedStr` is the *play* timestamp for games in `recentlyPlayedGames`, falling back to
+`mostRecentAwardedDate` otherwise — so launching a game without unlocking anything still counts
+as in progress.
+
+The `Mastered` toggle only renders under `all`; the buckets exclude mastered games by definition.
+Under the other three a one-line hint replaces it.
+
+## Stats Tab
+
+`StatsTab` — own profile only. Reuses `ALL_GAMES`, `PROFILE_DATA.gameAwards` and `heatmapData`
+from the mount fetch, plus the achievement chunks it shares with the Activity tab. No extra
+API surface.
+
+### Props
+
+| Prop | Source |
+|---|---|
+| `achievements` | `allLoadedAchievements` |
+| `achLoading` | `achievements === null \|\| achievementsLoadingMore` |
+| `games` | `ALL_GAMES` |
+| `gameAwards` | `PROFILE_DATA.gameAwards` (needs the raw `awardedAt` field added in `transform.js`) |
+| `heatmapData` | the same memo the Activity tab uses |
+
+### Tiles (`StatTile`) — `grid-cols-2 md:grid-cols-4`
+
+| Tile | Derived from |
+|---|---|
+| Current streak | `heatmapData` day keys. Counts back from today; a quiet today starts the count at yesterday rather than breaking the streak |
+| Longest streak | Longest consecutive run in the loaded window |
+| Active days | Days with any unlock in the last 90 |
+| Points this month | This calendar month's points vs the median of the other months in the window |
+
+Day keys are local (`YYYY-MM-DD`) but parsed as UTC (`T00:00:00Z`) for arithmetic, so run
+lengths stay exact across DST boundaries.
+
+### Cards (`StatCard`)
+
+- **Point acquisition** (`PointAcquisitionChart`) — points per **week** as columns with a 4-week
+  trailing mean as a 2px line overlay. ~52 columns over the loaded window; weeks start Monday and
+  quiet weeks are filled so the axis is real time. Too many columns to label individually, so the
+  x-axis ticks the first week of each month. **Both series are points-per-month and share one axis.**
+  A cumulative line here would need a second y-scale; dual-axis plots invent a correlation that
+  isn't in the data, so the trend is a rolling mean instead. The oldest bucket is dropped because
+  the 364-day fetch window clips it. The line starts at the fourth retained week, where a true
+  4-week mean first exists.
+  Bars are capped at 24px and centred inside full-width bands, so column centres line up with the
+  line's percentage geometry — capping the *band* instead misaligns the two series. The line is a
+  stretched `viewBox="0 0 100 100"` SVG with `vectorEffect="non-scaling-stroke"` (stays 2px at any
+  width); the end marker is a div, so it stays circular while the SVG is stretched. Hovering a
+  column band dims the others and swaps the legend row for a readout. Only the peak column carries
+  a direct label.
+- **Mastery timeline** — lifetime, bucketed by month from `gameAwards[].awardedAt`. Mastery and
+  Beaten stack in one column with a 2px surface gap, using the same gold/grey the Consoles card
+  does. Hovering a column dims the others and swaps
+  the legend row for a readout, matching the acquisition chart (`tlHover` state, keyed by month). Empty months are filled, short histories pad back to a 24-month
+  span, and the axis always runs to the current month so a drought is visible. Columns are
+  `flex: 1 1 0` with `minWidth: 10px` / `maxWidth: 22px` — they fill the card on desktop and
+  overflow into a horizontal scroll on mobile, auto-scrolled to the right edge on mount (same
+  `requestAnimationFrame` trick as the heatmap).
+- **Consoles** (`StackedBarRow`) — **everything is counted in games.** Bar length is games played
+  on that console (relative to the console with the most), split into **1–3 segments** ordered
+  **in progress (`#66c0f4`) → beaten (grey `#8f98a0`) → mastered (gold)**. Mastered wins over
+  beaten, so a game is never counted twice. The mastered/beaten counts printed beside the bar are
+  the same numbers the segments encode.
+
+  **In progress is deliberately first.** A stacked bar is only precisely comparable across rows for
+  the segment anchored at the baseline; everything after it floats. Only 3 of 12 consoles have a
+  mastered game, so a mastered-first order left nine bars starting on a different colour and
+  nothing comparable at the baseline — every row has in-progress games, so blue anchors all of
+  them. Left-to-right then reads as the progression, gold terminating the bar, matching the
+  blue-to-gold progress bars elsewhere in the app. **The legend follows the segment order**; if one
+  changes, change the other.
+
+  Segments were briefly weighted by *achievements earned in* mastered/beaten games, which was
+  coherent arithmetic but read as broken: one 80-achievement mastery filled 83% of a PSP bar
+  labelled "1 mastered". Keep both the length and the segments in one unit.
+
+  Rows sort by games played; top 10, remainder rolled into one "N more systems" row that sums
+  every segment. Achievements unlocked is no longer encoded on this card.
+- **Rarity profile** — unlocks banded by `trueRatio / points`, RA's own difficulty weighting.
+  Bands: Common `<1.5`, Uncommon `<3`, Rare `<6`, Very rare `<12`, Ultra rare above. Achievements
+  with no points or no `trueRatio` are skipped.
+
+  Rarity has **its own palette**, not the generic accents and not a single-hue ramp:
+
+  | Band | Colour |
+  |---|---|
+  | Common | `#8f98a0` grey |
+  | Uncommon | `#66c0f4` blue — the app's bar blue exactly |
+  | Rare | `#e8813c` orange |
+  | Very rare | `#f5e08f` pale yellow |
+  | Ultra rare | `#c94040` deep red |
+
+  The three warm tiers are hue-wheel neighbours, so they are separated by **lightness**, not hue.
+  At comparable saturation they measure ΔE 8–11 against each other and collapse entirely under
+  red-green CVD; spread across lightness they clear it (CVD ΔE 12.4 deutan, contrast all ≥ 3:1).
+  The shades are also pulled away from meanings the app already owns — `#f5e08f` is far from the
+  `#e5b143` gold that means *mastered*, and `#c94040` is far from the `#ff6b6b` that means *error*.
+
+  Nothing in this palette encodes the order; the labels, counts and percentages do. The one
+  sub-floor pair is grey↔blue at ΔE 13.9, the same pair already accepted on the Consoles card and
+  mitigated the same way. Kept in sync with the game page's `DIFFICULTY_BANDS` — same ladder.
+
+Charts are hand-rolled divs (plus one stretched SVG for the trend line) — no chart library,
+consistent with the heatmap.
+
+Chart palettes are checked with the `dataviz` skill's `scripts/validate_palette.js` against the
+`#1b2838` card surface before shipping. The award segments use the repo's status colors unchanged;
+grey↔`#66c0f4` falls below the validator's normal-vision floor, so every segment carries its own
+count and icon as secondary encoding — see `docs/rules.md`. The app's `#66c0f4` / `#e5b143` accents sit outside the
+validator's dark lightness band but pass CVD separation, normal-vision separation and contrast by
+wide margins; they are kept for design-system consistency. Ordered scales must use the validated
+single-hue ramp rather than a set of accent hues.
 
 ## Heatmap
 

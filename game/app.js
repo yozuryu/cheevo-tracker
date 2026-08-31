@@ -22,6 +22,16 @@ const AWARD_CONFIG = {
   'beaten-softcore': { label: 'Beaten (SC)', color: '#8f98a0', Icon: Medal  },
 };
 
+// Same rarity ladder as the profile Stats tab's RARITY_BANDS — loot-tier colours,
+// kept in sync so one concept reads the same on both pages. See the comment there.
+const DIFFICULTY_BANDS = [
+  { key: 'common',    label: 'Common',     min: 0.50, color: '#8f98a0' },
+  { key: 'uncommon',  label: 'Uncommon',   min: 0.25, color: '#66c0f4' },
+  { key: 'rare',      label: 'Rare',       min: 0.10, color: '#e8813c' },
+  { key: 'veryrare',  label: 'Very rare',  min: 0.05, color: '#f5e08f' },
+  { key: 'ultrarare', label: 'Ultra rare', min: 0,    color: '#c94040' },
+];
+
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 function handleAuthError() {
@@ -475,6 +485,21 @@ function GameApp() {
     });
   }, [achList, filter, sort, typeFilter]);
 
+  // ── Difficulty curve: the set bucketed by unlock rate, with your share filled in ──
+  const difficulty = useMemo(() => {
+    const players = game?.numDistinctPlayersCasual || 0;
+    if (!players || !achList.length) return null;
+    const bands = DIFFICULTY_BANDS.map(b => ({ ...b, total: 0, unlocked: 0 }));
+    achList.forEach(a => {
+      const rate = (a.numAwarded || 0) / players;
+      const band = bands.find(b => rate >= b.min) || bands[bands.length - 1];
+      band.total++;
+      if (a.dateEarned) band.unlocked++;
+    });
+    if (bands.every(b => b.total === 0)) return null;
+    return { bands, max: Math.max(1, ...bands.map(b => b.total)) };
+  }, [achList, game]);
+
   const unlockedCount   = useMemo(() => achList.filter(a => !!a.dateEarned).length, [achList]);
   const totalPoints     = useMemo(() => achList.reduce((s, a) => s + a.points, 0), [achList]);
   const earnedPoints    = useMemo(() => achList.filter(a => !!a.dateEarned).reduce((s, a) => s + a.points, 0), [achList]);
@@ -699,6 +724,39 @@ function GameApp() {
           {/* ── Achievements tab ── */}
           {tab === 'achievements' && (
             <div className="flex-1 max-w-4xl mx-auto w-full px-4 md:px-8 py-4">
+              {/* ── Difficulty curve ── */}
+              {difficulty && (
+                <div className="mb-3 bg-[#1b2838] border border-[#2a475e] rounded-[3px] p-2.5">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-[9px] uppercase tracking-wider text-[#546270]">Difficulty curve</span>
+                    <span className="text-[9px] text-[#546270] ml-auto">share of {game.numDistinctPlayersCasual.toLocaleString()} players who unlocked each</span>
+                  </div>
+                  {/* Columns are capped at 46px and centred rather than stretched across the
+                      card — filling the width rendered them as 157×40px slabs with no readable
+                      silhouette, and the silhouette is the point of a curve. `flex-1` with a
+                      max-width keeps them from overflowing on narrow phones. */}
+                  {/* items-start, not items-end: every plot is a fixed 80px, so aligning tops
+                      aligns the baselines. With items-end a wrapped label ("Ultra rare") makes its
+                      column taller and shunts that bar upward off the baseline. */}
+                  <div className="flex items-start justify-center gap-2 sm:gap-4">
+                    {difficulty.bands.map(b => (
+                      <div key={b.key} className="flex-1 max-w-[46px] flex flex-col items-center gap-1 min-w-0">
+                        <div className="w-full flex items-end" style={{ height: '80px' }}>
+                          <div className="w-full flex flex-col justify-end rounded-t-[3px] overflow-hidden"
+                            style={{ height: `${Math.max((b.total / difficulty.max) * 80, b.total ? 4 : 1)}px`, background: '#232f3b' }}>
+                            <div style={{ height: `${b.total ? (b.unlocked / b.total) * 100 : 0}%`, background: b.color }} />
+                          </div>
+                        </div>
+                        <span className="text-[9px] tabular-nums leading-none" style={{ color: b.unlocked > 0 ? b.color : '#546270' }}>
+                          {b.unlocked}<span className="text-[#546270]">/{b.total}</span>
+                        </span>
+                        <span className="text-[7px] uppercase tracking-wider text-[#546270] text-center w-full" style={{ lineHeight: 1.15 }}>{b.label}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {/* Controls */}
               <div className="flex flex-col mb-3 gap-1.5">
                 <div className="flex items-center gap-1.5">

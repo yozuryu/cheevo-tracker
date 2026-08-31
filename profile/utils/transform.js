@@ -276,6 +276,7 @@ export const transformData = (data) => {
               type: a.awardType,
               console: a.consoleName || "Unknown Console",
               date: formatDate(a.awardedAt),
+              awardedAt: a.awardedAt,
               icon: getMediaUrl(a.imageIcon)
             }));
         })()

@@ -1732,6 +1732,22 @@ is opened and `game.achievements` is empty.
 
 ---
 
+### `fetchCompletionMap(username, apiKey, forceRefresh = false)`
+
+Wraps `getUserCompletionProgress` and keys the result by game ID. Used by the console page to
+show library coverage without paying for the full 5-call `fetchProfile`.
+
+**Returns:**
+```js
+{
+  "[gameId]": { numAwarded: number, maxPossible: number, award: string | null }
+}
+```
+
+**Cache key:** `ra_completion_{username}` in **localStorage** — TTL 1 hour.
+
+---
+
 ### `validateCredentials(username, apiKey)`
 
 Makes a minimal `API_GetUserProfile` call. Used on the login page to verify credentials

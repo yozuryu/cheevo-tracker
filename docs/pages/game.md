@@ -29,6 +29,38 @@ All in parallel:
 | Hashes | Supported ROM hashes |
 | Professor Oak | Only shown when `findPocSubset(gameId)` matches — i.e. when browsing a POC subset's own page — see below |
 
+## Difficulty Curve
+
+Strip above the Achievements tab controls. Renders only when `game.numDistinctPlayersCasual > 0`
+and the set has achievements — no extra request, both inputs are already on the page.
+
+Each achievement's unlock rate is `numAwarded / numDistinctPlayersCasual`, bucketed by
+`DIFFICULTY_BANDS` (descending `min`, first match wins):
+
+| Band | Unlock rate | Color |
+|---|---|---|
+| Common | ≥ 50% | `#8f98a0` |
+| Uncommon | ≥ 25% | `#66c0f4` |
+| Rare | ≥ 10% | `#e8813c` |
+| Very rare | ≥ 5% | `#f5e08f` |
+| Ultra rare | < 5% | `#c94040` |
+
+Rarity has its own palette, shared with the profile Stats tab's `RARITY_BANDS` — keep the two
+in sync. The warm tiers separate by lightness rather than hue; see `docs/pages/profile.md` for
+the reasoning and the measurements.
+
+Each band is one column: total bar height is the band's share of the largest band (80px plot),
+and the filled portion within it is the user's `unlocked / total` for that band.
+
+**Columns are capped at 46px and centred, not stretched.** Stretching them across the card
+rendered 157×40px slabs with no readable silhouette, and empty bands drew as 157×1px hairlines
+that looked like dividers. `flex-1 max-w-[46px]` with `justify-center` keeps them capped on
+desktop and shrinking on narrow phones — verified no horizontal overflow down to 320px.
+
+The column row uses **`items-start`, not `items-end`**. Every plot is a fixed 80px, so aligning
+tops aligns the baselines; with `items-end` a wrapped label ("Ultra rare" at 46px) makes its
+column taller and shunts that bar upward off the shared baseline.
+
 ## Achievement Rows
 
 `AchievementRow` props:

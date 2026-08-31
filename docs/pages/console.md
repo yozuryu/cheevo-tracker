@@ -8,6 +8,7 @@
 
 - Console list via `fetchConsoles()` — used to resolve the console name from the ID
 - Game list via `fetchConsoleGames(consoleId)` — full list of games for the console
+- Completion map via `fetchCompletionMap()` — feeds the coverage strip. Failure is swallowed (the strip just doesn't render); only `AUTH_ERROR` propagates to `handleAuthError()`.
 
 ## Constants
 
@@ -19,6 +20,20 @@
 - Filterable/sortable game list
 - Links to `/game/?id=<gameId>` for each game
 - Shows achievement count per game
+
+## Coverage Strip
+
+Sits above the search box on `GameListView`. Renders only once both `games` and `completion` have resolved.
+
+Computed in a `useMemo` over games with `numAchievements > 0` (the denominator — achievement *sets*, not the raw game count in the header):
+
+| Field | Meaning |
+|---|---|
+| `total` | Games on this console that have an achievement set |
+| `played` | Of those, games with a `completion[gameId].numAwarded > 0` |
+| `mastered` | Of those, games where `numAwarded >= maxPossible` |
+
+Single bar, two segments: gold (`#e5b143`) for mastered, blue (`#66c0f4`) for played-but-not-mastered, both as a share of `total`.
 
 ## Mobile
 

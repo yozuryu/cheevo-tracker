@@ -3,7 +3,7 @@ import { createRoot } from 'react-dom/client';
 import { Gamepad2, ChevronRight, Search, X, ArrowLeft } from 'lucide-react';
 import { parseTitle, getMediaUrl } from '../profile/utils/helpers.js';
 import { TILDE_TAG_COLORS } from '../profile/utils/constants.js';
-import { getCredentials, clearCredentials, fetchConsoles, fetchConsoleGames } from '../profile/utils/ra-api.js';
+import { getCredentials, clearCredentials, fetchConsoles, fetchConsoleGames, fetchCompletionMap } from '../profile/utils/ra-api.js';
 import { Topbar, Footer } from '../assets/ui.js';
 
 function handleAuthError() {
@@ -231,6 +231,7 @@ function ConsoleListView({ onSelect }) {
 function GameListView({ consoleId, consoleName, onBack }) {
   const creds = getCredentials();
   const [games, setGames]       = useState(null);
+  const [completion, setCompletion] = useState(null);
   const [search, setSearch]     = useState('');
   const [achFilter, setAchFilter] = useState(() => {
     const f = new URLSearchParams(window.location.search).get('ach');
@@ -248,7 +249,26 @@ function GameListView({ consoleId, consoleName, onBack }) {
         if (e.message === 'AUTH_ERROR') handleAuthError();
         else setError('Failed to load games.');
       });
+    // Coverage is a nice-to-have — a failure here leaves the strip hidden, not the page broken.
+    fetchCompletionMap(creds.username, creds.apiKey)
+      .then(setCompletion)
+      .catch(e => { if (e.message === 'AUTH_ERROR') handleAuthError(); });
   }, [consoleId]);
+
+  // ── How much of this system's achievement library the user has touched ──
+  const coverage = useMemo(() => {
+    if (!games || !completion) return null;
+    const withAch = games.filter(g => g.numAchievements > 0);
+    if (!withAch.length) return null;
+    let played = 0, mastered = 0;
+    withAch.forEach(g => {
+      const c = completion[g.id];
+      if (!c || !c.numAwarded) return;
+      played++;
+      if (c.maxPossible > 0 && c.numAwarded >= c.maxPossible) mastered++;
+    });
+    return { total: withAch.length, played, mastered };
+  }, [games, completion]);
 
   const filtered = useMemo(() => {
     if (!games) return [];
@@ -284,6 +304,22 @@ function GameListView({ consoleId, consoleName, onBack }) {
             {games && <span className="text-[10px] text-[#546270] shrink-0"><span className="text-[#66c0f4]">{games.length}</span> games</span>}
           </div>
         </div>
+
+        {/* Library coverage — how much of this system you have actually played */}
+        {coverage && (
+          <div className="flex items-center gap-2.5 mb-3 px-2.5 py-2 bg-[#1b2838] border border-[#2a475e] rounded-[3px]">
+            <span className="text-[9px] uppercase tracking-wider text-[#546270] shrink-0">Coverage</span>
+            <div className="flex-1 min-w-0 h-[6px] bg-[#101214] rounded-full overflow-hidden flex">
+              <div className="h-full transition-all duration-500" style={{ width: `${(coverage.mastered / coverage.total) * 100}%`, background: '#e5b143' }} />
+              <div className="h-full transition-all duration-500" style={{ width: `${((coverage.played - coverage.mastered) / coverage.total) * 100}%`, background: '#66c0f4' }} />
+            </div>
+            <span className="text-[10px] tabular-nums text-[#546270] shrink-0">
+              <span className="text-[#66c0f4] font-semibold">{coverage.played.toLocaleString()}</span>
+              {' / '}{coverage.total.toLocaleString()}{' sets'}
+              {coverage.mastered > 0 && <span className="text-[#e5b143] ml-1.5">{coverage.mastered}★</span>}
+            </span>
+          </div>
+        )}
 
         {/* Search + filter */}
         <div className="flex flex-col gap-2 mb-3">

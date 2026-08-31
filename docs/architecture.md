@@ -87,6 +87,7 @@ The only functions `app.js` calls directly (Layer 2). All cache in `sessionStora
 | `fetchWatchlist(u, k)` | `ra_watchlist_{u}` | Full want-to-play list, all pages |
 | `fetchGameDetails(u, k, gameId)` | `ra_game_{u}_{gameId}` | Game metadata + per-achievement user progress incl. `userTotalPlaytime` |
 | `fetchSocial(u, k)` | `ra_social_{u}` (localStorage, 1h) | Following + followers lists |
+| `fetchCompletionMap(u, k)` | `ra_completion_{u}` (localStorage, 1h) | `{ [gameId]: { numAwarded, maxPossible, award } }` for every game the user has touched |
 | `fetchFriendsActivity(u, k, followingList, { onProgress, onUser, onError })` | `ra_fa_{friendUser}` per user (localStorage, append) | 30-day window via 10-day chunks. No cache → full 3-chunk fetch. Fresh (<1h) → instant serve. Stale (≥1h) → serve stale immediately then incremental delta (≤10d=1 call, ≤20d=2, ≤30d=3, >30d=full refresh). 300ms between chunks, 1000ms between users (only when API called). |
 | `allFriendsCached(followingList)` | — | Returns true if every user has any `ra_fa_*` entry (fresh or stale); stale entries are still served immediately then updated incrementally |
 | `validateCredentials(u, k)` | — | Minimal profile call; throws `AUTH_ERROR` if invalid |
@@ -153,6 +154,7 @@ RA API (live)
 |---|---|---|
 | `sessionStorage` | 5 min | Profile data, achievement chunks, game details, watchlist (`ra_*` keys) |
 | `localStorage` | 1 hour | Social data (following/followers, `ra_social_*`) |
+| `localStorage` | 1 hour | Completion map for the console coverage strip (`ra_completion_{username}`) |
 | `localStorage` | append (1h freshness) | Per-friend activity (`ra_fa_{username}`): served instantly if any cache exists; incremental delta fetched when stale; full refresh only when missing or delta >30d |
 | `sessionStorage` | 5 min | Per-friend game data on game page (`ra_fg_*`) |
 
@@ -178,4 +180,8 @@ Bust cache: `sessionStorage.clear()` for session data, `localStorage.removeItem(
 - Adds `padding-bottom` to body
 - Repositions `.scroll-top-btn` above the nav bar
 
-Two nav tabs: Profile (`/profile/`) and Log (`/changelog/`).
+Six nav slots: Profile, Progress, Activity, Backlog, Social, Menu. The bar is full — a seventh
+slot makes the 8px labels unreadable at 360px, so new destinations go in the Menu sheet instead.
+
+The Menu sheet (slide-up, opened from the Menu slot) holds: Stats (`/profile/?tab=stats`),
+Consoles, Search, Changelog, Refresh Data, Purge Cache, Debug Mode, Log Out.

@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { createRoot } from 'react-dom/client';
-import { Gamepad2, Activity, BarChart2, Award, Star, ChevronDown, ChevronUp, AlertCircle, Trophy, Crown, Lock, Unlock, AlertTriangle, Flame, Feather, Medal, ShieldOff, CircleDashed, X, Clock, Layers, Users, Loader2, RefreshCw, RotateCcw, ArrowLeftRight } from 'lucide-react';
+import { Gamepad2, Activity, BarChart2, Award, Star, ChevronDown, ChevronUp, AlertCircle, Trophy, Crown, Lock, Unlock, AlertTriangle, Flame, Feather, Medal, ShieldOff, CircleDashed, X, Clock, Layers, Users, Loader2, RefreshCw, RotateCcw, ArrowLeftRight, PieChart, TrendingUp } from 'lucide-react';
 import { MEDIA_URL, SITE_URL, TILDE_TAG_COLORS } from './utils/constants.js';
 import { getMediaUrl, parseTitle, formatTimeAgo } from './utils/helpers.js';
 import { transformData } from './utils/transform.js';
@@ -1619,6 +1619,624 @@ function SeriesProgressTab({ seriesData, gamesData, backlogData }) {
 
 // ── Social Tab ────────────────────────────────────────────────────────────────
 
+// ── Stats tab ─────────────────────────────────────────────
+// Every number here is derived from data already in memory — the profile fetch
+// (games, awards) and the achievement chunks the Activity tab loads. No extra API calls.
+
+// Rarity has its own palette rather than the generic accents or a single-hue ramp.
+// The three warm tiers are neighbours on the hue wheel, so they are separated by
+// LIGHTNESS — mid orange, pale yellow, deep red. At equal saturation they measure
+// ΔE 8–11 against each other and collapse entirely under red-green CVD; spread
+// across lightness they clear it. The shades are also pulled away from meanings the
+// app already owns: #f5e08f is far from the #e5b143 gold that means *mastered*, and
+// #c94040 is far from the #ff6b6b that means *error*.
+// Nothing here encodes the order — the labels, counts and percentages do that.
+// Checked with the dataviz skill's validate_palette.js against the #1b2838 surface:
+// CVD ΔE 12.4 (deutan), contrast all ≥ 3:1. The one sub-floor pair is grey↔blue at
+// ΔE 13.9, the same pair already accepted on the Consoles card.
+const RARITY_BANDS = [
+  { key: 'common',    label: 'Common',     max: 1.5,      color: '#8f98a0' },
+  { key: 'uncommon',  label: 'Uncommon',   max: 3,        color: '#66c0f4' },
+  { key: 'rare',      label: 'Rare',       max: 6,        color: '#e8813c' },
+  { key: 'veryrare',  label: 'Very rare',  max: 12,       color: '#f5e08f' },
+  { key: 'ultrarare', label: 'Ultra rare', max: Infinity, color: '#c94040' },
+];
+
+const StatTile = ({ label, value, sub, color = '#66c0f4', Icon }) => (
+  <div className="flex flex-col gap-1.5 bg-[#1b2838] border border-[#2a475e] rounded-[3px] px-3 py-2.5">
+    <div className="flex items-center gap-1.5">
+      {Icon && <Icon size={11} className="shrink-0" style={{ color }} />}
+      <span className="text-[8px] uppercase tracking-[0.09em] text-[#546270] leading-none">{label}</span>
+    </div>
+    <span className="text-[18px] font-bold leading-none tabular-nums" style={{ color }}>{value}</span>
+    {sub && <span className="text-[9px] text-[#546270] leading-none truncate">{sub}</span>}
+  </div>
+);
+
+const StatCard = ({ title, hint, children }) => (
+  <div className="bg-[#1b2838] border border-[#2a475e] rounded-[3px]">
+    <div className="flex items-center gap-2 px-3 py-2 border-b border-[#2a475e]">
+      <span className="w-[3px] h-[11px] bg-[#66c0f4] rounded-[1px] shrink-0" />
+      <span className="text-[11px] text-white uppercase tracking-wide font-medium">{title}</span>
+      {hint && <span className="text-[9px] text-[#546270] ml-auto text-right shrink-0">{hint}</span>}
+    </div>
+    <div className="p-3">{children}</div>
+  </div>
+);
+
+const BarRow = ({ label, value, sub, pct, color }) => (
+  <div className="flex items-center gap-2">
+    <span className="w-[80px] md:w-[130px] shrink-0 text-[10px] text-[#c6d4df] truncate" title={label}>{label}</span>
+    <div className="flex-1 min-w-0 h-[10px] bg-[#101214] rounded-[2px] overflow-hidden">
+      <div className="h-full rounded-[2px] transition-all duration-500" style={{ width: `${Math.max(pct, 1.5)}%`, background: color }} />
+    </div>
+    <span className="w-[64px] md:w-[86px] shrink-0 text-right text-[10px] tabular-nums text-[#8f98a0]">
+      {value.toLocaleString()}
+      {sub && <span className="text-[#546270] ml-1">{sub}</span>}
+    </span>
+  </div>
+);
+
+// Round an axis maximum up to a readable tick (132 → 200, 45 → 50).
+const niceMax = v => {
+  if (v <= 0) return 1;
+  const p = Math.pow(10, Math.floor(Math.log10(v)));
+  return Math.ceil(v / p) * p;
+};
+
+const MONTH_ABBR = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+// Points per week as columns, with a 4-week trailing mean as a trend line.
+// Both series are points-per-week, so they share one axis — a cumulative line
+// here would need a second y-scale, which invents a correlation that isn't
+// in the data.
+const PointAcquisitionChart = ({ data }) => {
+  const [hover, setHover] = useState(null);
+
+  if (!data) return <div className="text-[10px] text-[#546270] py-3 text-center">Not enough history yet.</div>;
+
+  const { weeks, max } = data;
+  const axisMax  = niceMax(max);
+  const PLOT_H   = 132;
+  const peakIdx  = weeks.reduce((best, w, i) => w.points > weeks[best].points ? i : best, 0);
+  const trendPts = weeks
+    .map((w, i) => w.trend === null ? null
+      : `${((i + 0.5) / weeks.length) * 100},${100 - (w.trend / axisMax) * 100}`)
+    .filter(Boolean)
+    .join(' ');
+  const lastTrendIdx = weeks.reduce((last, w, i) => w.trend !== null ? i : last, -1);
+  const active = hover !== null ? weeks[hover] : null;
+
+  return (
+    <>
+      <div className="relative" style={{ height: `${PLOT_H}px` }}>
+        {/* Gridlines — hairline, solid, recessive; sit behind the marks */}
+        {[0, 0.5, 1].map(f => (
+          <div key={f} className="absolute left-0 right-0 flex items-center pointer-events-none"
+            style={{ bottom: `${f * 100}%`, height: '1px' }}>
+            <span className="w-full" style={{ height: '1px', background: f === 0 ? '#2a475e' : '#212f3d' }} />
+            <span className="absolute right-0 -top-[9px] text-[8px] text-[#546270] tabular-nums bg-[#1b2838] pl-1">
+              {f === 0 ? '' : Math.round(axisMax * f).toLocaleString()}
+            </span>
+          </div>
+        ))}
+
+        {/* Columns — bar capped at 24px and centred inside a full-width band, so
+            column centres line up with the trend line's percentage geometry */}
+        <div className="absolute inset-0 flex items-end" style={{ gap: '1px' }}>
+          {weeks.map((w, i) => (
+            <div key={w.key}
+              className="relative h-full flex flex-col justify-end items-center cursor-default"
+              style={{ flex: '1 1 0' }}
+              onMouseEnter={() => setHover(i)}
+              onMouseLeave={() => setHover(h => (h === i ? null : h))}>
+              {/* Hit target spans the whole column band, not just the painted bar */}
+              <div className="absolute inset-0" />
+              <div style={{
+                width: '100%', maxWidth: '24px',
+                height: `${Math.max((w.points / axisMax) * 100, w.points > 0 ? 1.5 : 0)}%`,
+                background: '#66c0f4',
+                opacity: hover === null || hover === i ? 1 : 0.4,
+                borderRadius: '3px 3px 0 0',
+                transition: 'opacity 0.12s',
+              }} />
+            </div>
+          ))}
+        </div>
+
+        {/* Trend line — stretched to the plot box; non-scaling-stroke keeps it 2px at any width */}
+        {trendPts && (
+          <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 100 100" preserveAspectRatio="none">
+            <polyline points={trendPts} fill="none" stroke="#e5b143" strokeWidth="2"
+              strokeLinejoin="round" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
+          </svg>
+        )}
+
+        {/* End marker — a div, so it stays circular while the SVG is stretched */}
+        {lastTrendIdx >= 0 && (
+          <div className="absolute pointer-events-none" style={{
+            left:   `${((lastTrendIdx + 0.5) / weeks.length) * 100}%`,
+            bottom: `${(weeks[lastTrendIdx].trend / axisMax) * 100}%`,
+            width: '8px', height: '8px', marginLeft: '-4px', marginBottom: '-4px',
+            borderRadius: '50%', background: '#e5b143', boxShadow: '0 0 0 2px #1b2838',
+          }} />
+        )}
+
+        {/* Selective direct label — the peak week only, never a number on every bar */}
+        {weeks[peakIdx].points > 0 && hover === null && (
+          <div className="absolute text-[8px] text-[#8f98a0] tabular-nums pointer-events-none whitespace-nowrap"
+            style={{
+              left: `${((peakIdx + 0.5) / weeks.length) * 100}%`,
+              bottom: `calc(${(weeks[peakIdx].points / axisMax) * 100}% + 3px)`,
+              transform: 'translateX(-50%)',
+            }}>
+            {weeks[peakIdx].points.toLocaleString()}
+          </div>
+        )}
+      </div>
+
+      {/* X axis — 52 weeks is too many to label, so tick the first week of each month */}
+      <div className="flex mt-1.5" style={{ gap: '1px' }}>
+        {weeks.map((w, i) => {
+          const isMonthStart = i === 0 || weeks[i - 1].start.getMonth() !== w.start.getMonth();
+          return (
+            <div key={w.key} className="relative text-[7px] text-[#546270] leading-none" style={{ flex: '1 1 0' }}>
+              {isMonthStart && (
+                <span className="absolute left-0 top-0 whitespace-nowrap">
+                  {MONTH_ABBR[w.start.getMonth()]}{w.start.getMonth() === 0 ? ` '${String(w.start.getFullYear()).slice(2)}` : ''}
+                </span>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Hover readout — reserves its own row so the card never reflows */}
+      <div className="mt-3 pt-2 border-t border-[#2a475e] flex items-center gap-3 flex-wrap min-h-[16px]">
+        {active ? (
+          <span className="text-[10px] text-[#c6d4df] tabular-nums">
+            Week of {active.start.getDate()} {MONTH_ABBR[active.start.getMonth()]} {active.start.getFullYear()}
+            <span className="text-[#66c0f4] ml-2">{active.points.toLocaleString()} pts</span>
+            <span className="text-[#546270] ml-1.5">· {active.count} cheevo{active.count === 1 ? '' : 's'}</span>
+            {active.trend !== null && (
+              <span className="text-[#e5b143] ml-2">avg {Math.round(active.trend).toLocaleString()}</span>
+            )}
+          </span>
+        ) : (
+          <>
+            <span className="flex items-center gap-1.5 text-[9px] text-[#546270]">
+              <span className="w-2 h-2 rounded-[1px] bg-[#66c0f4]" /> Points earned
+            </span>
+            <span className="flex items-center gap-1.5 text-[9px] text-[#546270]">
+              <span className="w-3 h-[2px] rounded-full bg-[#e5b143]" /> 4-week average
+            </span>
+          </>
+        )}
+      </div>
+    </>
+  );
+};
+
+// Segment colours are the repo's status colours (docs/rules.md): gold = mastered,
+// grey = beaten, blue = in progress. Grey↔#66c0f4 measures ΔE 13.9 under normal
+// vision, below the dataviz skill's 15 floor, so every segment is also labelled with
+// its own count and a Trophy/Medal icon — identity never rests on colour alone.
+const AWARD_SEGMENTS = {
+  mastered: '#e5b143',
+  beaten:   '#8f98a0',
+  other:    '#66c0f4',
+};
+
+const StackedBarRow = ({ label, segments, total, max, mastered, beaten }) => {
+  const shown = segments.filter(seg => seg.value > 0);
+  return (
+    <div className="flex items-center gap-2">
+      <span className="w-[80px] md:w-[130px] shrink-0 text-[10px] text-[#c6d4df] truncate" title={label}>{label}</span>
+      <div className="flex-1 min-w-0 h-[10px] bg-[#101214] rounded-[2px] flex overflow-hidden" style={{ gap: '2px' }}>
+        {shown.map((seg, i) => (
+          <div key={seg.key} style={{
+            width: `${(seg.value / max) * 100}%`,
+            minWidth: '3px',
+            background: seg.color,
+            borderRadius: i === shown.length - 1 ? '0 3px 3px 0' : 0,
+          }} />
+        ))}
+      </div>
+      <span className="w-[76px] md:w-[104px] shrink-0 flex items-center justify-end gap-1.5 text-[10px] tabular-nums">
+        {mastered > 0 && (
+          <span className="flex items-center gap-0.5" style={{ color: AWARD_SEGMENTS.mastered }}>
+            <Trophy size={9} className="shrink-0" />{mastered}
+          </span>
+        )}
+        {beaten > 0 && (
+          <span className="flex items-center gap-0.5" style={{ color: AWARD_SEGMENTS.beaten }}>
+            <Medal size={9} className="shrink-0" />{beaten}
+          </span>
+        )}
+        <span className="text-[#8f98a0]">{total.toLocaleString()}</span>
+      </span>
+    </div>
+  );
+};
+
+const StatsTab = ({ achievements, achLoading, games, gameAwards, heatmapData }) => {
+  const timelineRef = useRef(null);
+  const [tlHover, setTlHover] = useState(null);
+
+  // ── Streaks + active days, from the same day map the heatmap uses ──
+  const streaks = useMemo(() => {
+    const DAY = 86400000;
+    // Keys are local calendar days ("YYYY-MM-DD"); read them as UTC so day
+    // arithmetic stays exact across DST boundaries.
+    const nums = Object.keys(heatmapData)
+      .map(k => Math.round(new Date(`${k}T00:00:00Z`).getTime() / DAY))
+      .filter(n => !isNaN(n))
+      .sort((a, b) => a - b);
+    if (!nums.length) return { current: 0, longest: 0, active90: 0 };
+
+    const set = new Set(nums);
+    const now = new Date();
+    const todayNum = Math.round(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()) / DAY);
+
+    // A quiet today does not break the streak — start counting from yesterday.
+    let cursor = set.has(todayNum) ? todayNum : todayNum - 1;
+    let current = 0;
+    while (set.has(cursor)) { current++; cursor--; }
+
+    let longest = 1, run = 1;
+    for (let i = 1; i < nums.length; i++) {
+      run = nums[i] === nums[i - 1] + 1 ? run + 1 : 1;
+      if (run > longest) longest = run;
+    }
+
+    return { current, longest, active90: nums.filter(n => n > todayNum - 90).length };
+  }, [heatmapData]);
+
+  // ── This month's points against the median of the loaded window ──
+  const pace = useMemo(() => {
+    const byMonth = {};
+    achievements.forEach(a => {
+      const d = new Date(a.date);
+      if (isNaN(d)) return;
+      const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+      byMonth[key] = (byMonth[key] || 0) + (a.points || 0);
+    });
+    const now = new Date();
+    const thisKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+    const past = Object.entries(byMonth).filter(([k]) => k !== thisKey).map(([, v]) => v).sort((a, b) => a - b);
+    const median = past.length
+      ? (past.length % 2
+          ? past[(past.length - 1) / 2]
+          : Math.round((past[past.length / 2 - 1] + past[past.length / 2]) / 2))
+      : 0;
+    const currentPts = byMonth[thisKey] || 0;
+    return { currentPts, median, delta: median > 0 ? Math.round(((currentPts - median) / median) * 100) : null };
+  }, [achievements]);
+
+  // ── Point acquisition — points per week with a 4-week trailing mean ──
+  const acquisition = useMemo(() => {
+    const weekKey = d => {
+      const x = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+      x.setDate(x.getDate() - ((x.getDay() + 6) % 7));   // snap back to Monday
+      return x;
+    };
+    const fmt = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+
+    const byWeek = new Map();
+    achievements.forEach(a => {
+      const d = new Date(a.date);
+      if (isNaN(d)) return;
+      const start = weekKey(d);
+      const key = fmt(start);
+      if (!byWeek.has(key)) byWeek.set(key, { key, start, points: 0, count: 0 });
+      const b = byWeek.get(key);
+      b.points += a.points || 0;
+      b.count++;
+    });
+    if (byWeek.size < 4) return null;
+
+    // Fill quiet weeks so the axis is real time, not just weeks with unlocks.
+    const keys = Array.from(byWeek.keys()).sort();
+    const last = byWeek.get(keys[keys.length - 1]).start;
+    const weeks = [];
+    for (const cur = new Date(byWeek.get(keys[0]).start); cur <= last; cur.setDate(cur.getDate() + 7)) {
+      const key = fmt(cur);
+      weeks.push(byWeek.get(key) || { key, start: new Date(cur), points: 0, count: 0 });
+    }
+
+    // The oldest bucket is clipped by the 364-day fetch window — drop it so the
+    // first column isn't an artefact of where the window happens to start.
+    const trimmed = weeks.length > 6 ? weeks.slice(1) : weeks;
+
+    const WINDOW = 4;
+    const withTrend = trimmed.map((b, i) => {
+      if (i < WINDOW - 1) return { ...b, trend: null };
+      let sum = 0;
+      for (let j = i - WINDOW + 1; j <= i; j++) sum += trimmed[j].points;
+      return { ...b, trend: sum / WINDOW };
+    });
+
+    return {
+      weeks: withTrend,
+      max: Math.max(1, ...withTrend.map(b => Math.max(b.points, b.trend ?? 0))),
+      total: withTrend.reduce((s, b) => s + b.points, 0),
+    };
+  }, [achievements]);
+
+  // ── Mastery timeline — lifetime, straight off the award dates ──
+  const timeline = useMemo(() => {
+    const byMonth = new Map();
+    (gameAwards || []).forEach(a => {
+      if (!a.awardedAt) return;
+      const d = new Date(a.awardedAt);
+      if (isNaN(d)) return;
+      const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+      if (!byMonth.has(key)) byMonth.set(key, { mastered: 0, beaten: 0 });
+      const bucket = byMonth.get(key);
+      if (a.type === 'Mastery/Completion') bucket.mastered++; else bucket.beaten++;
+    });
+    if (!byMonth.size) return { months: [], max: 0, totalMastered: 0, totalBeaten: 0 };
+
+    // Fill empty months so the axis reads as real time, not just months with awards.
+    const keys = Array.from(byMonth.keys()).sort();
+    let [sy, sm] = keys[0].split('-').map(Number);
+
+    // Always run the axis to the current month — a drought since the last award
+    // is exactly the thing worth seeing.
+    const nowDate = new Date();
+    const ey = nowDate.getFullYear();
+    const em = nowDate.getMonth() + 1;
+
+    // Short histories get padded back to a 24-month span so the chart still fills the card.
+    const MIN_MONTHS = 24;
+    const span = (ey - sy) * 12 + (em - sm) + 1;
+    if (span < MIN_MONTHS) {
+      let back = MIN_MONTHS - span;
+      sm -= back;
+      while (sm < 1) { sm += 12; sy -= 1; }
+    }
+
+    const months = [];
+    let y = sy, m = sm;
+    while (y < ey || (y === ey && m <= em)) {
+      const key = `${y}-${String(m).padStart(2, '0')}`;
+      months.push({ key, year: y, month: m, ...(byMonth.get(key) || { mastered: 0, beaten: 0 }) });
+      m++; if (m > 12) { m = 1; y++; }
+    }
+    return {
+      months,
+      max: Math.max(1, ...months.map(x => x.mastered + x.beaten)),
+      totalMastered: months.reduce((s, x) => s + x.mastered, 0),
+      totalBeaten:   months.reduce((s, x) => s + x.beaten, 0),
+    };
+  }, [gameAwards]);
+
+  useEffect(() => {
+    if (!timelineRef.current || !timeline.months.length) return;
+    requestAnimationFrame(() => {
+      if (timelineRef.current) timelineRef.current.scrollLeft = timelineRef.current.scrollWidth;
+    });
+  }, [timeline.months.length]);
+
+  // ── Where the achievements actually came from ──
+  const consoles = useMemo(() => {
+    // Bar length and segments are both counted in GAMES, so a segment's width is the
+    // share of that console's games carrying each award — the same numbers printed
+    // beside the bar. Weighting segments by achievements instead let a single large
+    // mastered set fill most of a bar that reported "1 mastered".
+    const blank = name => ({ name, unlocked: 0, games: 0, mastered: 0, beaten: 0, inProgress: 0 });
+    const map = new Map();
+    (games || []).forEach(g => {
+      if (!g.console || !g.achievementsUnlocked) return;
+      if (!map.has(g.console)) map.set(g.console, blank(g.console));
+      const c = map.get(g.console);
+      c.unlocked += g.achievementsUnlocked;
+      c.games++;
+      // Mastered wins over beaten — a mastered game is not also counted as beaten.
+      if (g.isMastered)    c.mastered++;
+      else if (g.isBeaten) c.beaten++;
+      else                 c.inProgress++;
+    });
+
+    const list = Array.from(map.values()).sort((a, b) => b.games - a.games || b.unlocked - a.unlocked);
+    const shown = list.slice(0, 10);
+    const rest  = list.slice(10);
+    if (rest.length) {
+      const roll = blank(`${rest.length} more system${rest.length > 1 ? 's' : ''}`);
+      rest.forEach(c => {
+        roll.unlocked += c.unlocked; roll.games += c.games;
+        roll.mastered += c.mastered; roll.beaten += c.beaten; roll.inProgress += c.inProgress;
+      });
+      shown.push(roll);
+    }
+    return {
+      list: shown,
+      max: Math.max(1, ...shown.map(c => c.games)),
+      total: list.length,
+      anyMastered: shown.some(c => c.mastered > 0),
+      anyBeaten:   shown.some(c => c.beaten > 0),
+    };
+  }, [games]);
+
+  // ── Rarity profile — TrueRatio/points is RA's own difficulty weight ──
+  const rarity = useMemo(() => {
+    const buckets = RARITY_BANDS.map(b => ({ ...b, count: 0 }));
+    let scored = 0;
+    achievements.forEach(a => {
+      if (!a.points || !a.trueRatio) return;
+      scored++;
+      const ratio = a.trueRatio / a.points;
+      (buckets.find(b => ratio < b.max) || buckets[buckets.length - 1]).count++;
+    });
+    return { buckets, scored, max: Math.max(1, ...buckets.map(b => b.count)) };
+  }, [achievements]);
+
+  const chunkHint = achLoading ? 'loading…' : 'last 12 months';
+  const paceColor = pace.delta === null ? '#8f98a0' : pace.delta >= 0 ? '#66c0f4' : '#8f98a0';
+
+  return (
+    <div className="flex flex-col gap-3">
+      <div className="flex md:hidden items-center gap-2 pb-2 border-b border-[#2a475e]">
+        <span className="w-[3px] h-[14px] bg-[#66c0f4] rounded-[1px] shrink-0" />
+        <span className="text-[13px] text-white tracking-wide uppercase font-medium">Stats</span>
+      </div>
+
+      {/* ── Tiles: 2×2 on mobile, one row on desktop ── */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+        <StatTile label="Current streak" value={`${streaks.current}d`} Icon={Flame}
+          color={streaks.current > 0 ? '#e5b143' : '#546270'}
+          sub={streaks.current === 0 ? 'no unlocks yesterday' : 'consecutive days'} />
+        <StatTile label="Longest streak" value={`${streaks.longest}d`} Icon={Trophy} color="#66c0f4" sub={chunkHint} />
+        <StatTile label="Active days" value={streaks.active90} Icon={Activity} color="#57cbde" sub="of the last 90" />
+        <StatTile label="Points this month" value={pace.currentPts.toLocaleString()} Icon={TrendingUp} color={paceColor}
+          sub={pace.median > 0
+            ? `${pace.delta >= 0 ? '+' : ''}${pace.delta}% vs ${pace.median.toLocaleString()} median`
+            : 'no baseline yet'} />
+      </div>
+
+      {/* ── Point acquisition ── */}
+      <StatCard title="Point acquisition"
+        hint={acquisition ? `${acquisition.total.toLocaleString()} pts · ${chunkHint}` : chunkHint}>
+        {achLoading && !acquisition
+          ? <div className="shimmer rounded-[2px]" style={{ height: '132px' }} />
+          : <PointAcquisitionChart data={acquisition} />}
+      </StatCard>
+
+      {/* ── Mastery timeline ── */}
+      <StatCard title="Mastery timeline"
+        hint={timeline.months.length ? `${timeline.totalMastered} mastered · ${timeline.totalBeaten} beaten` : null}>
+        {timeline.months.length === 0 ? (
+          <div className="text-[10px] text-[#546270] py-3 text-center">No game awards yet.</div>
+        ) : (
+          <>
+            <div ref={timelineRef} className="overflow-x-auto scrollbar-none" style={{ scrollbarWidth: 'none' }}>
+              <div className="inline-flex flex-col min-w-full">
+                <div className="flex items-end gap-[2px]" style={{ height: '84px' }}>
+                  {timeline.months.map(m => {
+                    const total = m.mastered + m.beaten;
+                    const scale = 76 / timeline.max;
+                    return (
+                      <div key={m.key} className="flex flex-col justify-end cursor-default"
+                        style={{
+                          flex: '1 1 0', minWidth: '10px', maxWidth: '22px', height: '84px',
+                          opacity: tlHover === null || tlHover === m.key ? 1 : 0.4,
+                          transition: 'opacity 0.12s',
+                        }}
+                        onMouseEnter={() => setTlHover(m.key)}
+                        onMouseLeave={() => setTlHover(h => (h === m.key ? null : h))}>
+                        {m.mastered > 0 && <div style={{ height: `${Math.max(m.mastered * scale, 2)}px`, background: '#e5b143', borderRadius: '4px 4px 0 0', marginBottom: m.beaten > 0 ? '2px' : 0 }} />}
+                        {m.beaten > 0   && <div style={{ height: `${Math.max(m.beaten * scale, 2)}px`,   background: '#8f98a0', borderRadius: m.mastered > 0 ? 0 : '4px 4px 0 0' }} />}
+                        {total === 0    && <div style={{ height: '1px', background: '#101214' }} />}
+                      </div>
+                    );
+                  })}
+                </div>
+                <div className="flex gap-[2px] mt-1">
+                  {timeline.months.map((m, i) => (
+                    <div key={m.key} className="text-[7px] text-[#546270] whitespace-nowrap leading-none" style={{ flex: '1 1 0', minWidth: '10px', maxWidth: '22px' }}>
+                      {(m.month === 1 || i === 0) ? `'${String(m.year).slice(2)}` : ''}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+            <div className="flex items-center gap-3 mt-2.5 pt-2 border-t border-[#2a475e] min-h-[16px]">
+              {(() => {
+                const hovered = tlHover === null ? null : timeline.months.find(x => x.key === tlHover);
+                if (!hovered) return (
+                  <>
+                    <span className="flex items-center gap-1.5 text-[9px] text-[#546270]">
+                      <span className="w-2 h-2 rounded-[1px] bg-[#e5b143]" /> Mastered
+                    </span>
+                    <span className="flex items-center gap-1.5 text-[9px] text-[#546270]">
+                      <span className="w-2 h-2 rounded-[1px] bg-[#8f98a0]" /> Beaten
+                    </span>
+                  </>
+                );
+                return (
+                  <span className="text-[10px] text-[#c6d4df] tabular-nums">
+                    {MONTH_ABBR[hovered.month - 1]} {hovered.year}
+                    <span className="text-[#e5b143] ml-2">{hovered.mastered} mastered</span>
+                    <span className="text-[#8f98a0] ml-2">{hovered.beaten} beaten</span>
+                  </span>
+                );
+              })()}
+            </div>
+          </>
+        )}
+      </StatCard>
+
+      {/* ── Console split ── */}
+      <StatCard title="Consoles" hint={`${consoles.total} system${consoles.total === 1 ? '' : 's'} played`}>
+        {consoles.list.length === 0 ? (
+          <div className="text-[10px] text-[#546270] py-3 text-center">No achievements unlocked yet.</div>
+        ) : (
+          <>
+            <div className="flex flex-col gap-1.5">
+              {consoles.list.map(c => (
+                <StackedBarRow key={c.name} label={c.name} total={c.games} max={consoles.max}
+                  mastered={c.mastered} beaten={c.beaten}
+                  segments={[
+                    // In progress first so every row anchors on the same series: only 3 of 12
+                    // consoles have a mastered game, so a mastered-first order left nine bars
+                    // starting on a different colour and nothing comparable at the baseline.
+                    // Left-to-right then reads as the progression, gold terminating the bar —
+                    // the same language as the blue-to-gold progress bars elsewhere in the app.
+                    { key: 'other',    value: c.inProgress, color: AWARD_SEGMENTS.other    },
+                    { key: 'beaten',   value: c.beaten,     color: AWARD_SEGMENTS.beaten   },
+                    { key: 'mastered', value: c.mastered,   color: AWARD_SEGMENTS.mastered },
+                  ]} />
+              ))}
+            </div>
+            <div className="flex items-center gap-3 mt-2.5 pt-2 border-t border-[#2a475e] flex-wrap">
+              <span className="flex items-center gap-1.5 text-[9px] text-[#546270]">
+                <span className="w-2 h-2 rounded-[1px]" style={{ background: AWARD_SEGMENTS.other }} /> In progress
+              </span>
+              {consoles.anyBeaten && (
+                <span className="flex items-center gap-1.5 text-[9px] text-[#546270]">
+                  <span className="w-2 h-2 rounded-[1px]" style={{ background: AWARD_SEGMENTS.beaten }} />
+                  <Medal size={9} style={{ color: AWARD_SEGMENTS.beaten }} /> Beaten
+                </span>
+              )}
+              {consoles.anyMastered && (
+                <span className="flex items-center gap-1.5 text-[9px] text-[#546270]">
+                  <span className="w-2 h-2 rounded-[1px]" style={{ background: AWARD_SEGMENTS.mastered }} />
+                  <Trophy size={9} style={{ color: AWARD_SEGMENTS.mastered }} /> Mastered
+                </span>
+              )}
+              <span className="text-[9px] text-[#546270] ml-auto">bar length = games played</span>
+            </div>
+          </>
+        )}
+      </StatCard>
+
+      {/* ── Rarity profile ── */}
+      <StatCard title="Rarity profile" hint={chunkHint}>
+        {achLoading && rarity.scored === 0 ? (
+          <div className="flex flex-col gap-1.5">
+            {[...Array(5)].map((_, i) => <div key={i} className="shimmer h-[10px] rounded-[2px]" />)}
+          </div>
+        ) : rarity.scored === 0 ? (
+          <div className="text-[10px] text-[#546270] py-3 text-center">No scored unlocks in the loaded window.</div>
+        ) : (
+          <>
+            <div className="flex flex-col gap-1.5">
+              {rarity.buckets.map(b => (
+                <BarRow key={b.key} label={b.label} value={b.count}
+                  sub={`· ${Math.round((b.count / rarity.scored) * 100)}%`}
+                  pct={(b.count / rarity.max) * 100} color={b.color} />
+              ))}
+            </div>
+            <p className="text-[9px] text-[#546270] mt-2.5 pt-2 border-t border-[#2a475e] leading-relaxed">
+              Banded by RetroPoints ÷ points — RA's own weighting for how few players hold an achievement.
+            </p>
+          </>
+        )}
+      </StatCard>
+    </div>
+  );
+};
+
 const CompareModal = ({ otherUser, myGames, compareData, loading, error, onClose, profileMap = new Map() }) => {
   const [sortBy, setSortBy] = useState('diff');
 
@@ -2070,7 +2688,7 @@ export default function App() {
 
   const VALID_TABS = isVisitorMode
     ? ['recent', 'progress', 'series']
-    : ['recent', 'progress', 'series', 'activity', 'backlog', 'social'];
+    : ['recent', 'progress', 'series', 'activity', 'backlog', 'social', 'stats'];
   const initialTab = (() => {
     const p = new URLSearchParams(window.location.search).get('tab');
     return VALID_TABS.includes(p) ? p : 'recent';
@@ -2078,6 +2696,7 @@ export default function App() {
 
   const [activeTab, setActiveTab] = useState(initialTab);
   const [progressSearch,  setProgressSearch]  = useState('');
+  const [progressFilter,  setProgressFilter]  = useState('all');   // all | nearly | inprogress | abandoned
   const [showMastered,    setShowMastered]    = useState(false);
   const [showAllRecent,   setShowAllRecent]   = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
@@ -2387,9 +3006,9 @@ export default function App() {
     })();
   }, [activeTab, socialError]);
 
-  // ── Load achievements when Activity tab opens ──
+  // ── Load achievements when the Activity or Stats tab opens ──
   useEffect(() => {
-    if (isVisitorMode || activeTab !== 'activity') return;
+    if (isVisitorMode || (activeTab !== 'activity' && activeTab !== 'stats')) return;
     if (achievements === null && !achievementsLoadingMore) loadAchievements();
   }, [activeTab]);
 
@@ -2463,11 +3082,42 @@ export default function App() {
     displayedGames.sort((a, b) => new Date(b.lastPlayedStr || 0) - new Date(a.lastPlayedStr || 0));
     displayedGames = displayedGames.slice(0, 15);
   } else if (activeTab === 'progress') {
-    displayedGames = displayedGames
-      .filter(g => g.achievementsUnlocked > 0 && g.achievementsTotal > 0
-        && (showMastered || !g.isMastered)
-        && (!progressSearch || (g.baseTitle || g.title || '').toLowerCase().includes(progressSearch.toLowerCase())))
-      .sort((a, b) => b.rawProgress - a.rawProgress);
+    // Progression buckets. Applied to started-but-unfinished games, first match wins:
+    // nearly there → in progress → abandoned. "Nearly there" is deliberately
+    // recency-neutral — a game you dropped at 80% is the one most worth resurrecting,
+    // so it should not disappear into the abandoned pile.
+    const NEARLY_PCT = 75;
+    const STALE_MS   = 30 * 24 * 60 * 60 * 1000;
+    const nowMs = Date.now();
+
+    const isNearly = g => !g.isMastered && g.rawProgress >= NEARLY_PCT;
+    const isStale  = g => !g.lastPlayedStr || (nowMs - new Date(g.lastPlayedStr).getTime()) > STALE_MS;
+    const byRecency = (a, b) => new Date(b.lastPlayedStr || 0) - new Date(a.lastPlayedStr || 0);
+
+    displayedGames = displayedGames.filter(g =>
+      g.achievementsUnlocked > 0 && g.achievementsTotal > 0
+      && (!progressSearch || (g.baseTitle || g.title || '').toLowerCase().includes(progressSearch.toLowerCase())));
+
+    if (progressFilter === 'nearly') {
+      displayedGames = displayedGames
+        .filter(isNearly)
+        // Fewest achievements left first — a set at 81% with 18 to go is not a tonight job.
+        .sort((a, b) =>
+          ((a.achievementsTotal - a.achievementsUnlocked) - (b.achievementsTotal - b.achievementsUnlocked))
+          || (b.rawProgress - a.rawProgress));
+    } else if (progressFilter === 'inprogress') {
+      displayedGames = displayedGames
+        .filter(g => !g.isMastered && !isNearly(g) && !isStale(g))
+        .sort(byRecency);
+    } else if (progressFilter === 'abandoned') {
+      displayedGames = displayedGames
+        .filter(g => !g.isMastered && !isNearly(g) && isStale(g))
+        .sort(byRecency);
+    } else {
+      displayedGames = displayedGames
+        .filter(g => showMastered || !g.isMastered)
+        .sort((a, b) => b.rawProgress - a.rawProgress);
+    }
   }
 
   return (
@@ -2831,6 +3481,14 @@ export default function App() {
                 {activeTab === 'social' && <div className="absolute bottom-[-1px] left-0 w-full h-[3px] bg-[#57cbde]" />}
               </button>
             )}
+            {!isVisitorMode && (
+              <button onClick={() => setTab('stats')} className={`flex-1 md:flex-none flex flex-col md:flex-row items-center justify-center gap-1 md:gap-0 py-2.5 md:py-0 md:pb-2 px-1 md:px-0 transition-colors relative ${activeTab === 'stats' ? 'text-white' : 'text-[#546270] hover:text-[#c6d4df]'}`}>
+                <PieChart size={18} className="block md:hidden shrink-0" />
+                <span className="block md:hidden text-[9px] font-semibold uppercase tracking-[0.06em] leading-none">Stats</span>
+                <span className="hidden md:inline text-[11px] md:text-[14px] uppercase tracking-wide font-medium whitespace-nowrap">Stats</span>
+                {activeTab === 'stats' && <div className="absolute bottom-[-1px] left-0 w-full h-[3px] bg-[#66c0f4]" />}
+              </button>
+            )}
           </div>
         </div>
 
@@ -2866,6 +3524,14 @@ export default function App() {
               </div>
               <SocialTab socialData={socialData} socialError={socialError} onRetry={() => setSocialError(false)} onCompare={openCompare} profileMap={socialProfileMap} />
             </div>
+          ) : activeTab === 'stats' ? (
+            <StatsTab
+              achievements={allLoadedAchievements}
+              achLoading={achievements === null || achievementsLoadingMore}
+              games={ALL_GAMES}
+              gameAwards={PROFILE_DATA.gameAwards}
+              heatmapData={heatmapData}
+            />
           ) : activeTab === 'series' ? (
             <SeriesProgressTab seriesData={seriesData} gamesData={gamesData} backlogData={backlogData} />
           ) : activeTab === 'activity' ? (
@@ -3188,19 +3854,52 @@ export default function App() {
                     <span className="w-[3px] h-[14px] bg-[#66c0f4] rounded-[1px] shrink-0" />
                     <span className="text-[13px] text-white tracking-wide uppercase font-medium">Completion Progress</span>
                   </div>
+                  <div className="flex items-center gap-1.5 mb-2 flex-wrap">
+                    <span className="text-[9px] text-[#546270] uppercase tracking-wider shrink-0">View</span>
+                    {[
+                      { value: 'all',        label: 'All'          },
+                      { value: 'nearly',     label: 'Nearly there' },
+                      { value: 'inprogress', label: 'In progress'  },
+                      { value: 'abandoned',  label: 'Abandoned'    },
+                    ].map(opt => (
+                      <button
+                        key={opt.value}
+                        onClick={() => setProgressFilter(opt.value)}
+                        className={`text-[9px] font-semibold uppercase tracking-wider px-2 py-[3px] rounded-[2px] border transition-colors ${
+                          progressFilter === opt.value
+                            ? 'bg-[#66c0f4] text-[#101214] border-[#66c0f4]'
+                            : 'bg-[#101214] text-[#8f98a0] border-[#323f4c] hover:text-[#c6d4df] hover:border-[#546270]'
+                        }`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
                   <div className="flex items-center gap-2 mb-3">
-                    <span className="text-[9px] text-[#546270] uppercase tracking-wider">Filter</span>
-                    <button
-                      onClick={() => setShowMastered(v => !v)}
-                      className={`text-[9px] font-semibold uppercase tracking-wider px-2 py-[3px] rounded-[2px] border transition-colors ${
-                        showMastered
-                          ? 'bg-[#e5b143] text-[#101214] border-[#e5b143]'
-                          : 'bg-[#101214] text-[#8f98a0] border-[#323f4c] hover:text-[#c6d4df] hover:border-[#546270]'
-                      }`}
-                    >
-                      Mastered
-                    </button>
-                    <span className="ml-auto text-[9px] text-[#546270]">{displayedGames.length} games</span>
+                    {progressFilter === 'all' ? (
+                      <>
+                        <span className="text-[9px] text-[#546270] uppercase tracking-wider">Filter</span>
+                        <button
+                          onClick={() => setShowMastered(v => !v)}
+                          className={`text-[9px] font-semibold uppercase tracking-wider px-2 py-[3px] rounded-[2px] border transition-colors ${
+                            showMastered
+                              ? 'bg-[#e5b143] text-[#101214] border-[#e5b143]'
+                              : 'bg-[#101214] text-[#8f98a0] border-[#323f4c] hover:text-[#c6d4df] hover:border-[#546270]'
+                          }`}
+                        >
+                          Mastered
+                        </button>
+                      </>
+                    ) : (
+                      <span className="text-[9px] text-[#546270] leading-snug">
+                        {progressFilter === 'nearly'
+                          ? '75%+ done · fewest achievements left first'
+                          : progressFilter === 'inprogress'
+                          ? 'Active in the last 30 days · most recent first'
+                          : 'Started, unfinished, quiet for 30+ days'}
+                      </span>
+                    )}
+                    <span className="ml-auto text-[9px] text-[#546270] shrink-0">{displayedGames.length} games</span>
                   </div>
                   <div className="relative mb-4">
                     <input
