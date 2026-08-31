@@ -1,29 +1,17 @@
-# Settings Page
+# Settings Page — removed
 
-**File:** `settings/app.js`  
-**URL:** `/settings/`  
-**Auth required:** Yes
+The standalone settings page (`settings/app.js`, `/settings/`) **no longer exists.** It was
+removed in `e9af883` when its actions moved into the mobile slide-up menu sheet. The `settings/`
+directory is an empty leftover.
 
-## Feature Rows
+Those actions now live in `assets/mobile-nav.js`, in the sheet opened from the Menu nav slot:
 
-Each setting is a row with an icon, label, and action. Current rows:
+| Action | What it does |
+|---|---|
+| Refresh Data | Clears `sessionStorage`, all `ra_*` localStorage keys, and the ephemeral IDB stores (`progress`, `friend_activity`, `backlog`, `friend_list`, `meta`) — keeps the `consoles`/`games` catalog |
+| Purge Cache | Deletes every service-worker cache and reloads; leaves all IDB data intact |
+| Debug Mode | Toggles `raDebugMode` in localStorage and fires a `raDebugModeChange` event |
+| Log Out | Removes `raCredentials` and redirects to `/` |
 
-- **Log out** — `clearCredentials()` + redirect to `../`
-- **Clear cache** — `sessionStorage.clear()` + `localStorage.clear()` (except credentials)
-- Any additional settings follow the same icon + label + action row pattern
-
-## Adding a New Setting
-
-1. Define the row as a component or inline JSX in the settings list.
-2. Use the same row pattern: icon (Lucide), label text, action button/toggle on the right.
-3. No separate state file — all state in `app.js`.
-
-## Mobile
-
-Single-column, centered, max-width constrained:
-
-```jsx
-<div className="max-w-lg mx-auto w-full px-4 pt-8 pb-5 md:pt-5 flex-1">
-```
-
-No layout differences between mobile and desktop — settings rows are full-width at all sizes.
+On desktop the same actions are reached from the Topbar. This file is kept as a pointer so links
+to it don't dead-end.

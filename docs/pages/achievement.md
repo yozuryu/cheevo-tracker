@@ -1,6 +1,6 @@
 # Achievement Page
 
-**File:** `achievement/app.js`  
+**File:** `achievement/app.js` (~580 LOC)  
 **URL:** `/achievement/?id=<achievementId>`  
 **Auth required:** Yes
 

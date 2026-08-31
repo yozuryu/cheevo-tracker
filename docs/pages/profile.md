@@ -1,6 +1,6 @@
 # Profile Page
 
-**File:** `profile/app.js` (~2150 LOC)  
+**File:** `profile/app.js` (~4090 LOC)  
 **URL:** `/profile/` (own profile) · `/profile/?u=<username>` (visitor mode)  
 **Auth required:** Yes
 
@@ -11,8 +11,9 @@
 | Recent Games | Clock | `?tab=games` | Default |
 | Completion Progress | BarChart2 | `?tab=progress` | |
 | Series Progress | Layers | `?tab=series` | Hidden if no series with `showProgress` |
-| Activity | Activity | `?tab=activity` | Lazy-loads achievement chunks on scroll |
-| Watchlist | Star | `?tab=watchlist` | Triggers `fetchWatchlist` on first open |
+| Activity | Activity | `?tab=activity` | Mine / Friends toggle; lazy-loads achievement chunks |
+| Backlog | Star | `?tab=backlog` | Want-to-play list; triggers `fetchBacklog` on first open |
+| Social | Users | `?tab=social` | Following / followers; triggers `fetchSocial` on first open |
 | Stats | PieChart | `?tab=stats` | Own profile only. Desktop tab bar + mobile menu sheet — deliberately **not** in the floating pill |
 
 Tab state persists in URL query param. Floating pill (mobile) appears when tab bar scrolls off screen; animated via `slideUpPill`/`slideDownPill` CSS keyframes.
@@ -25,13 +26,14 @@ Tab state persists in URL query param. Floating pill (mobile) appears when tab b
 2. `API_GetUserSummary?g=20&a=5` → `userSummary`, `recentlyPlayedGames`, `mostRecentGame`, `mostRecentAchievement`
 3. `API_GetUserCompletionProgress` (auto-paginated, 500/page) → `gameAwardsAndProgress`
 4. `API_GetUserAwards` → `pageAwards`
-5. `API_GetAchievementsEarnedBetween` (last 91 days) → pre-populates chunk 0 + computes `points7Days`/`points30Days`
+5. `API_GetAchievementsEarnedBetween` (last 182 days) → pre-populates chunk 0 + computes `points7Days`/`points30Days`
 
 ## Lazy Loads
 
 | Trigger | Fetch | State updated |
 |---|---|---|
-| Watchlist tab opens (first time) | `fetchWatchlist()` | `wantToPlayList` |
+| Backlog tab opens (first time) | `getBacklog()` from IDB, then `fetchBacklog()` | `backlogData` |
+| Social tab opens (first time) | `fetchSocial()` | `socialData` |
 | Activity tab scroll (sentinel ref) | `fetchAchievementsChunk(u, k, idx)` idx 1–3 | `achievementChunks` |
 | Stats tab opens (first time) | `loadAchievements()` — same call the Activity tab makes, shared state | `achievements` |
 | Game modal opens (achievements not yet loaded) | `fetchGameDetails(u, k, gameId)` | `gamesData.detailedGameProgress[gameId]` |
@@ -46,7 +48,7 @@ The Activity tab has a **Mine / Friends** toggle. Friends view shows a merged ti
 | State | Type | Purpose |
 |---|---|---|
 | `socialView` | `'mine' \| 'friends'` | Active sub-tab |
-| `friendsActivityStatus` | `'idle' \| 'loading' \| 'done' \| 'error'` | Fetch lifecycle |
+| `friendsActivityStatus` | `'idle' \| 'loading' \| 'updating' \| 'done' \| 'error'` | Fetch lifecycle |
 | `friendsActivity` | `{ [username]: achievement[] }` | Per-friend achievement arrays (streams in) |
 | `friendsFetchProgress` | `{ done, total } \| null` | Progress counter for loading indicator |
 | `friendsFetchingRef` | `useRef(boolean)` | Re-entry guard for the fetch useEffect |
@@ -74,7 +76,7 @@ The Activity tab has a **Mine / Friends** toggle. Friends view shows a merged ti
 ```js
 rawData = {
   ...profileData,          // from fetchProfile()
-  wantToPlayList,          // null until watchlist tab opens
+  wantToPlayList,          // backlogData — null until the Backlog tab opens
   recentAchievements: [],  // not used directly
   detailedGameProgress,    // lazy-populated per game
 }
@@ -295,7 +297,7 @@ The tab bar takes full-screen on non-Recent tabs on mobile.
 
 Right stats column hidden on mobile unless `statsExpanded`. Expand toggle button is `sm:hidden` (mobile only).
 
-### Watchlist table
+### Backlog table
 
 Certain columns carry `wl-hide-mobile` class and are hidden on mobile via a `<style>` rule.
 

@@ -1,6 +1,6 @@
 # Game Page
 
-**File:** `game/app.js`  
+**File:** `game/app.js` (~1460 LOC)  
 **URL:** `/game/?id=<gameId>`  
 **Auth required:** Yes
 

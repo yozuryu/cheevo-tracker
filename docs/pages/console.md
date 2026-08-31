@@ -1,6 +1,6 @@
 # Console Page
 
-**File:** `console/app.js`  
+**File:** `console/app.js` (~500 LOC)  
 **URL:** `/console/?id=<consoleId>`  
 **Auth required:** Yes
 

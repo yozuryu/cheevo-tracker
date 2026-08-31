@@ -24,9 +24,9 @@ cheevo-tracker/
 │   ├── mobile-nav.js   # Shared bottom nav IIFE (mobile only, < 768px)
 │   └── ui.js           # Shared Topbar + Footer components (React.createElement, no JSX)
 │
-├── profile/            # Main profile page
+├── profile/            # Main profile page (also visitor mode via ?u=<username>)
 │   ├── index.html
-│   ├── app.js          # ~2150 LOC React app
+│   ├── app.js          # ~4090 LOC React app
 │   └── utils/          # Shared utilities — used by ALL pages
 │       ├── ra-api.js   # RA API client (two-layer: raw wrappers + app composites)
 │       ├── constants.js
@@ -35,11 +35,14 @@ cheevo-tracker/
 │
 ├── game/               # Game detail page (?id=<gameId>)
 ├── achievement/        # Achievement detail page (?id=<achievementId>)
-├── console/            # Console game list page (?id=<consoleId>)
-├── user/               # User profile visitor page (?u=<username>)
-├── settings/           # Settings page
+├── console/            # Console list + per-console game list (?id=<consoleId>)
+├── search/             # Cross-console game search, backed by the IDB catalog
 └── changelog/          # Changelog viewer page
 ```
+
+There is no `user/` directory — visitor mode is the profile page with `?u=<username>`.
+The `settings/` page was removed when its actions moved into the mobile menu sheet
+(`assets/mobile-nav.js`); the empty directory is a leftover.
 
 Each page directory contains `index.html` + `app.js`. No shared component files — each `app.js` is self-contained.
 
@@ -61,7 +64,7 @@ import { getCredentials, clearCredentials, fetchProfile, ... } from '../profile/
 |---|---|
 | `MEDIA_URL` | `https://media.retroachievements.org` |
 | `SITE_URL` | `https://retroachievements.org` |
-| `TILDE_TAG_COLORS` | Map of tag name → hex color (Hack, Homebrew, Demo, Prototype) |
+| `TILDE_TAG_COLORS` | Map of tag name → `{ bg, border, color }` (Homebrew, Demo, Prototype, Hack) |
 
 ### `helpers.js`
 
@@ -72,13 +75,14 @@ Pure utility functions — no API calls, no state.
 | `getMediaUrl(path)` | `(string) → string` | Prepends `MEDIA_URL` to an RA image path |
 | `formatTimeAgo(date, refTime)` | `(Date, Date?) → string` | Human-readable relative time ("3 days ago") |
 | `formatDate(date)` | `(Date) → string` | Short formatted date string |
-| `parseTitle(title)` | `(string) → { title, tag, subset }` | Strips `~Tag~` prefixes and `[Subset - Name]` suffixes |
+| `parseTitle(title)` | `(string) → { baseTitle, subsetName, isSubset, tags }` | Strips `~Tag~` prefixes into `tags[]` and splits `[Subset - Name]` suffixes |
 
 ### `ra-api.js` — App Composites
 
 Full endpoint reference: [`profile/utils/ra-api.md`](../profile/utils/ra-api.md)
 
-The only functions `app.js` calls directly (Layer 2). All cache in `sessionStorage` with a 5-min TTL.
+The only functions `app.js` calls directly (Layer 2). `CACHE_TTL` is **1 minute** — the
+`sessionStorage`-backed composites use it; IDB- and localStorage-backed ones carry their own TTL.
 
 | Function | Cache key | What it does |
 |---|---|---|
@@ -90,6 +94,11 @@ The only functions `app.js` calls directly (Layer 2). All cache in `sessionStora
 | `fetchCompletionMap(u, k)` | `ra_completion_{u}` (localStorage, 1h) | `{ [gameId]: { numAwarded, maxPossible, award } }` for every game the user has touched |
 | `fetchFriendsActivity(u, k, followingList, { onProgress, onUser, onError })` | `ra_fa_{friendUser}` per user (localStorage, append) | 30-day window via 10-day chunks. No cache → full 3-chunk fetch. Fresh (<1h) → instant serve. Stale (≥1h) → serve stale immediately then incremental delta (≤10d=1 call, ≤20d=2, ≤30d=3, >30d=full refresh). 300ms between chunks, 1000ms between users (only when API called). |
 | `allFriendsCached(followingList)` | — | Returns true if every user has any `ra_fa_*` entry (fresh or stale); stale entries are still served immediately then updated incrementally |
+| `fetchAllAchievements(u, k, { onPartial })` | IDB `progress` store + `progress_ts_{u}` | Last ~12 months of unlocks as two 182-day chunks; `onPartial` fires after chunk 0 |
+| `fetchBacklog(u, k, onPartial)` | IDB `backlog` store, 24h | Full want-to-play list, all pages |
+| `fetchConsoles(u, k)` | `ra_consoles` (localStorage, 24h) | Active game systems, alphabetical |
+| `fetchConsoleGames(u, k, consoleId)` | IDB `games`/`consoles` stores, 24h | Full game list for one console |
+| `getAllGamesFromDB()` | IDB, no fetch | Whole cached catalog — powers the search page |
 | `validateCredentials(u, k)` | — | Minimal profile call; throws `AUTH_ERROR` if invalid |
 
 ### `profileData` shape
@@ -125,7 +134,7 @@ Assembled in `profile/app.js`, passed to `transformData()` → `{ profile, games
 ```
 rawData = {
   ...profileData,          // from fetchProfile()
-  wantToPlayList,          // from fetchWatchlist(), null until watchlist tab opens
+  wantToPlayList,          // backlogData — null until the Backlog tab opens
   recentAchievements: [],  // not used directly — achievements handled via achievementChunks
   detailedGameProgress,    // lazy-populated per game via fetchGameDetails()
 }
@@ -138,7 +147,7 @@ Do not bypass `transformData`. All derived fields (progress %, mastery status, s
 ```
 RA API (live)
     ↓  ra-api.js (raw wrappers → camelCase)
-    ↓  ra-api.js (app composites → sessionStorage cache, 5-min TTL)
+    ↓  ra-api.js (app composites → sessionStorage cache, CACHE_TTL = 1 min)
     ↓  app.js useState / useMemo (rawData)
     ↓  transform.js (transformData → { profile, games, backlog })
     ↓  React components
@@ -152,7 +161,7 @@ RA API (live)
 
 | Store | TTL | What is cached |
 |---|---|---|
-| `sessionStorage` | 5 min | Profile data, achievement chunks, game details, watchlist (`ra_*` keys) |
+| `sessionStorage` | 1 min (`CACHE_TTL`) | Profile data, game details, watchlist (`ra_*` keys) |
 | `localStorage` | 1 hour | Social data (following/followers, `ra_social_*`) |
 | `localStorage` | 1 hour | Completion map for the console coverage strip (`ra_completion_{username}`) |
 | `localStorage` | append (1h freshness) | Per-friend activity (`ra_fa_{username}`): served instantly if any cache exists; incremental delta fetched when stale; full refresh only when missing or delta >30d |

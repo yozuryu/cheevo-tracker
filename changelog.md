@@ -14,6 +14,16 @@
 - Updated `docs/pages/game.md` — added the difficulty curve section with the band table and the ordinal-ramp rationale.
 - Updated `docs/architecture.md` — added `fetchCompletionMap` to the composites and caching tables, and corrected the mobile nav section, which still described two nav tabs when the bar has had six slots plus a menu sheet for a while.
 - Updated `profile/utils/ra-api.md` — documented `fetchCompletionMap` under App Composites.
+- **Full docs audit.** Fixed drift that mostly predated this session:
+  - `CACHE_TTL` is 1 minute, not 5 — corrected in `docs/architecture.md` (3 places) and `profile/utils/ra-api.md` (6 places).
+  - `docs/architecture.md` listed a `user/` directory that has never existed (visitor mode is `profile/?u=`), listed the `settings/` page that was deleted in `e9af883`, and omitted `search/` entirely.
+  - `parseTitle` was documented as returning `{ title, tag, subset }`; it returns `{ baseTitle, subsetName, isSubset, tags }`. `TILDE_TAG_COLORS` maps to `{ bg, border, color }` objects, not hex strings.
+  - The profile tab is `?tab=backlog`, not `?tab=watchlist`; the Tabs and Lazy Loads tables said watchlist and omitted Social entirely.
+  - `fetchProfile`'s first chunk covers 182 days, not the 91 documented.
+  - LOC counts refreshed (`profile/app.js` is ~4090, not ~2150) and added to the game, console and achievement docs for parity.
+  - The composites tables in both `architecture.md` and `ra-api.md` were missing most of what `app.js` actually calls — added `fetchAllAchievements`, `fetchBacklog`, `fetchConsoles`, `fetchConsoleGames`, `getAllGamesFromDB`, `markAllGamesFullFetch`, `fetchSocial`, `fetchFriendsActivity` with their real stores and TTLs.
+- Added `docs/pages/search.md` — the search page was ~440 LOC and completely undocumented. Covers the IDB-only query path, the rate-limited catalog build with its cancel flag, state, and why an empty `consoleFilter` means *all* consoles.
+- `docs/pages/settings.md` now records that the page was removed in `e9af883` and maps its actions to where they live in the mobile menu sheet, rather than describing a page that isn't there. `CLAUDE.md`'s doc table gained a Search row and flags the Settings row as removed.
 - Chart palettes are now checked with the `dataviz` skill's `validate_palette.js` against the `#1b2838` card surface before shipping. `#66c0f4` / `#e5b143` sit outside the validator's dark lightness band but clear CVD separation, normal-vision separation and contrast by wide margins, so they stay for design-system consistency; ordered scales take the validated single-hue ramp instead of a set of accent hues. Noted in `docs/pages/profile.md`.
 
 ### Profile

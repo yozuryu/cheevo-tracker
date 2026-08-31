@@ -33,14 +33,14 @@ All raw RA responses are PascalCase; everything exported from this module is cam
 | Layer | Functions | Caching |
 |---|---|---|
 | **Raw endpoint wrappers** | `getUserProfile`, `getGame`, `getAchievementsEarnedBetween`, … | None — pure fetch + map |
-| **App composites** | `fetchProfile`, `fetchAchievementsChunk`, `fetchWatchlist`, `fetchGameDetails`, `validateCredentials` | sessionStorage, 5-minute TTL |
+| **App composites** | `fetchProfile`, `fetchAchievementsChunk`, `fetchWatchlist`, `fetchGameDetails`, `fetchCompletionMap`, `fetchAllAchievements`, `fetchBacklog`, `fetchConsoles`, `fetchConsoleGames`, `fetchSocial`, `fetchFriendsActivity`, `validateCredentials` | sessionStorage (`CACHE_TTL` = 1 min), or IDB / localStorage with their own TTLs |
 
 Raw wrappers are safe to call in any context. App composites are what `app.js` uses.
 
 ### Cache
 
 ```js
-CACHE_TTL = 5 * 60 * 1000  // 5 minutes
+CACHE_TTL = 1 * 60 * 1000  // 1 minute
 ```
 
 | Composite | sessionStorage key |
@@ -1662,7 +1662,7 @@ Requests fired:
 }
 ```
 
-**Cache key:** `ra_profile_{username}` — TTL 5 minutes.
+**Cache key:** `ra_profile_{username}` — TTL 1 minute (`CACHE_TTL`).
 
 ---
 
@@ -1677,7 +1677,7 @@ Fetches a 6-month window of achievements.
 
 **Returns:** `Array` — same shape as [`getAchievementsEarnedBetween`](#getachievementsearnedBetween).
 
-**Cache key:** `ra_chunk_{username}_{chunkIndex}` — TTL 5 minutes.
+**Cache key:** `ra_chunk_{username}_{chunkIndex}` — TTL 1 minute (`CACHE_TTL`).
 
 > **Note:** The app uses `TOTAL_ACH_CHUNKS = 2` and loads both chunks eagerly when the
 > Activity tab is first opened, with a 1-second stagger between them.
@@ -1696,7 +1696,7 @@ Fetches the full want-to-play list (all pages, 100/page, 1 s between pages).
 }
 ```
 
-**Cache key:** `ra_watchlist_{username}` — TTL 5 minutes.
+**Cache key:** `ra_watchlist_{username}` — TTL 1 minute (`CACHE_TTL`).
 
 ---
 
@@ -1728,7 +1728,7 @@ is opened and `game.achievements` is empty.
 }
 ```
 
-**Cache key:** `ra_game_{username}_{gameId}` — TTL 5 minutes.
+**Cache key:** `ra_game_{username}_{gameId}` — TTL 1 minute (`CACHE_TTL`).
 
 ---
 
@@ -1745,6 +1745,24 @@ show library coverage without paying for the full 5-call `fetchProfile`.
 ```
 
 **Cache key:** `ra_completion_{username}` in **localStorage** — TTL 1 hour.
+
+---
+
+### Other composites
+
+These are also Layer 2 — call them from `app.js`, never `raFetch`. They are backed by IndexedDB
+or `localStorage` rather than `sessionStorage`, so each carries its own TTL.
+
+| Function | Store | TTL | Returns |
+|---|---|---|---|
+| `fetchAllAchievements(u, k, { onPartial }, force)` | IDB `progress`, keyed `[username, gameId]` | 1 min (`progress_ts_{u}`) | Last ~12 months of unlocks (two 182-day chunks), newest first. `onPartial` fires after chunk 0 |
+| `fetchBacklog(u, k, onPartial, force)` | IDB `backlog` | 24 h | `{ total, results }` — full want-to-play list, all pages |
+| `fetchConsoles(u, k)` | `ra_consoles` (localStorage) | 24 h | Active game systems, alphabetical |
+| `fetchConsoleGames(u, k, consoleId, force)` | IDB `games` + `consoles` | 24 h | Every game on one console, `~z~` filtered, tagged titles last |
+| `getAllGamesFromDB()` | IDB, no network | — | `{ games, consolesFetched, lastFullFetch }` — the whole cached catalog |
+| `markAllGamesFullFetch()` | IDB `meta` | — | Stamps `lastFullFetch`; used by the search page after a full catalog sync |
+| `fetchSocial(u, k, force)` | `ra_social_{u}` (localStorage) | 1 h | `{ following, followers }` |
+| `fetchFriendsActivity(u, k, list, cbs)` | IDB `friend_activity` per user | 1 h freshness, incremental | 30-day merged friend feed; see `docs/pages/profile.md` |
 
 ---
 
