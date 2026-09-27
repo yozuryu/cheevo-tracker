@@ -1,5 +1,11 @@
 # Changelog
 
+## v26.09.27 — Not-found page
+
+### Structure
+
+- New `404.html`: missing pages under `/cheevo-tracker/` now show a menu-styled "Area not found" card with links back to Cheevo Tracker and to the home page, instead of GitHub's default 404. It is plain HTML that reuses the root site's design system (`/assets/noah-ui.css` from yozuryu.github.io, same origin) and uses absolute URLs so it works at any depth
+
 ## v26.08.30 — Stats Tab + Contextual Analytics
 
 ### RetroAchievements API
