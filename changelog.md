@@ -1,16 +1,18 @@
 # Changelog
 
-## v26.09.27 — Not-found page + silver Beaten + POC fix
+## v26.09.27 — Not-found page + silver Beaten + POC fixes, FireRed & LeafGreen
 
 ### Cache
 
-- Service worker `CACHE_NAME` bumped (twice) so installed copies pick up the new colors and the Professor Oak fix — static files are cache-first
+- Service worker `CACHE_NAME` bumped with each change today so installed copies pick up the new colors and Professor Oak updates — static files (including `poc-pokemon.json`) are cache-first
 
 ### Structure
 
 - New `404.html`: missing pages under `/cheevo-tracker/` now show a menu-styled "Area not found" card with links back to Cheevo Tracker and to the home page, instead of GitHub's default 404. It is plain HTML that reuses the root site's design system (`/assets/noah-ui.css` from yozuryu.github.io, same origin) and uses absolute URLs so it works at any depth
 - Updated `docs/rules.md`, `docs/pages/profile.md` and `docs/pages/game.md` for the silver Beaten color
 - Updated `docs/pages/game.md` (checkpoint parsing: `moves` override, `checkPocTargets`) and `docs/poc-data-generation.md` (Step 5: check for the debug warning and fix with `moves`)
+- `scripts/poc-data-gen.js`: merges per species **and per version** — a run for new games used to replace a shared species' whole entry, wiping the other games' locations (running it for FireRed/LeafGreen would have erased HeartGold/SoulSilver/Red/Blue/Yellow locations for ~130 species); evolution parents not fetched in the run keep their proper name ("Mime Jr.", not "Mime-Jr"); same new parsing rules as `poc.js`, plus Tyrogue breeding and the LeafGreen "Exeggcutor" spelling
+- Updated `docs/poc-data-generation.md` and `docs/pages/game.md` for FireRed/LeafGreen, the LeafGreen parsing rules and the per-version merge
 
 ### Polish
 
@@ -23,6 +25,10 @@
 
 - Professor Oak Challenge: **Pikachu** in the SoulSilver subset was listed under **Badge I** — its achievement has an early ID, which made every Johto checkpoint one over its target. It's Kanto-only, so it's now pinned under **Badge IX** (Misty) via a new per-subset `moves` override in `POC_GAMES`; every SoulSilver and HeartGold checkpoint now matches its "all N available Pokemon" target
 - New `checkPocTargets` sanity check — with **Debug Mode** on, the Professor Oak tab logs a `[POC]` console warning if any checkpoint's species count doesn't match its target, so a misplaced achievement is caught instead of silently shown under the wrong badge
+- Professor Oak Challenge now supports **FireRed** (subset 23905) and **LeafGreen** (subset 33006), linked to each other like HeartGold/SoulSilver and Red/Blue, with FireRed/LeafGreen locations for every species in `poc-pokemon.json`
+- LeafGreen's author writes each catch with its own deadline ("Catch a Caterpie before obtaining the Boulder Badge", "Catch or buy a Magikarp …", "Evolve a Pidgey …") and checkpoints as "N Pokémon registered" — new patterns parse all of it; its habitat and "Catch 'Em All" achievements are recognised as extras and left out of the checklist. Vulpix (added last) is pinned under Badge III (Koga) via `moves`
+- **Blue**: Ponyta was listed under the Thunder Badge (its achievement ID is out of order); pinned under the Rainbow Badge like Red — every Blue checkpoint now matches its target
+- FireRed's Eeveelution achievements show Vaporeon / Jolteon / Flareon instead of "2 of the 3 available Eeveelutions", and "Hitmonlee and Hitmonchan" shows both as required rather than one made-up name
 
 ## v26.08.30 — Stats Tab + Contextual Analytics
 

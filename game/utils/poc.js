@@ -10,9 +10,10 @@
 
 // Each POC subset is its own RA game ID with its own achievement set — the tab
 // shows up when browsing the SUBSET's page directly (e.g. game/?id=22862),
-// not the parent game's page. `parentId` is only used for a link back to the
-// base game; `siblings` (other subsets under the same parent) power the
-// version switcher.
+// not the parent game's page. The key is the parent game's RA ID (for FireRed/
+// LeafGreen, which are separate RA games, FireRed's — grouping them makes the two
+// pages link to each other); `siblings` (the other subsets in the group) power the
+// "Also see" links.
 export const POC_GAMES = {
   '7212': { // Pokémon HeartGold Version | Pokémon SoulSilver Version
     subsets: [
@@ -26,7 +27,17 @@ export const POC_GAMES = {
   '724': { // Pokémon Red Version | Pokémon Blue Version
     subsets: [
       { id: 16084, label: 'Red', version: 'red' },
-      { id: 29295, label: 'Blue', version: 'blue' },
+      // Ponyta's achievement ID lands under the Thunder Badge (Rainbow one short of 121,
+      // Thunder one over); it belongs under the Rainbow Badge, as in Red.
+      { id: 29295, label: 'Blue', version: 'blue', moves: { 434396: 434339 } },
+    ],
+  },
+  '515': { // Pokémon FireRed Version (515) | Pokémon LeafGreen Version (788) — separate RA
+           // games, grouped here so each subset page links to the other like HG/SS and Red/Blue
+    subsets: [
+      { id: 23905, label: 'FireRed', version: 'firered' },
+      // Vulpix was added last (highest ID) but is due "before obtaining the Soul Badge" (Koga).
+      { id: 33006, label: 'LeafGreen', version: 'leafgreen', moves: { 500746: 500703 } },
     ],
   },
   '723': { // Pokémon Yellow Version: Special Pikachu Edition
@@ -52,6 +63,7 @@ const NUMERIC_TARGET_PATTERNS = [
   /(\d+)\s+pok[ée]mon\s+caught\b/i,                                    // "Defeat Falkner with 41 pokemon caught"
   /\ball\s+(\d+)\s*(?:other\s+)?(?:possible|available)\s*pok[ée]mon\b/i, // "while having all 43 available Pokemon" / "with all 122 possible Pokemon"
   /\ball\s+(\d+)\s*pok[ée]mon\s+(?:available|obtained|caught)\b/i,     // "with all 126 Pokemon available"
+  /(\d+)\s+pok[ée]mon\s+registered\b/i,                               // "Defeat Brock with 19 Pokémon registered as owned in the Pokédex" (LeafGreen)
 ];
 function extractTarget(description) {
   for (const p of NUMERIC_TARGET_PATTERNS) {
@@ -84,6 +96,27 @@ const SPECIES_PATTERNS = [
   /^Obtain (?:your starter |either |one of the following:?\s*)?(.+?)(?:\s*\[.*?\])?(?:\s+before\s+|\s+after\s+|$)/i, // "Obtain Caterpie" / "Obtain your starter Pikachu before ..." / "Obtain one of the following Nidoking, ..."
 ];
 
+// LeafGreen's author writes every catch with its own deadline ("... before obtaining
+// the Boulder Badge") instead of "Register X". Grouping still uses ID order + targets;
+// these only pull the species name out of the text.
+// "Evolve a Pidgey before ..." names the PRE-evolution — the achievement title is the species.
+const EVOLVE_TITLE_RE = /^Evolve an?\s+.+?\s+before\b/i;
+const DEADLINE_SPECIES_PATTERNS = [
+  /^Evolve your starter to (.+?)\s+before\b/i,                         // "Evolve your starter to Ivysaur, Charmeleon, or Wartortle before ..."
+  /^Obtain an? (.+?) from\b/i,                                          // "Obtain a Bulbasaur, Charmander, or Squirtle from Professor Oak."
+];
+// "Catch a Metapod or evolve a Caterpie before ..." / "Catch or buy a Magikarp before ..." /
+// "Receive a Hitmonlee or Hitmonchan before ..." / "Catch a female Nidoran before ..." (→ "Nidoran F").
+// Group 1 = gender (female/male), group 2 = the species (or "X or Y" choice).
+const OBTAIN_VERB = '(?:catch|capture|receive|revive|buy|trade for|perform an in-game trade for|exchange coins for)';
+const DEADLINE_OBTAIN_RE = new RegExp(
+  `^${OBTAIN_VERB}(?:\\s+or\\s+${OBTAIN_VERB})*\\s+(?:an?\\s+)?(?:(female|male)\\s+)?(.+?)(?:\\s+as a gift)?(?:\\s+or\\s+(?:evolve|catch)\\b.*?)?\\s+before\\b`, 'i');
+// Part of the set but neither one species nor a checkpoint — LeafGreen's habitat
+// achievements and "Catch 'Em All" ("Register all 11 forest habitat Pokémon ...").
+const EXTRA_PATTERNS = [
+  /^Register all \d+ [^.]*?Pok[ée]mon you can\b/i,
+];
+
 // A handful of achievements never name a real species in either title or
 // description text we can regex ("Choose your Eeveelution", SoulSilver's
 // generic "Starter Evolved" label) — the title is the only signal, via an
@@ -99,11 +132,18 @@ const KNOWN_CHOICE_GROUPS = {
   'Hoenn Evolved':   ['Grovyle', 'Combusken', 'Marshtomp'],
   'Hoenn Final':     ['Sceptile', 'Blaziken', 'Swampert'],
   'Eeveelution':     ['Vaporeon', 'Jolteon', 'Flareon'],
+  'Eeveelution I':   ['Vaporeon', 'Jolteon', 'Flareon'],   // FireRed: "Register any of the 3 available Eeveelutions ..."
+  'Eeveelution II':  ['Vaporeon', 'Jolteon', 'Flareon'],   // FireRed: "... 2 of the 3 ..."
+  'Eeveelution III': ['Vaporeon', 'Jolteon', 'Flareon'],   // FireRed: "... all 3 ..."
+  'Function Over Form': ['Omastar', 'Kabutops'],           // LeafGreen: "Evolve an Omanyte or Kabuto ..."
 };
 
 // "X, Y, or Z" / "X, Y or Z" / "X or Y" — handles both Oxford-comma and
 // bare-comma multi-choice phrasing without leaving a stray "or " fragment.
-const SPECIES_SPLIT_RE = /\s*,\s*(?:or\s+)?|\s+or\s+/i;
+// "X and Y" (FireRed's "Register Hitmonlee and Hitmonchan") splits too, but means
+// both are required — see isAllRequired.
+const SPECIES_SPLIT_RE = /\s*,\s*(?:or\s+|and\s+)?|\s+or\s+|\s+and\s+/i;
+const isAllRequired = raw => /\s+and\s+/i.test(raw) && !/\s+or\s+/i.test(raw);
 function splitSpeciesList(raw) {
   return raw.split(SPECIES_SPLIT_RE).map(s => s.trim()).filter(Boolean);
 }
@@ -125,15 +165,23 @@ export function classifyPocAchievement(ach) {
   if (target !== null) {
     return { kind: 'marker', target, speciesName: extractMarkerSpecies(description) };
   }
+  if (EXTRA_PATTERNS.some(p => p.test(description))) return { kind: 'extra' };
   if (KNOWN_CHOICE_GROUPS[title]) {
     const names = KNOWN_CHOICE_GROUPS[title];
     return { kind: 'species', names, isChoice: names.length > 1 };
   }
-  for (const p of SPECIES_PATTERNS) {
+  const obtained = description.match(DEADLINE_OBTAIN_RE);
+  if (obtained) {
+    const names = obtained[1] ? [`${obtained[2].trim()} ${obtained[1].toLowerCase() === 'female' ? 'F' : 'M'}`] : splitSpeciesList(obtained[2].trim());
+    return { kind: 'species', names, isChoice: names.length > 1 };
+  }
+  if (EVOLVE_TITLE_RE.test(description)) return { kind: 'species', names: [title.trim()], isChoice: false };
+  for (const p of [...DEADLINE_SPECIES_PATTERNS, ...SPECIES_PATTERNS]) {
     const m = description.match(p);
     if (m) {
-      const names = splitSpeciesList(m[1].trim());
-      return { kind: 'species', names, isChoice: names.length > 1 };
+      const raw = m[1].trim();
+      const names = splitSpeciesList(raw);
+      return { kind: 'species', names, isChoice: names.length > 1 && !isAllRequired(raw) };
     }
   }
   if (looksLikeSpeciesList(title)) {

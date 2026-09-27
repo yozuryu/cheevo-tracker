@@ -16,7 +16,7 @@ RA represents a POC challenge as a separate **subset game**, not a tag on the ma
 
 - `retroachievements.org/game/22862` → "Pokémon HeartGold Version [Subset - Professor Oak Challenge]"
 
-Note the **parent** game's ID too (the page you land on when browsing the game normally) — `POC_GAMES` is keyed by it, even though the tab itself renders on the subset's page.
+Note the **parent** game's ID too (the page you land on when browsing the game normally) — `POC_GAMES` is keyed by it, even though the tab itself renders on the subset's page. Paired versions that RA keeps as separate games (FireRed 515 / LeafGreen 788) go under one key so their pages link to each other.
 
 ## Step 2 — Find the matching PokeAPI version slug
 
@@ -35,11 +35,11 @@ Pass one `--subset` per version in the challenge (e.g. both HeartGold and SoulSi
 2. Parses every achievement's `Title`/`Description` into either a **checkpoint marker** (identified by a target Pokédex count embedded anywhere in the description — `NUMERIC_TARGET_PATTERNS`) or a **species catch** requirement (`SPECIES_PATTERNS`, falling back to `KNOWN_CHOICE_GROUPS` or a title-looks-like-a-species-list heuristic when the description alone doesn't name real Pokémon).
 3. Fetches each unique species from PokeAPI (species info, wild encounters filtered to the given version(s), evolution chain).
 4. Distills that into `evolvesFrom`/`evolveMethod`, `locations`, `breeding`, or `legendary`/`mythical` fields.
-5. **Merges** the result into the existing `game/data/poc-pokemon.json` (doesn't clobber species from other games already in the file) and writes it back, sorted.
+5. **Merges** the result into the existing `game/data/poc-pokemon.json` and writes it back, sorted. The merge is per species and, inside `locations`, per version — a species shared with a game already in the file (e.g. Pidgey in HeartGold and FireRed) keeps the other games' locations. An evolution parent not fetched in this run gets its display name from `SLUG_OVERRIDES` (so Mr. Mime still evolves from "Mime Jr.", not "Mime-Jr").
 
 It prints warnings for anything that needs a human look — read them before moving on:
 
-- **Unmatched achievement text** — a new subset author phrased something the regexes don't recognize. Add a pattern to `NUMERIC_TARGET_PATTERNS`/`MARKER_SPECIES_PATTERNS`/`SPECIES_PATTERNS` in `scripts/poc-data-gen.js` **and** the identical patterns in `game/utils/poc.js` (they must stay in sync — the script only generates data, `poc.js` does this same classification live at runtime). Five different subset authors (HeartGold, SoulSilver, Red, Blue, Yellow) are already covered, each with their own quirks — check `poc.js`'s pattern comments for real examples before assuming you need a brand new pattern; a small tweak to an existing one often covers it.
+- **Unmatched achievement text** — a new subset author phrased something the regexes don't recognize. Add a pattern to `NUMERIC_TARGET_PATTERNS`/`MARKER_SPECIES_PATTERNS`/`SPECIES_PATTERNS` in `scripts/poc-data-gen.js` **and** the identical patterns in `game/utils/poc.js` (they must stay in sync — the script only generates data, `poc.js` does this same classification live at runtime). Seven subsets (HeartGold, SoulSilver, Red, Blue, Yellow, FireRed, LeafGreen) are already covered, each with their own quirks — LeafGreen's author writes every catch with its own deadline ("Catch a Caterpie before obtaining the Boulder Badge", "Evolve a Pidgey before …") and checkpoints as "N Pokémon registered", handled by `DEADLINE_OBTAIN_RE` / `EVOLVE_TITLE_RE` / `DEADLINE_SPECIES_PATTERNS`, and its habitat / "Catch 'Em All" achievements are classified as `extra` (`EXTRA_PATTERNS`) so they're neither warned about nor listed; check `poc.js`'s pattern comments for real examples before assuming you need a brand new pattern; a small tweak to an existing one often covers it.
 - **PokeAPI fetch errors** — usually a slug mismatch. Check `ENCOUNTER_SLUG_OVERRIDES` if a species has an unusual default form (e.g. `wormadam` needs `wormadam-plant` for the encounters endpoint specifically, even though the plain slug works for species/evolution data).
 - **Species with no evolution/location/breeding/legendary data** — event-only Pokémon, fossils, or gifts PokeAPI doesn't track as an "encounter". Decide case by case:
   - If it's a starter-choice or literal placeholder achievement (e.g. "Evolve your starter"), no data is needed — `poc.js` already falls back to the achievement's own description text at runtime.

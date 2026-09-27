@@ -33,6 +33,16 @@
         "Kanto Route 7 (grass)",
         "Kanto Route 8 (grass)",
         "Celadon City Prize Corner (gift)"
+      ],
+      "firered": [
+        "Kanto Route 24 (grass)",
+        "Kanto Route 25 (grass)",
+        "Celadon City Prize Corner (gift)"
+      ],
+      "leafgreen": [
+        "Kanto Route 24 (grass)",
+        "Kanto Route 25 (grass)",
+        "Celadon City Prize Corner (gift)"
       ]
     }
   },
@@ -71,6 +81,12 @@
         "Cinnabar Island Cinnabar Lab (gift)"
       ],
       "yellow": [
+        "Cinnabar Island Cinnabar Lab (gift)"
+      ],
+      "firered": [
+        "Cinnabar Island Cinnabar Lab (gift)"
+      ],
+      "leafgreen": [
         "Cinnabar Island Cinnabar Lab (gift)"
       ]
     }
@@ -139,6 +155,12 @@
         "Cerulean Cave 1F (grass)",
         "Cerulean Cave B1F (grass)",
         "Kanto Route 23 (grass)"
+      ],
+      "firered": [
+        "Kanto Route 23 (grass)",
+        "Kanto Victory Road 2 1F (grass)",
+        "Kanto Victory Road 2 2F (grass)",
+        "Kanto Victory Road 2 3F (grass)"
       ]
     }
   },
@@ -188,6 +210,12 @@
       ],
       "yellow": [
         "Seafoam Islands B4F (gift)"
+      ],
+      "firered": [
+        "Seafoam Islands B4F (static)"
+      ],
+      "leafgreen": [
+        "Seafoam Islands B4F (static)"
       ]
     }
   },
@@ -324,6 +352,14 @@
         "Kanto Route 15 (grass)",
         "Kanto Route 24 (grass)",
         "Kanto Route 25 (grass)"
+      ],
+      "leafgreen": [
+        "Kanto Route 12 (grass)",
+        "Kanto Route 5 (grass)",
+        "Kanto Route 6 (grass)",
+        "Kanto Route 7 (grass)",
+        "Kanto Route 13 (grass)",
+        "Kanto Route 14 (grass)"
       ]
     }
   },
@@ -462,6 +498,12 @@
       ],
       "yellow": [
         "Cerulean City (gift)"
+      ],
+      "firered": [
+        "Pallet Town (gift)"
+      ],
+      "leafgreen": [
+        "Pallet Town (gift)"
       ]
     }
   },
@@ -583,6 +625,20 @@
       ],
       "yellow": [
         "Viridian Forest (grass)"
+      ],
+      "firered": [
+        "Kanto Route 2 (south towards viridian city) (grass)",
+        "Kanto Route 24 (grass)",
+        "Kanto Route 25 (grass)",
+        "Viridian Forest (grass)",
+        "Pattern Bush (grass)"
+      ],
+      "leafgreen": [
+        "Kanto Route 2 (south towards viridian city) (grass)",
+        "Kanto Route 24 (grass)",
+        "Kanto Route 25 (grass)",
+        "Viridian Forest (grass)",
+        "Pattern Bush (grass)"
       ]
     }
   },
@@ -618,6 +674,14 @@
         "Cerulean Cave B1F (grass)",
         "Kanto Safari Zone Middle (grass)",
         "Kanto Safari Zone Area 1 East (grass)"
+      ],
+      "firered": [
+        "Kanto Safari Zone Middle (grass)",
+        "Kanto Safari Zone Area 2 North (grass)"
+      ],
+      "leafgreen": [
+        "Kanto Safari Zone Middle (grass)",
+        "Kanto Safari Zone Area 2 North (grass)"
       ]
     }
   },
@@ -641,6 +705,12 @@
       ],
       "yellow": [
         "Kanto Route 24 (gift)"
+      ],
+      "firered": [
+        "Pallet Town (gift)"
+      ],
+      "leafgreen": [
+        "Pallet Town (gift)"
       ]
     }
   },
@@ -792,6 +862,16 @@
         "Mt Moon 1F (grass)",
         "Mt Moon B1F (grass)",
         "Mt Moon B2F (grass)"
+      ],
+      "firered": [
+        "Mt Moon 1F (grass)",
+        "Mt Moon B2F (grass)",
+        "Celadon City Prize Corner (gift)"
+      ],
+      "leafgreen": [
+        "Mt Moon 1F (grass)",
+        "Mt Moon B2F (grass)",
+        "Celadon City Prize Corner (gift)"
       ]
     }
   },
@@ -917,6 +997,22 @@
         "Kanto Safari Zone Area 1 East (grass)",
         "Kanto Safari Zone Area 2 North (grass)",
         "Kanto Safari Zone Area 3 West (grass)"
+      ],
+      "firered": [
+        "Pokemon Tower 3F (grass)",
+        "Pokemon Tower 4F (grass)",
+        "Pokemon Tower 5F (grass)",
+        "Pokemon Tower 6F (grass)",
+        "Pokemon Tower 7F (grass)",
+        "Sevault Canyon (grass)"
+      ],
+      "leafgreen": [
+        "Pokemon Tower 3F (grass)",
+        "Pokemon Tower 4F (grass)",
+        "Pokemon Tower 5F (grass)",
+        "Pokemon Tower 6F (grass)",
+        "Pokemon Tower 7F (grass)",
+        "Sevault Canyon (grass)"
       ]
     }
   },
@@ -937,6 +1033,10 @@
         "Ice Path B1F (grass)",
         "Ice Path B2F (grass)",
         "Ice Path B3F (grass)"
+      ],
+      "firered": [
+        "Icefall Cave 1F (grass)",
+        "Icefall Cave B1F (grass)"
       ]
     }
   },
@@ -964,6 +1064,18 @@
         "Seafoam Islands B3F (grass)",
         "Seafoam Islands B4F (grass)",
         "Cinnabar Island Cinnabar Lab (npc trade)"
+      ],
+      "firered": [
+        "Seafoam Islands B3F (grass/surf)",
+        "Seafoam Islands B4F (grass/surf)",
+        "Icefall Cave Entrance (grass/surf)",
+        "Icefall Cave Waterfall (grass)"
+      ],
+      "leafgreen": [
+        "Seafoam Islands B3F (grass/surf)",
+        "Seafoam Islands B4F (grass/surf)",
+        "Icefall Cave Entrance (grass/surf)",
+        "Icefall Cave Waterfall (grass)"
       ]
     }
   },
@@ -988,6 +1100,12 @@
         "Digletts Cave (grass)"
       ],
       "yellow": [
+        "Digletts Cave (grass)"
+      ],
+      "firered": [
+        "Digletts Cave (grass)"
+      ],
+      "leafgreen": [
         "Digletts Cave (grass)"
       ]
     }
@@ -1031,6 +1149,22 @@
         "Cerulean Cave 2F (grass)",
         "Cerulean Cave B1F (grass)",
         "Pokemon Mansion B1F (grass)"
+      ],
+      "firered": [
+        "Kanto Route 13 (grass)",
+        "Kanto Route 14 (grass)",
+        "Kanto Route 15 (grass)",
+        "Cerulean Cave 1F (grass)",
+        "Cerulean Cave 2F (grass)",
+        "Cerulean Cave B1F (grass)"
+      ],
+      "leafgreen": [
+        "Kanto Route 13 (grass)",
+        "Kanto Route 14 (grass)",
+        "Kanto Route 15 (grass)",
+        "Cerulean Cave 1F (grass)",
+        "Cerulean Cave 2F (grass)",
+        "Cerulean Cave B1F (grass)"
       ]
     }
   },
@@ -1099,6 +1233,20 @@
         "Kanto Route 16 (grass)",
         "Kanto Route 17 (grass)",
         "Kanto Route 18 (grass)"
+      ],
+      "firered": [
+        "Kanto Route 16 (grass)",
+        "Kanto Route 17 (grass)",
+        "Kanto Route 18 (grass)",
+        "Kanto Safari Zone Area 1 East (grass)",
+        "Kanto Safari Zone Area 3 West (grass)"
+      ],
+      "leafgreen": [
+        "Kanto Route 16 (grass)",
+        "Kanto Route 17 (grass)",
+        "Kanto Route 18 (grass)",
+        "Kanto Safari Zone Area 1 East (grass)",
+        "Kanto Safari Zone Area 3 West (grass)"
       ]
     }
   },
@@ -1130,6 +1278,18 @@
       ],
       "yellow": [
         "Kanto Safari Zone Middle (super rod)"
+      ],
+      "firered": [
+        "Kanto Safari Zone Middle (super rod)",
+        "Kanto Safari Zone Area 1 East (super rod)",
+        "Kanto Safari Zone Area 2 North (super rod)",
+        "Kanto Safari Zone Area 3 West (super rod)"
+      ],
+      "leafgreen": [
+        "Kanto Safari Zone Middle (super rod)",
+        "Kanto Safari Zone Area 1 East (super rod)",
+        "Kanto Safari Zone Area 2 North (super rod)",
+        "Kanto Safari Zone Area 3 West (super rod)"
       ]
     }
   },
@@ -1172,6 +1332,20 @@
         "Kanto Safari Zone Area 1 East (super rod)",
         "Kanto Safari Zone Area 2 North (super rod)",
         "Kanto Safari Zone Area 3 West (super rod)"
+      ],
+      "firered": [
+        "Kanto Safari Zone Middle (super rod)",
+        "Kanto Safari Zone Area 1 East (super rod)",
+        "Kanto Safari Zone Area 2 North (super rod)",
+        "Kanto Safari Zone Area 3 West (super rod)",
+        "Celadon City Prize Corner (gift)"
+      ],
+      "leafgreen": [
+        "Kanto Safari Zone Middle (super rod)",
+        "Kanto Safari Zone Area 1 East (super rod)",
+        "Kanto Safari Zone Area 2 North (super rod)",
+        "Kanto Safari Zone Area 3 West (super rod)",
+        "Celadon City Prize Corner (gift)"
       ]
     }
   },
@@ -1197,6 +1371,14 @@
       ],
       "yellow": [
         "Kanto Route 11 (grass)"
+      ],
+      "firered": [
+        "Kanto Route 11 (grass)",
+        "Berry Forest (grass)"
+      ],
+      "leafgreen": [
+        "Kanto Route 11 (grass)",
+        "Berry Forest (grass)"
       ]
     }
   },
@@ -1219,6 +1401,12 @@
       "yellow": [
         "Kanto Route 11 (npc trade)",
         "Digletts Cave (grass)"
+      ],
+      "firered": [
+        "Digletts Cave (grass)"
+      ],
+      "leafgreen": [
+        "Digletts Cave (grass)"
       ]
     }
   },
@@ -1229,6 +1417,12 @@
       ],
       "soulsilver": [
         "Dark Cave Violet City Entrance (grass/rock smash)"
+      ],
+      "firered": [
+        "Three Isle Port (grass)"
+      ],
+      "leafgreen": [
+        "Three Isle Port (grass)"
       ]
     }
   },
@@ -1284,6 +1478,12 @@
       ],
       "yellow": [
         "Celadon City Celadon Mansion (gift)"
+      ],
+      "firered": [
+        "Celadon City Celadon Mansion (gift)"
+      ],
+      "leafgreen": [
+        "Celadon City Celadon Mansion (gift)"
       ]
     }
   },
@@ -1307,6 +1507,14 @@
         "Kanto Route 10 (grass)",
         "Kanto Route 11 (grass)",
         "Kanto Route 23 (grass)"
+      ],
+      "firered": [
+        "Kanto Route 4 (grass)",
+        "Kanto Route 8 (grass)",
+        "Kanto Route 9 (grass)",
+        "Kanto Route 10 (grass)",
+        "Kanto Route 11 (grass)",
+        "Kanto Route 23 (grass)"
       ]
     }
   },
@@ -1323,6 +1531,9 @@
         "Johto Safari Zone Forest (grass)"
       ],
       "red": [
+        "Kanto Power Plant (grass)"
+      ],
+      "firered": [
         "Kanto Power Plant (grass)"
       ]
     }
@@ -1367,6 +1578,20 @@
       ],
       "yellow": [
         "Kanto Power Plant (gift)"
+      ],
+      "firered": [
+        "Cerulean Cave 1F (grass)",
+        "Cerulean Cave 2F (grass)",
+        "Cerulean Cave B1F (grass)",
+        "Kanto Power Plant (static)",
+        "Cinnabar Island Cinnabar Lab (npc trade)"
+      ],
+      "leafgreen": [
+        "Cerulean Cave 1F (grass)",
+        "Cerulean Cave 2F (grass)",
+        "Cerulean Cave B1F (grass)",
+        "Kanto Power Plant (static)",
+        "Cinnabar Island Cinnabar Lab (npc trade)"
       ]
     }
   },
@@ -1381,6 +1606,12 @@
       ],
       "soulsilver": [
         "Roaming Johto (roaming grass)"
+      ],
+      "firered": [
+        "Roaming Kanto (roaming grass)"
+      ],
+      "leafgreen": [
+        "Roaming Kanto (roaming grass)"
       ]
     }
   },
@@ -1423,8 +1654,26 @@
         "Kanto Safari Zone Area 1 East (grass)",
         "Kanto Safari Zone Area 2 North (grass)",
         "Kanto Safari Zone Area 3 West (grass)"
+      ],
+      "firered": [
+        "Kanto Safari Zone Middle (grass)",
+        "Kanto Safari Zone Area 1 East (grass)",
+        "Kanto Safari Zone Area 2 North (grass)",
+        "Kanto Safari Zone Area 3 West (grass)",
+        "Berry Forest (grass)"
+      ],
+      "leafgreen": [
+        "Kanto Safari Zone Middle (grass)",
+        "Kanto Safari Zone Area 1 East (grass)",
+        "Kanto Safari Zone Area 2 North (grass)",
+        "Kanto Safari Zone Area 3 West (grass)",
+        "Berry Forest (grass)"
       ]
     }
+  },
+  "Exeggcutor": {
+    "evolvesFrom": "Exeggcute",
+    "evolveMethod": "Use a Leaf Stone"
   },
   "Exeggutor": {
     "evolvesFrom": "Exeggcute",
@@ -1459,6 +1708,12 @@
       "yellow": [
         "Kanto Route 12 (grass)",
         "Kanto Route 13 (grass)"
+      ],
+      "firered": [
+        "Vermilion City (npc trade)"
+      ],
+      "leafgreen": [
+        "Vermilion City (npc trade)"
       ]
     }
   },
@@ -1498,6 +1753,22 @@
         "Kanto Route 17 (grass)",
         "Kanto Route 18 (grass)",
         "Kanto Route 23 (grass)"
+      ],
+      "firered": [
+        "Kanto Route 17 (grass)",
+        "Kanto Route 18 (grass)",
+        "Kanto Route 23 (grass)",
+        "Mt Ember (grass)",
+        "Kindle Road (grass)",
+        "Treasure Beach (grass)"
+      ],
+      "leafgreen": [
+        "Kanto Route 17 (grass)",
+        "Kanto Route 18 (grass)",
+        "Kanto Route 23 (grass)",
+        "Mt Ember (grass)",
+        "Kindle Road (grass)",
+        "Treasure Beach (grass)"
       ]
     }
   },
@@ -1613,6 +1884,22 @@
         "Pokemon Tower 5F (grass)",
         "Pokemon Tower 6F (grass)",
         "Pokemon Tower 7F (grass)"
+      ],
+      "firered": [
+        "Pokemon Tower 3F (grass)",
+        "Pokemon Tower 4F (grass)",
+        "Pokemon Tower 5F (grass)",
+        "Pokemon Tower 6F (grass)",
+        "Pokemon Tower 7F (grass)",
+        "Lost Cave Room 1 (grass)"
+      ],
+      "leafgreen": [
+        "Pokemon Tower 3F (grass)",
+        "Pokemon Tower 4F (grass)",
+        "Pokemon Tower 5F (grass)",
+        "Pokemon Tower 6F (grass)",
+        "Pokemon Tower 7F (grass)",
+        "Lost Cave Room 1 (grass)"
       ]
     }
   },
@@ -1657,6 +1944,22 @@
         "Mt Moon B2F (grass)",
         "Rock Tunnel B2F (grass)",
         "Kanto Victory Road 2 1F (grass)"
+      ],
+      "firered": [
+        "Mt Moon 1F (grass)",
+        "Rock Tunnel 1F (grass)",
+        "Rock Tunnel B1F (grass/rock smash)",
+        "Cerulean Cave 1F (rock smash)",
+        "Cerulean Cave 2F (rock smash)",
+        "Cerulean Cave B1F (rock smash)"
+      ],
+      "leafgreen": [
+        "Mt Moon 1F (grass)",
+        "Rock Tunnel 1F (grass)",
+        "Rock Tunnel B1F (grass/rock smash)",
+        "Cerulean Cave 1F (rock smash)",
+        "Cerulean Cave 2F (rock smash)",
+        "Cerulean Cave B1F (rock smash)"
       ]
     }
   },
@@ -1724,6 +2027,14 @@
         "Kanto Route 15 (grass)",
         "Cerulean Cave 1F (grass)",
         "Cerulean Cave 2F (grass)"
+      ],
+      "firered": [
+        "Kanto Route 12 (grass)",
+        "Kanto Route 13 (grass)",
+        "Kanto Route 14 (grass)",
+        "Kanto Route 15 (grass)",
+        "Berry Forest (grass)",
+        "Cape Brink (grass)"
       ]
     }
   },
@@ -1764,6 +2075,22 @@
         "Kanto Victory Road 2 2F (grass)"
       ],
       "yellow": [
+        "Seafoam Islands 1F (grass)",
+        "Seafoam Islands B1F (grass)",
+        "Seafoam Islands B2F (grass)",
+        "Seafoam Islands B3F (grass)",
+        "Seafoam Islands B4F (grass)",
+        "Cerulean Cave 1F (grass)"
+      ],
+      "firered": [
+        "Seafoam Islands 1F (grass)",
+        "Seafoam Islands B1F (grass)",
+        "Seafoam Islands B2F (grass)",
+        "Seafoam Islands B3F (grass)",
+        "Seafoam Islands B4F (grass)",
+        "Cerulean Cave 1F (grass)"
+      ],
+      "leafgreen": [
         "Seafoam Islands 1F (grass)",
         "Seafoam Islands B1F (grass)",
         "Seafoam Islands B2F (grass)",
@@ -1814,6 +2141,22 @@
         "Kanto Sea Route 19 (good rod)",
         "Kanto Sea Route 20 (good rod)",
         "Cinnabar Island (good rod)"
+      ],
+      "firered": [
+        "Viridian City (good rod)",
+        "Fuchsia City (good rod/super rod)",
+        "Kanto Route 6 (good rod)",
+        "Kanto Route 22 (good rod)",
+        "Kanto Route 25 (good rod)",
+        "Cerulean Cave 1F (good rod)"
+      ],
+      "leafgreen": [
+        "Viridian City (good rod)",
+        "Fuchsia City (good rod/super rod)",
+        "Kanto Route 6 (good rod)",
+        "Kanto Route 22 (good rod)",
+        "Kanto Route 25 (good rod)",
+        "Cerulean Cave 1F (good rod)"
       ]
     }
   },
@@ -1846,6 +2189,14 @@
       ],
       "yellow": [
         "Kanto Route 6 (surf)"
+      ],
+      "firered": [
+        "Seafoam Islands B1F (grass)",
+        "Seafoam Islands B2F (grass)",
+        "Seafoam Islands B3F (grass/surf)",
+        "Seafoam Islands B4F (grass/surf)",
+        "Cerulean Cave 1F (surf)",
+        "Cerulean Cave B1F (surf)"
       ]
     }
   },
@@ -1890,6 +2241,22 @@
         "Kanto Victory Road 2 1F (grass)",
         "Kanto Victory Road 2 2F (grass)",
         "Kanto Victory Road 2 3F (grass)"
+      ],
+      "firered": [
+        "Rock Tunnel B1F (rock smash)",
+        "Cerulean Cave 1F (rock smash)",
+        "Cerulean Cave 2F (rock smash)",
+        "Cerulean Cave B1F (rock smash)",
+        "Mt Ember (rock smash)",
+        "Mt Ember Inside (rock smash)"
+      ],
+      "leafgreen": [
+        "Rock Tunnel B1F (rock smash)",
+        "Cerulean Cave 1F (rock smash)",
+        "Cerulean Cave 2F (rock smash)",
+        "Cerulean Cave B1F (rock smash)",
+        "Mt Ember (rock smash)",
+        "Mt Ember Inside (rock smash)"
       ]
     }
   },
@@ -1923,6 +2290,20 @@
       ],
       "yellow": [
         "Kanto Power Plant (grass)",
+        "Pokemon Mansion 1F (grass)",
+        "Pokemon Mansion 2F (grass)",
+        "Pokemon Mansion 3F (grass)",
+        "Pokemon Mansion B1F (grass)"
+      ],
+      "firered": [
+        "Celadon City (super rod)",
+        "Pokemon Mansion 1F (grass)",
+        "Pokemon Mansion 2F (grass)",
+        "Pokemon Mansion 3F (grass)",
+        "Pokemon Mansion B1F (grass)"
+      ],
+      "leafgreen": [
+        "Celadon City (super rod)",
         "Pokemon Mansion 1F (grass)",
         "Pokemon Mansion 2F (grass)",
         "Pokemon Mansion 3F (grass)",
@@ -1961,6 +2342,14 @@
       ],
       "yellow": [
         "Pokemon Mansion 1F (grass)"
+      ],
+      "firered": [
+        "Kanto Route 7 (grass)",
+        "Kanto Route 8 (grass)",
+        "Pokemon Mansion 1F (grass)",
+        "Pokemon Mansion 2F (grass)",
+        "Pokemon Mansion 3F (grass)",
+        "Pokemon Mansion B1F (grass)"
       ]
     }
   },
@@ -1997,6 +2386,22 @@
       ],
       "yellow": [
         "Fuchsia City (super rod)"
+      ],
+      "firered": [
+        "Seafoam Islands B3F (super rod)",
+        "Seafoam Islands B4F (super rod)",
+        "Kanto Route 12 (super rod)",
+        "Kanto Sea Route 19 (super rod)",
+        "Kanto Sea Route 20 (super rod)",
+        "Cinnabar Island (super rod)"
+      ],
+      "leafgreen": [
+        "Seafoam Islands B3F (super rod)",
+        "Seafoam Islands B4F (super rod)",
+        "Kanto Route 12 (super rod)",
+        "Kanto Sea Route 19 (super rod)",
+        "Kanto Sea Route 20 (super rod)",
+        "Cinnabar Island (super rod)"
       ]
     }
   },
@@ -2039,6 +2444,22 @@
         "Pokemon Tower 5F (grass)",
         "Pokemon Tower 6F (grass)",
         "Pokemon Tower 7F (grass)"
+      ],
+      "firered": [
+        "Pokemon Tower 3F (grass)",
+        "Pokemon Tower 4F (grass)",
+        "Pokemon Tower 5F (grass)",
+        "Pokemon Tower 6F (grass)",
+        "Pokemon Tower 7F (grass)",
+        "Lost Cave Room 1 (grass)"
+      ],
+      "leafgreen": [
+        "Pokemon Tower 3F (grass)",
+        "Pokemon Tower 4F (grass)",
+        "Pokemon Tower 5F (grass)",
+        "Pokemon Tower 6F (grass)",
+        "Pokemon Tower 7F (grass)",
+        "Lost Cave Room 1 (grass)"
       ]
     }
   },
@@ -2059,6 +2480,12 @@
         "Route 45 (headbutt)",
         "Route 46 (headbutt)",
         "Route 47 (headbutt)"
+      ],
+      "firered": [
+        "Pattern Bush (grass)"
+      ],
+      "leafgreen": [
+        "Pattern Bush (grass)"
       ]
     }
   },
@@ -2088,6 +2515,12 @@
       ],
       "yellow": [
         "Saffron City Fighting Dojo (gift)"
+      ],
+      "firered": [
+        "Saffron City Fighting Dojo (gift)"
+      ],
+      "leafgreen": [
+        "Saffron City Fighting Dojo (gift)"
       ]
     }
   },
@@ -2102,6 +2535,12 @@
         "Saffron City Fighting Dojo (gift)"
       ],
       "yellow": [
+        "Saffron City Fighting Dojo (gift)"
+      ],
+      "firered": [
+        "Saffron City Fighting Dojo (gift)"
+      ],
+      "leafgreen": [
         "Saffron City Fighting Dojo (gift)"
       ]
     }
@@ -2162,6 +2601,20 @@
         "Kanto Route 13 (grass)",
         "Kanto Route 14 (grass)",
         "Kanto Route 15 (grass)"
+      ],
+      "firered": [
+        "Resort Gorgeous (surf)",
+        "Water Labyrinth (surf)",
+        "Five Isle Meadow (grass/surf)",
+        "Memorial Pillar (grass/surf)",
+        "Five Island (surf)"
+      ],
+      "leafgreen": [
+        "Resort Gorgeous (surf)",
+        "Water Labyrinth (surf)",
+        "Five Isle Meadow (grass/surf)",
+        "Memorial Pillar (grass/surf)",
+        "Five Island (surf)"
       ]
     }
   },
@@ -2199,6 +2652,22 @@
         "Kanto Route 10 (super rod)",
         "Kanto Route 11 (super rod)",
         "Kanto Route 13 (super rod)"
+      ],
+      "firered": [
+        "Seafoam Islands B3F (good rod/super rod/surf)",
+        "Seafoam Islands B4F (good rod/super rod/surf)",
+        "Kanto Route 12 (good rod/super rod)",
+        "Kanto Sea Route 19 (good rod/super rod)",
+        "Kanto Sea Route 20 (good rod/super rod)",
+        "Cinnabar Island (good rod/super rod)"
+      ],
+      "leafgreen": [
+        "Seafoam Islands B3F (good rod)",
+        "Seafoam Islands B4F (good rod)",
+        "Kanto Route 12 (good rod)",
+        "Kanto Sea Route 19 (good rod)",
+        "Kanto Sea Route 20 (good rod)",
+        "Cinnabar Island (good rod)"
       ]
     }
   },
@@ -2243,6 +2712,12 @@
       ],
       "blue": [
         "Cerulean Cave 1F (grass)"
+      ],
+      "firered": [
+        "Berry Forest (grass/static)"
+      ],
+      "leafgreen": [
+        "Berry Forest (grass/static)"
       ]
     }
   },
@@ -2292,6 +2767,12 @@
         "Kanto Route 6 (grass)",
         "Kanto Route 7 (grass)",
         "Kanto Route 8 (grass)"
+      ],
+      "firered": [
+        "Kanto Route 3 (grass)"
+      ],
+      "leafgreen": [
+        "Kanto Route 3 (grass)"
       ]
     }
   },
@@ -2334,6 +2815,12 @@
       ],
       "blue": [
         "Cerulean City (npc trade)"
+      ],
+      "firered": [
+        "Cerulean City (npc trade)"
+      ],
+      "leafgreen": [
+        "Cerulean City (npc trade)"
       ]
     }
   },
@@ -2352,6 +2839,12 @@
         "Cinnabar Island Cinnabar Lab (gift)"
       ],
       "yellow": [
+        "Cinnabar Island Cinnabar Lab (gift)"
+      ],
+      "firered": [
+        "Cinnabar Island Cinnabar Lab (gift)"
+      ],
+      "leafgreen": [
         "Cinnabar Island Cinnabar Lab (gift)"
       ]
     }
@@ -2384,6 +2877,14 @@
       ],
       "yellow": [
         "Kanto Route 8 (grass)"
+      ],
+      "firered": [
+        "Cerulean Cave 2F (grass)",
+        "Cerulean Cave B1F (grass)"
+      ],
+      "leafgreen": [
+        "Cerulean Cave 2F (grass)",
+        "Cerulean Cave B1F (grass)"
       ]
     }
   },
@@ -2410,6 +2911,18 @@
       "blue": [
         "Kanto Route 25 (grass)",
         "Viridian Forest (grass)"
+      ],
+      "firered": [
+        "Kanto Route 24 (grass)",
+        "Kanto Route 25 (grass)",
+        "Viridian Forest (grass)",
+        "Pattern Bush (grass)"
+      ],
+      "leafgreen": [
+        "Kanto Route 24 (grass)",
+        "Kanto Route 25 (grass)",
+        "Viridian Forest (grass)",
+        "Pattern Bush (grass)"
       ]
     }
   },
@@ -2433,6 +2946,14 @@
       ],
       "yellow": [
         "Kanto Safari Zone Area 2 North (grass)"
+      ],
+      "firered": [
+        "Kanto Safari Zone Area 1 East (grass)",
+        "Kanto Safari Zone Area 3 West (grass)"
+      ],
+      "leafgreen": [
+        "Kanto Safari Zone Area 1 East (grass)",
+        "Kanto Safari Zone Area 3 West (grass)"
       ]
     }
   },
@@ -2475,6 +2996,14 @@
         "Seafoam Islands B4F (grass/super rod)",
         "Kanto Route 10 (super rod)",
         "Kanto Route 25 (super rod)"
+      ],
+      "leafgreen": [
+        "Kanto Sea Route 19 (super rod)",
+        "Kanto Sea Route 20 (super rod)",
+        "Pallet Town (super rod)",
+        "Kanto Sea Route 21 (super rod)",
+        "Icefall Cave Waterfall (super rod)",
+        "Kindle Road (super rod)"
       ]
     }
   },
@@ -2503,6 +3032,20 @@
         "Pokemon Mansion B1F (grass)"
       ],
       "blue": [
+        "Pokemon Mansion 1F (grass)",
+        "Pokemon Mansion 2F (grass)",
+        "Pokemon Mansion 3F (grass)",
+        "Pokemon Mansion B1F (grass)"
+      ],
+      "firered": [
+        "Celadon City (surf)",
+        "Pokemon Mansion 1F (grass)",
+        "Pokemon Mansion 2F (grass)",
+        "Pokemon Mansion 3F (grass)",
+        "Pokemon Mansion B1F (grass)"
+      ],
+      "leafgreen": [
+        "Celadon City (surf)",
         "Pokemon Mansion 1F (grass)",
         "Pokemon Mansion 2F (grass)",
         "Pokemon Mansion 3F (grass)",
@@ -2551,6 +3094,22 @@
         "Seafoam Islands B3F (grass/super rod)",
         "Seafoam Islands B4F (grass/super rod)",
         "Kanto Route 10 (super rod)"
+      ],
+      "firered": [
+        "Seafoam Islands B3F (good rod)",
+        "Seafoam Islands B4F (good rod)",
+        "Kanto Route 12 (good rod)",
+        "Kanto Sea Route 19 (good rod)",
+        "Kanto Sea Route 20 (good rod)",
+        "Cinnabar Island (good rod)"
+      ],
+      "leafgreen": [
+        "Seafoam Islands B3F (good rod/super rod/surf)",
+        "Seafoam Islands B4F (good rod/super rod/surf)",
+        "Kanto Route 12 (good rod/super rod)",
+        "Kanto Sea Route 19 (good rod/super rod)",
+        "Kanto Sea Route 20 (good rod/super rod)",
+        "Cinnabar Island (good rod/super rod)"
       ]
     }
   },
@@ -2638,6 +3197,14 @@
       ],
       "yellow": [
         "Saffron City Silph Co 7F (gift)"
+      ],
+      "firered": [
+        "Icefall Cave Waterfall (surf)",
+        "Saffron City Silph Co 7F (gift)"
+      ],
+      "leafgreen": [
+        "Icefall Cave Waterfall (surf)",
+        "Saffron City Silph Co 7F (gift)"
       ]
     }
   },
@@ -2658,6 +3225,12 @@
         "Mt Silver 1F (grass)",
         "Mt Silver Mountainside (grass)",
         "Mt Silver 3F (grass)"
+      ],
+      "firered": [
+        "Sevault Canyon (grass)"
+      ],
+      "leafgreen": [
+        "Sevault Canyon (grass)"
       ]
     }
   },
@@ -2697,6 +3270,12 @@
         "Route 30 (grass/headbutt)",
         "Route 31 (grass/headbutt)",
         "Route 34 (headbutt)"
+      ],
+      "firered": [
+        "Pattern Bush (grass)"
+      ],
+      "leafgreen": [
+        "Pattern Bush (grass)"
       ]
     }
   },
@@ -2724,6 +3303,12 @@
       ],
       "yellow": [
         "Cerulean Cave B1F (grass)"
+      ],
+      "firered": [
+        "Kanto Route 18 (npc trade)"
+      ],
+      "leafgreen": [
+        "Kanto Route 18 (npc trade)"
       ]
     }
   },
@@ -2884,6 +3469,22 @@
         "Kanto Victory Road 2 2F (grass)",
         "Kanto Victory Road 2 3F (grass)",
         "Kanto Underground Path (npc trade)"
+      ],
+      "firered": [
+        "Cerulean Cave 1F (grass)",
+        "Cerulean Cave 2F (grass)",
+        "Cerulean Cave B1F (grass)",
+        "Kanto Victory Road 2 1F (grass)",
+        "Kanto Victory Road 2 2F (grass)",
+        "Kanto Victory Road 2 3F (grass)"
+      ],
+      "leafgreen": [
+        "Cerulean Cave 1F (grass)",
+        "Cerulean Cave 2F (grass)",
+        "Cerulean Cave B1F (grass)",
+        "Kanto Victory Road 2 1F (grass)",
+        "Kanto Victory Road 2 2F (grass)",
+        "Kanto Victory Road 2 3F (grass)"
       ]
     }
   },
@@ -2923,6 +3524,22 @@
         "Rock Tunnel B1F (grass)",
         "Kanto Route 10 (grass)",
         "Rock Tunnel B2F (grass)"
+      ],
+      "firered": [
+        "Rock Tunnel 1F (grass)",
+        "Rock Tunnel B1F (grass)",
+        "Kanto Victory Road 2 1F (grass)",
+        "Kanto Victory Road 2 2F (grass)",
+        "Kanto Victory Road 2 3F (grass)",
+        "Mt Ember (grass)"
+      ],
+      "leafgreen": [
+        "Rock Tunnel 1F (grass)",
+        "Rock Tunnel B1F (grass)",
+        "Kanto Victory Road 2 1F (grass)",
+        "Kanto Victory Road 2 2F (grass)",
+        "Kanto Victory Road 2 3F (grass)",
+        "Mt Ember (grass)"
       ]
     }
   },
@@ -2931,7 +3548,15 @@
   },
   "Magcargo": {
     "evolvesFrom": "Slugma",
-    "evolveMethod": "Level 38"
+    "evolveMethod": "Level 38",
+    "locations": {
+      "firered": [
+        "Mt Ember B3F (rock smash)"
+      ],
+      "leafgreen": [
+        "Mt Ember B3F (rock smash)"
+      ]
+    }
   },
   "Magikarp": {
     "locations": {
@@ -2974,6 +3599,22 @@
         "Kanto Sea Route 19 (old rod)",
         "Kanto Sea Route 20 (old rod)",
         "Cinnabar Island (old rod)"
+      ],
+      "firered": [
+        "Seafoam Islands B3F (good rod/old rod)",
+        "Seafoam Islands B4F (good rod/old rod)",
+        "Kanto Route 12 (good rod/old rod)",
+        "Kanto Sea Route 19 (good rod/old rod)",
+        "Kanto Sea Route 20 (good rod/old rod)",
+        "Cinnabar Island (good rod/old rod)"
+      ],
+      "leafgreen": [
+        "Seafoam Islands B3F (good rod/old rod)",
+        "Seafoam Islands B4F (good rod/old rod)",
+        "Kanto Route 12 (good rod/old rod)",
+        "Kanto Sea Route 19 (good rod/old rod)",
+        "Kanto Sea Route 20 (good rod/old rod)",
+        "Cinnabar Island (good rod/old rod)"
       ]
     }
   },
@@ -2992,6 +3633,9 @@
       "blue": [
         "Pokemon Mansion 3F (grass)",
         "Pokemon Mansion B1F (grass)"
+      ],
+      "leafgreen": [
+        "Mt Ember (grass)"
       ]
     }
   },
@@ -3021,6 +3665,12 @@
       ],
       "yellow": [
         "Kanto Route 10 (grass)",
+        "Kanto Power Plant (grass)"
+      ],
+      "firered": [
+        "Kanto Power Plant (grass)"
+      ],
+      "leafgreen": [
         "Kanto Power Plant (grass)"
       ]
     }
@@ -3052,6 +3702,18 @@
         "Kanto Power Plant (grass)"
       ],
       "yellow": [
+        "Kanto Power Plant (grass)"
+      ],
+      "firered": [
+        "Cerulean Cave 1F (grass)",
+        "Cerulean Cave 2F (grass)",
+        "Cerulean Cave B1F (grass)",
+        "Kanto Power Plant (grass)"
+      ],
+      "leafgreen": [
+        "Cerulean Cave 1F (grass)",
+        "Cerulean Cave 2F (grass)",
+        "Cerulean Cave B1F (grass)",
         "Kanto Power Plant (grass)"
       ]
     }
@@ -3109,6 +3771,22 @@
         "Kanto Route 8 (grass)"
       ],
       "yellow": [
+        "Kanto Route 3 (grass)",
+        "Kanto Route 4 (grass)",
+        "Kanto Route 22 (grass)",
+        "Kanto Route 23 (grass)"
+      ],
+      "firered": [
+        "Rock Tunnel 1F (grass)",
+        "Rock Tunnel B1F (grass)",
+        "Kanto Route 3 (grass)",
+        "Kanto Route 4 (grass)",
+        "Kanto Route 22 (grass)",
+        "Kanto Route 23 (grass)"
+      ],
+      "leafgreen": [
+        "Rock Tunnel 1F (grass)",
+        "Rock Tunnel B1F (grass)",
         "Kanto Route 3 (grass)",
         "Kanto Route 4 (grass)",
         "Kanto Route 22 (grass)",
@@ -3187,6 +3865,18 @@
       "yellow": [
         "Kanto Safari Zone Area 1 East (grass)",
         "Kanto Safari Zone Area 3 West (grass)"
+      ],
+      "firered": [
+        "Kanto Victory Road 2 1F (grass)",
+        "Kanto Victory Road 2 2F (grass)",
+        "Kanto Victory Road 2 3F (grass)",
+        "Sevault Canyon (grass)"
+      ],
+      "leafgreen": [
+        "Kanto Victory Road 2 1F (grass)",
+        "Kanto Victory Road 2 2F (grass)",
+        "Kanto Victory Road 2 3F (grass)",
+        "Sevault Canyon (grass)"
       ]
     }
   },
@@ -3264,6 +3954,22 @@
         "Kanto Route 6 (grass)",
         "Kanto Route 7 (grass)",
         "Kanto Route 8 (grass)"
+      ],
+      "firered": [
+        "Kanto Route 5 (grass)",
+        "Kanto Route 6 (grass)",
+        "Kanto Route 7 (grass)",
+        "Kanto Route 8 (grass)",
+        "Kindle Road (grass)",
+        "Treasure Beach (grass)"
+      ],
+      "leafgreen": [
+        "Kanto Route 5 (grass)",
+        "Kanto Route 6 (grass)",
+        "Kanto Route 7 (grass)",
+        "Kanto Route 8 (grass)",
+        "Kindle Road (grass)",
+        "Treasure Beach (grass)"
       ]
     }
   },
@@ -3309,6 +4015,18 @@
       ],
       "yellow": [
         "Viridian Forest (grass)"
+      ],
+      "firered": [
+        "Kanto Route 24 (grass)",
+        "Kanto Route 25 (grass)",
+        "Viridian Forest (grass)",
+        "Pattern Bush (grass)"
+      ],
+      "leafgreen": [
+        "Kanto Route 24 (grass)",
+        "Kanto Route 25 (grass)",
+        "Viridian Forest (grass)",
+        "Pattern Bush (grass)"
       ]
     }
   },
@@ -3329,6 +4047,12 @@
       ],
       "yellow": [
         "Cerulean Cave B1F (gift)"
+      ],
+      "firered": [
+        "Cerulean Cave B1F (static)"
+      ],
+      "leafgreen": [
+        "Cerulean Cave B1F (static)"
       ]
     }
   },
@@ -3417,6 +4141,12 @@
       ],
       "yellow": [
         "Kanto Victory Road 2 2F (gift)"
+      ],
+      "firered": [
+        "Mt Ember Summit (static)"
+      ],
+      "leafgreen": [
+        "Mt Ember Summit (static)"
       ]
     }
   },
@@ -3446,6 +4176,12 @@
       ],
       "yellow": [
         "Kanto Route 2 (north towards pewter city) (npc trade)"
+      ],
+      "firered": [
+        "Kanto Route 2 (north towards pewter city) (npc trade)"
+      ],
+      "leafgreen": [
+        "Kanto Route 2 (north towards pewter city) (npc trade)"
       ]
     }
   },
@@ -3470,6 +4206,12 @@
         "Kanto Route 2 (north towards pewter city) (npc trade)"
       ],
       "yellow": [
+        "Kanto Route 2 (north towards pewter city) (npc trade)"
+      ],
+      "firered": [
+        "Kanto Route 2 (north towards pewter city) (npc trade)"
+      ],
+      "leafgreen": [
         "Kanto Route 2 (north towards pewter city) (npc trade)"
       ]
     }
@@ -3545,6 +4287,12 @@
         "Pokemon Mansion 3F (grass)",
         "Pokemon Mansion B1F (grass)",
         "Cinnabar Island Cinnabar Lab (npc trade)"
+      ],
+      "leafgreen": [
+        "Pokemon Mansion 1F (grass)",
+        "Pokemon Mansion 2F (grass)",
+        "Pokemon Mansion 3F (grass)",
+        "Pokemon Mansion B1F (grass)"
       ]
     }
   },
@@ -3562,6 +4310,14 @@
         "Kanto Route 7 (grass)",
         "Kanto Route 16 (grass)",
         "Johto Safari Zone Swamp (grass/surf)"
+      ],
+      "firered": [
+        "Lost Cave Room 1 (grass)",
+        "Lost Cave Room 2 (grass)",
+        "Lost Cave Room 3 (grass)",
+        "Lost Cave Room 4 (grass)",
+        "Lost Cave Room 5 (grass)",
+        "Lost Cave Room 6 (grass)"
       ]
     }
   },
@@ -3578,6 +4334,12 @@
         "Mt Silver Outside (headbutt)",
         "Mt Silver Mountainside (headbutt)",
         "Kanto Route 28 (headbutt)"
+      ],
+      "firered": [
+        "Ruin Valley (grass)"
+      ],
+      "leafgreen": [
+        "Ruin Valley (grass)"
       ]
     }
   },
@@ -3622,6 +4384,19 @@
         "Kanto Route 22 (grass)",
         "Kanto Safari Zone Middle (grass)",
         "Kanto Safari Zone Area 1 East (grass)"
+      ],
+      "firered": [
+        "Kanto Route 3 (grass)",
+        "Kanto Safari Zone Area 1 East (grass)",
+        "Kanto Safari Zone Area 3 West (grass)",
+        "Kanto Underground Path (npc trade)"
+      ],
+      "leafgreen": [
+        "Kanto Route 3 (grass)",
+        "Kanto Safari Zone Middle (grass)",
+        "Kanto Safari Zone Area 1 East (grass)",
+        "Kanto Safari Zone Area 2 North (grass)",
+        "Kanto Safari Zone Area 3 West (grass)"
       ]
     }
   },
@@ -3690,6 +4465,19 @@
         "Kanto Route 22 (grass)",
         "Kanto Safari Zone Middle (grass)",
         "Kanto Safari Zone Area 1 East (grass)"
+      ],
+      "firered": [
+        "Kanto Route 3 (grass)",
+        "Kanto Safari Zone Middle (grass)",
+        "Kanto Safari Zone Area 1 East (grass)",
+        "Kanto Safari Zone Area 2 North (grass)",
+        "Kanto Safari Zone Area 3 West (grass)"
+      ],
+      "leafgreen": [
+        "Kanto Route 3 (grass)",
+        "Kanto Safari Zone Area 1 East (grass)",
+        "Kanto Safari Zone Area 3 West (grass)",
+        "Kanto Underground Path (npc trade)"
       ]
     }
   },
@@ -3758,6 +4546,19 @@
         "Kanto Route 22 (grass)",
         "Kanto Safari Zone Middle (grass)",
         "Kanto Safari Zone Area 1 East (grass)"
+      ],
+      "firered": [
+        "Kanto Route 3 (grass)",
+        "Kanto Safari Zone Area 1 East (grass)",
+        "Kanto Safari Zone Area 3 West (grass)",
+        "Kanto Underground Path (npc trade)"
+      ],
+      "leafgreen": [
+        "Kanto Route 3 (grass)",
+        "Kanto Safari Zone Middle (grass)",
+        "Kanto Safari Zone Area 1 East (grass)",
+        "Kanto Safari Zone Area 2 North (grass)",
+        "Kanto Safari Zone Area 3 West (grass)"
       ]
     }
   },
@@ -3790,6 +4591,19 @@
         "Kanto Route 22 (grass)",
         "Kanto Safari Zone Middle (grass)",
         "Kanto Safari Zone Area 1 East (grass)"
+      ],
+      "firered": [
+        "Kanto Route 3 (grass)",
+        "Kanto Safari Zone Middle (grass)",
+        "Kanto Safari Zone Area 1 East (grass)",
+        "Kanto Safari Zone Area 2 North (grass)",
+        "Kanto Safari Zone Area 3 West (grass)"
+      ],
+      "leafgreen": [
+        "Kanto Route 3 (grass)",
+        "Kanto Safari Zone Area 1 East (grass)",
+        "Kanto Safari Zone Area 3 West (grass)",
+        "Kanto Underground Path (npc trade)"
       ]
     }
   },
@@ -3894,6 +4708,19 @@
         "Kanto Route 22 (grass)",
         "Kanto Safari Zone Middle (grass)",
         "Kanto Safari Zone Area 1 East (grass)"
+      ],
+      "firered": [
+        "Kanto Route 3 (grass)",
+        "Kanto Safari Zone Area 1 East (grass)",
+        "Kanto Safari Zone Area 3 West (grass)",
+        "Kanto Underground Path (npc trade)"
+      ],
+      "leafgreen": [
+        "Kanto Route 3 (grass)",
+        "Kanto Safari Zone Middle (grass)",
+        "Kanto Safari Zone Area 1 East (grass)",
+        "Kanto Safari Zone Area 2 North (grass)",
+        "Kanto Safari Zone Area 3 West (grass)"
       ]
     }
   },
@@ -3926,6 +4753,19 @@
         "Kanto Route 22 (grass)",
         "Kanto Safari Zone Middle (grass)",
         "Kanto Safari Zone Area 1 East (grass)"
+      ],
+      "firered": [
+        "Kanto Route 3 (grass)",
+        "Kanto Safari Zone Middle (grass)",
+        "Kanto Safari Zone Area 1 East (grass)",
+        "Kanto Safari Zone Area 2 North (grass)",
+        "Kanto Safari Zone Area 3 West (grass)"
+      ],
+      "leafgreen": [
+        "Kanto Route 3 (grass)",
+        "Kanto Safari Zone Area 1 East (grass)",
+        "Kanto Safari Zone Area 3 West (grass)",
+        "Kanto Underground Path (npc trade)"
       ]
     }
   },
@@ -3963,6 +4803,17 @@
         "Kanto Route 23 (grass)",
         "Kanto Safari Zone Area 1 East (grass)",
         "Kanto Safari Zone Area 2 North (grass)"
+      ],
+      "firered": [
+        "Kanto Route 11 (npc trade)",
+        "Kanto Safari Zone Middle (grass)",
+        "Kanto Safari Zone Area 2 North (grass)"
+      ],
+      "leafgreen": [
+        "Kanto Safari Zone Middle (grass)",
+        "Kanto Safari Zone Area 1 East (grass)",
+        "Kanto Safari Zone Area 2 North (grass)",
+        "Kanto Safari Zone Area 3 West (grass)"
       ]
     }
   },
@@ -3998,6 +4849,17 @@
         "Kanto Route 23 (grass)",
         "Kanto Safari Zone Middle (grass)",
         "Kanto Safari Zone Area 3 West (grass)"
+      ],
+      "firered": [
+        "Kanto Safari Zone Middle (grass)",
+        "Kanto Safari Zone Area 1 East (grass)",
+        "Kanto Safari Zone Area 2 North (grass)",
+        "Kanto Safari Zone Area 3 West (grass)"
+      ],
+      "leafgreen": [
+        "Kanto Route 11 (npc trade)",
+        "Kanto Safari Zone Middle (grass)",
+        "Kanto Safari Zone Area 2 North (grass)"
       ]
     }
   },
@@ -4112,6 +4974,14 @@
         "Kanto Route 15 (grass)",
         "Kanto Route 24 (grass)",
         "Kanto Route 25 (grass)"
+      ],
+      "firered": [
+        "Kanto Route 12 (grass)",
+        "Kanto Route 5 (grass)",
+        "Kanto Route 6 (grass)",
+        "Kanto Route 7 (grass)",
+        "Kanto Route 13 (grass)",
+        "Kanto Route 14 (grass)"
       ]
     }
   },
@@ -4130,6 +5000,12 @@
         "Cinnabar Island Cinnabar Lab (gift)"
       ],
       "yellow": [
+        "Cinnabar Island Cinnabar Lab (gift)"
+      ],
+      "firered": [
+        "Cinnabar Island Cinnabar Lab (gift)"
+      ],
+      "leafgreen": [
         "Cinnabar Island Cinnabar Lab (gift)"
       ]
     }
@@ -4175,6 +5051,22 @@
         "Kanto Victory Road 2 1F (grass)",
         "Kanto Victory Road 2 2F (grass)",
         "Kanto Victory Road 2 3F (grass)"
+      ],
+      "firered": [
+        "Rock Tunnel 1F (grass)",
+        "Rock Tunnel B1F (grass)",
+        "Kanto Victory Road 2 1F (grass)",
+        "Kanto Victory Road 2 2F (grass)",
+        "Kanto Victory Road 2 3F (grass)",
+        "Sevault Canyon (grass)"
+      ],
+      "leafgreen": [
+        "Rock Tunnel 1F (grass)",
+        "Rock Tunnel B1F (grass)",
+        "Kanto Victory Road 2 1F (grass)",
+        "Kanto Victory Road 2 2F (grass)",
+        "Kanto Victory Road 2 3F (grass)",
+        "Sevault Canyon (grass)"
       ]
     }
   },
@@ -4226,6 +5118,20 @@
         "Mt Moon B1F (grass)",
         "Mt Moon B2F (grass)",
         "Kanto Safari Zone Middle (grass)"
+      ],
+      "firered": [
+        "Mt Moon 1F (grass)",
+        "Mt Moon B1F (grass)",
+        "Mt Moon B2F (grass)",
+        "Kanto Safari Zone Area 1 East (grass)",
+        "Kanto Safari Zone Area 2 North (grass)"
+      ],
+      "leafgreen": [
+        "Mt Moon 1F (grass)",
+        "Mt Moon B1F (grass)",
+        "Mt Moon B2F (grass)",
+        "Kanto Safari Zone Area 1 East (grass)",
+        "Kanto Safari Zone Area 2 North (grass)"
       ]
     }
   },
@@ -4261,6 +5167,20 @@
         "Kanto Route 18 (npc trade)",
         "Cerulean Cave 1F (grass)",
         "Kanto Safari Zone Middle (grass)"
+      ],
+      "firered": [
+        "Cerulean Cave 1F (grass)",
+        "Cerulean Cave 2F (grass)",
+        "Cerulean Cave B1F (grass)",
+        "Kanto Safari Zone Middle (grass)",
+        "Kanto Safari Zone Area 1 East (grass)"
+      ],
+      "leafgreen": [
+        "Cerulean Cave 1F (grass)",
+        "Cerulean Cave 2F (grass)",
+        "Cerulean Cave B1F (grass)",
+        "Kanto Safari Zone Middle (grass)",
+        "Kanto Safari Zone Area 1 East (grass)"
       ]
     }
   },
@@ -4275,6 +5195,22 @@
       "soulsilver": [
         "Kanto Route 7 (grass)",
         "Cerulean Cave 1F (grass)"
+      ],
+      "firered": [
+        "Kindle Road (grass)",
+        "Treasure Beach (grass)",
+        "Cape Brink (grass)",
+        "Bond Bridge (grass)",
+        "Five Isle Meadow (grass)",
+        "Water Path (grass)"
+      ],
+      "leafgreen": [
+        "Kindle Road (grass)",
+        "Treasure Beach (grass)",
+        "Cape Brink (grass)",
+        "Bond Bridge (grass)",
+        "Five Isle Meadow (grass)",
+        "Water Path (grass)"
       ]
     }
   },
@@ -4286,6 +5222,14 @@
         "Mt Silver 1F (grass)",
         "Mt Silver Mountainside (grass)",
         "Mt Silver 3F (grass)"
+      ],
+      "firered": [
+        "Canyon Entrance (grass)",
+        "Sevault Canyon (grass)"
+      ],
+      "leafgreen": [
+        "Canyon Entrance (grass)",
+        "Sevault Canyon (grass)"
       ]
     }
   },
@@ -4333,6 +5277,22 @@
         "Kanto Route 7 (grass)",
         "Kanto Route 8 (grass)",
         "Kanto Route 11 (grass)"
+      ],
+      "firered": [
+        "Kanto Route 13 (grass)",
+        "Kanto Route 14 (grass)",
+        "Kanto Route 15 (grass)",
+        "Berry Forest (grass)",
+        "Bond Bridge (grass)",
+        "Five Isle Meadow (grass)"
+      ],
+      "leafgreen": [
+        "Kanto Route 13 (grass)",
+        "Kanto Route 14 (grass)",
+        "Kanto Route 15 (grass)",
+        "Berry Forest (grass)",
+        "Bond Bridge (grass)",
+        "Five Isle Meadow (grass)"
       ]
     }
   },
@@ -4377,6 +5337,22 @@
         "Kanto Route 5 (grass)",
         "Kanto Route 6 (grass)",
         "Kanto Route 7 (grass)"
+      ],
+      "firered": [
+        "Kanto Route 12 (grass)",
+        "Kanto Route 1 (grass)",
+        "Kanto Route 2 (south towards viridian city) (grass)",
+        "Kanto Route 3 (grass)",
+        "Kanto Route 5 (grass)",
+        "Kanto Route 6 (grass)"
+      ],
+      "leafgreen": [
+        "Kanto Route 12 (grass)",
+        "Kanto Route 1 (grass)",
+        "Kanto Route 2 (south towards viridian city) (grass)",
+        "Kanto Route 3 (grass)",
+        "Kanto Route 5 (grass)",
+        "Kanto Route 6 (grass)"
       ]
     }
   },
@@ -4400,6 +5376,16 @@
       ],
       "yellow": [
         "Pallet Town (gift)"
+      ],
+      "firered": [
+        "Viridian Forest (grass)",
+        "Kanto Power Plant (grass)",
+        "Kanto Pokecenter (colosseum bonus disc jpn)"
+      ],
+      "leafgreen": [
+        "Viridian Forest (grass)",
+        "Kanto Power Plant (grass)",
+        "Kanto Pokecenter (colosseum bonus disc jpn)"
       ]
     }
   },
@@ -4443,6 +5429,11 @@
       "yellow": [
         "Kanto Safari Zone Area 2 North (grass)",
         "Kanto Safari Zone Area 3 West (grass)",
+        "Celadon City Prize Corner (gift)"
+      ],
+      "leafgreen": [
+        "Kanto Safari Zone Middle (grass)",
+        "Kanto Safari Zone Area 1 East (grass)",
         "Celadon City Prize Corner (gift)"
       ]
     }
@@ -4508,6 +5499,22 @@
         "Kanto Sea Route 19 (good rod)",
         "Kanto Sea Route 20 (good rod)",
         "Cinnabar Island (good rod)"
+      ],
+      "firered": [
+        "Viridian City (good rod/super rod)",
+        "Fuchsia City (good rod)",
+        "Kanto Route 6 (good rod/super rod)",
+        "Kanto Route 22 (good rod/super rod)",
+        "Kanto Route 25 (good rod/super rod)",
+        "Cerulean Cave 1F (good rod/super rod)"
+      ],
+      "leafgreen": [
+        "Viridian City (good rod/super rod)",
+        "Fuchsia City (good rod)",
+        "Kanto Route 6 (good rod/super rod)",
+        "Kanto Route 22 (good rod/super rod)",
+        "Kanto Route 25 (good rod/super rod)",
+        "Cerulean Cave 1F (good rod/super rod)"
       ]
     }
   },
@@ -4542,6 +5549,22 @@
       "yellow": [
         "Kanto Route 22 (super rod)",
         "Kanto Route 23 (super rod)"
+      ],
+      "firered": [
+        "Viridian City (super rod)",
+        "Kanto Route 6 (super rod)",
+        "Kanto Route 22 (super rod)",
+        "Kanto Route 25 (super rod)",
+        "Cerulean Cave 1F (super rod)",
+        "Cerulean Cave B1F (super rod)"
+      ],
+      "leafgreen": [
+        "Viridian City (super rod)",
+        "Kanto Route 6 (super rod)",
+        "Kanto Route 22 (super rod)",
+        "Kanto Route 25 (super rod)",
+        "Cerulean Cave 1F (super rod)",
+        "Cerulean Cave B1F (super rod)"
       ]
     }
   },
@@ -4581,6 +5604,14 @@
       ],
       "yellow": [
         "Kanto Route 17 (grass)"
+      ],
+      "firered": [
+        "Mt Ember (grass)",
+        "Kindle Road (grass)"
+      ],
+      "leafgreen": [
+        "Mt Ember (grass)",
+        "Kindle Road (grass)"
       ]
     }
   },
@@ -4610,6 +5641,12 @@
       ],
       "yellow": [
         "Celadon City Prize Corner (gift)"
+      ],
+      "firered": [
+        "Celadon City Prize Corner (gift)"
+      ],
+      "leafgreen": [
+        "Celadon City Prize Corner (gift)"
       ]
     }
   },
@@ -4623,6 +5660,16 @@
       ],
       "yellow": [
         "Kanto Route 23 (grass)"
+      ],
+      "firered": [
+        "Cerulean Cave 1F (grass)",
+        "Kanto Route 23 (grass)",
+        "Kanto Victory Road 2 2F (grass)"
+      ],
+      "leafgreen": [
+        "Cerulean Cave 1F (grass)",
+        "Kanto Route 23 (grass)",
+        "Kanto Victory Road 2 2F (grass)"
       ]
     }
   },
@@ -4662,6 +5709,14 @@
       ],
       "yellow": [
         "Kanto Route 6 (surf)"
+      ],
+      "firered": [
+        "Seafoam Islands 1F (grass)",
+        "Seafoam Islands B1F (grass)",
+        "Seafoam Islands B2F (grass)",
+        "Seafoam Islands B3F (grass/super rod/surf)",
+        "Seafoam Islands B4F (grass/super rod/surf)",
+        "Kanto Route 12 (super rod)"
       ]
     }
   },
@@ -4714,6 +5769,14 @@
         "Route 32 (good rod/old rod/super rod)",
         "Kanto Route 12 (super rod)",
         "Kanto Route 13 (super rod)"
+      ],
+      "firered": [
+        "Resort Gorgeous (super rod)",
+        "Water Labyrinth (super rod)",
+        "Five Isle Meadow (super rod)",
+        "Memorial Pillar (super rod)",
+        "Outcast Island (super rod)",
+        "Green Path (super rod)"
       ]
     }
   },
@@ -4740,6 +5803,12 @@
       ],
       "soulsilver": [
         "Roaming Johto (roaming grass)"
+      ],
+      "firered": [
+        "Roaming Kanto (roaming grass)"
+      ],
+      "leafgreen": [
+        "Roaming Kanto (roaming grass)"
       ]
     }
   },
@@ -4764,6 +5833,14 @@
       "soulsilver": [
         "Mt Silver Outside (grass)",
         "Kanto Route 28 (grass)"
+      ],
+      "firered": [
+        "Mt Ember (grass)",
+        "Kindle Road (grass)"
+      ],
+      "leafgreen": [
+        "Mt Ember (grass)",
+        "Kindle Road (grass)"
       ]
     }
   },
@@ -4806,6 +5883,22 @@
         "Kanto Route 16 (grass)",
         "Kanto Route 18 (grass)",
         "Kanto Sea Route 21 (grass)"
+      ],
+      "firered": [
+        "Kanto Route 16 (grass)",
+        "Kanto Route 17 (grass)",
+        "Kanto Route 18 (grass)",
+        "Pokemon Mansion 1F (grass)",
+        "Pokemon Mansion 2F (grass)",
+        "Pokemon Mansion 3F (grass)"
+      ],
+      "leafgreen": [
+        "Kanto Route 16 (grass)",
+        "Kanto Route 17 (grass)",
+        "Kanto Route 18 (grass)",
+        "Pokemon Mansion 1F (grass)",
+        "Pokemon Mansion 2F (grass)",
+        "Pokemon Mansion 3F (grass)"
       ]
     }
   },
@@ -4850,6 +5943,22 @@
         "Kanto Route 4 (grass)",
         "Kanto Route 5 (grass)",
         "Kanto Route 6 (grass)"
+      ],
+      "firered": [
+        "Kanto Route 1 (grass)",
+        "Kanto Route 2 (south towards viridian city) (grass)",
+        "Kanto Route 4 (grass)",
+        "Kanto Route 9 (grass)",
+        "Kanto Route 16 (grass)",
+        "Kanto Route 17 (grass)"
+      ],
+      "leafgreen": [
+        "Kanto Route 1 (grass)",
+        "Kanto Route 2 (south towards viridian city) (grass)",
+        "Kanto Route 4 (grass)",
+        "Kanto Route 9 (grass)",
+        "Kanto Route 16 (grass)",
+        "Kanto Route 17 (grass)"
       ]
     }
   },
@@ -4925,6 +6034,14 @@
         "Cerulean Cave B1F (grass)",
         "Kanto Safari Zone Middle (grass)",
         "Kanto Safari Zone Area 2 North (grass)"
+      ],
+      "firered": [
+        "Kanto Safari Zone Middle (grass)",
+        "Kanto Safari Zone Area 2 North (grass)"
+      ],
+      "leafgreen": [
+        "Kanto Safari Zone Middle (grass)",
+        "Kanto Safari Zone Area 2 North (grass)"
       ]
     }
   },
@@ -4990,6 +6107,14 @@
         "Mt Moon 1F (grass)",
         "Kanto Route 3 (grass)",
         "Kanto Route 4 (grass)"
+      ],
+      "leafgreen": [
+        "Kanto Route 4 (grass)",
+        "Kanto Route 8 (grass)",
+        "Kanto Route 9 (grass)",
+        "Kanto Route 10 (grass)",
+        "Kanto Route 11 (grass)",
+        "Kanto Route 23 (grass)"
       ]
     }
   },
@@ -5015,6 +6140,12 @@
       "yellow": [
         "Cerulean Cave 1F (grass)",
         "Cerulean Cave 2F (grass)"
+      ],
+      "leafgreen": [
+        "Kanto Route 23 (grass)",
+        "Kanto Victory Road 2 1F (grass)",
+        "Kanto Victory Road 2 2F (grass)",
+        "Kanto Victory Road 2 3F (grass)"
       ]
     }
   },
@@ -5038,6 +6169,11 @@
       "yellow": [
         "Kanto Safari Zone Area 1 East (grass)",
         "Kanto Safari Zone Area 2 North (grass)",
+        "Celadon City Prize Corner (gift)"
+      ],
+      "firered": [
+        "Kanto Safari Zone Middle (grass)",
+        "Kanto Safari Zone Area 1 East (grass)",
         "Celadon City Prize Corner (gift)"
       ]
     }
@@ -5071,6 +6207,14 @@
       "yellow": [
         "Kanto Route 12 (super rod)",
         "Kanto Route 13 (super rod)"
+      ],
+      "firered": [
+        "Kanto Sea Route 19 (super rod)",
+        "Kanto Sea Route 20 (super rod)",
+        "Cinnabar Island (super rod)",
+        "Pallet Town (super rod)",
+        "Kanto Sea Route 21 (super rod)",
+        "Icefall Cave Waterfall (super rod)"
       ]
     }
   },
@@ -5111,6 +6255,22 @@
         "Kanto Route 24 (super rod)",
         "Cerulean Cave 1F (super rod)",
         "Cerulean Cave B1F (super rod)"
+      ],
+      "firered": [
+        "Fuchsia City (super rod)",
+        "Kanto Safari Zone Middle (super rod)",
+        "Kanto Safari Zone Area 1 East (super rod)",
+        "Kanto Safari Zone Area 2 North (super rod)",
+        "Kanto Safari Zone Area 3 West (super rod)",
+        "Berry Forest (super rod)"
+      ],
+      "leafgreen": [
+        "Fuchsia City (super rod)",
+        "Kanto Safari Zone Middle (super rod)",
+        "Kanto Safari Zone Area 1 East (super rod)",
+        "Kanto Safari Zone Area 2 North (super rod)",
+        "Kanto Safari Zone Area 3 West (super rod)",
+        "Berry Forest (super rod)"
       ]
     }
   },
@@ -5177,6 +6337,22 @@
         "Seafoam Islands B2F (grass)",
         "Seafoam Islands B3F (grass)",
         "Seafoam Islands B4F (grass)"
+      ],
+      "firered": [
+        "Seafoam Islands B1F (grass)",
+        "Seafoam Islands B2F (grass)",
+        "Seafoam Islands B3F (grass/surf)",
+        "Seafoam Islands B4F (grass/surf)",
+        "Icefall Cave Entrance (grass/surf)",
+        "Icefall Cave 1F (grass)"
+      ],
+      "leafgreen": [
+        "Seafoam Islands B1F (grass)",
+        "Seafoam Islands B2F (grass)",
+        "Seafoam Islands B3F (grass/surf)",
+        "Seafoam Islands B4F (grass/surf)",
+        "Icefall Cave Entrance (grass/surf)",
+        "Icefall Cave 1F (grass)"
       ]
     }
   },
@@ -5193,6 +6369,16 @@
         "Kanto Route 1 (grass)",
         "Johto Safari Zone Swamp (grass)",
         "Johto Safari Zone Wetland (grass)"
+      ],
+      "firered": [
+        "Five Isle Meadow (grass)",
+        "Water Path (grass)",
+        "Canyon Entrance (grass)"
+      ],
+      "leafgreen": [
+        "Five Isle Meadow (grass)",
+        "Water Path (grass)",
+        "Canyon Entrance (grass)"
       ]
     }
   },
@@ -5260,6 +6446,14 @@
         "Kanto Route 17 (super rod)",
         "Kanto Route 18 (super rod)",
         "Vermilion City Ss Anne Dock (super rod)"
+      ],
+      "firered": [
+        "Cinnabar Island (super rod)",
+        "Vermilion City (super rod)",
+        "Pallet Town (super rod)",
+        "Ss Anne (super rod)",
+        "Icefall Cave Waterfall (super rod)",
+        "One Island (super rod)"
       ]
     }
   },
@@ -5341,6 +6535,9 @@
     "locations": {
       "soulsilver": [
         "Route 45 (grass)"
+      ],
+      "firered": [
+        "Sevault Canyon (grass)"
       ]
     }
   },
@@ -5415,6 +6612,14 @@
         "Seafoam Islands B2F (grass)",
         "Kanto Route 12 (surf)",
         "Kanto Route 13 (surf)"
+      ],
+      "leafgreen": [
+        "Seafoam Islands B1F (grass)",
+        "Seafoam Islands B2F (grass)",
+        "Seafoam Islands B3F (grass/surf)",
+        "Seafoam Islands B4F (grass/surf)",
+        "Cinnabar Island (super rod)",
+        "Cerulean Cave 1F (surf)"
       ]
     }
   },
@@ -5454,6 +6659,14 @@
         "Seafoam Islands B2F (grass)",
         "Kanto Route 12 (surf)",
         "Kanto Route 13 (surf)"
+      ],
+      "leafgreen": [
+        "Seafoam Islands 1F (grass)",
+        "Seafoam Islands B1F (grass)",
+        "Seafoam Islands B2F (grass)",
+        "Seafoam Islands B3F (grass/super rod/surf)",
+        "Seafoam Islands B4F (grass/super rod/surf)",
+        "Kanto Route 12 (super rod)"
       ]
     }
   },
@@ -5470,6 +6683,16 @@
         "Kanto Route 17 (grass)",
         "Kanto Route 18 (grass)",
         "Violet City Pokemon Center (egg gift)"
+      ],
+      "firered": [
+        "Mt Ember B1F (grass)",
+        "Mt Ember B2F (grass)",
+        "Mt Ember B3F (grass/rock smash)"
+      ],
+      "leafgreen": [
+        "Mt Ember B1F (grass)",
+        "Mt Ember B2F (grass)",
+        "Mt Ember B3F (grass/rock smash)"
       ]
     }
   },
@@ -5527,6 +6750,14 @@
         "Kanto Route 16 (pokeflute)"
       ],
       "yellow": [
+        "Kanto Route 12 (pokeflute)",
+        "Kanto Route 16 (pokeflute)"
+      ],
+      "firered": [
+        "Kanto Route 12 (pokeflute)",
+        "Kanto Route 16 (pokeflute)"
+      ],
+      "leafgreen": [
         "Kanto Route 12 (pokeflute)",
         "Kanto Route 16 (pokeflute)"
       ]
@@ -5593,6 +6824,22 @@
         "Kanto Route 16 (grass)",
         "Kanto Route 18 (grass)",
         "Kanto Route 22 (grass)"
+      ],
+      "firered": [
+        "Kanto Route 3 (grass)",
+        "Kanto Route 4 (grass)",
+        "Kanto Route 9 (grass)",
+        "Kanto Route 10 (grass)",
+        "Kanto Route 11 (grass)",
+        "Kanto Route 16 (grass)"
+      ],
+      "leafgreen": [
+        "Kanto Route 3 (grass)",
+        "Kanto Route 4 (grass)",
+        "Kanto Route 9 (grass)",
+        "Kanto Route 10 (grass)",
+        "Kanto Route 11 (grass)",
+        "Kanto Route 16 (grass)"
       ]
     }
   },
@@ -5615,6 +6862,12 @@
         "Route 30 (grass/headbutt)",
         "Route 31 (grass/headbutt)",
         "Route 34 (headbutt)"
+      ],
+      "firered": [
+        "Pattern Bush (grass)"
+      ],
+      "leafgreen": [
+        "Pattern Bush (grass)"
       ]
     }
   },
@@ -5666,6 +6919,12 @@
       ],
       "yellow": [
         "Vermilion City (gift)"
+      ],
+      "firered": [
+        "Pallet Town (gift)"
+      ],
+      "leafgreen": [
+        "Pallet Town (gift)"
       ]
     }
   },
@@ -5746,6 +7005,14 @@
         "Kanto Sea Route 20 (super rod)",
         "Cinnabar Island (super rod)",
         "Pallet Town (super rod)"
+      ],
+      "leafgreen": [
+        "Cinnabar Island (super rod)",
+        "Vermilion City (super rod)",
+        "Pallet Town (super rod)",
+        "Ss Anne (super rod)",
+        "Icefall Cave Waterfall (super rod)",
+        "One Island (super rod)"
       ]
     }
   },
@@ -5783,6 +7050,12 @@
       ],
       "soulsilver": [
         "Kanto Route 25 (gift)"
+      ],
+      "firered": [
+        "Roaming Kanto (roaming grass)"
+      ],
+      "leafgreen": [
+        "Roaming Kanto (roaming grass)"
       ]
     }
   },
@@ -5853,6 +7126,14 @@
         "Ice Path B1F (grass)",
         "Ice Path B2F (grass)",
         "Ice Path B3F (grass)"
+      ],
+      "firered": [
+        "Icefall Cave 1F (grass)",
+        "Icefall Cave B1F (grass)"
+      ],
+      "leafgreen": [
+        "Icefall Cave 1F (grass)",
+        "Icefall Cave B1F (grass)"
       ]
     }
   },
@@ -5895,6 +7176,16 @@
       "yellow": [
         "Kanto Safari Zone Middle (grass)",
         "Kanto Safari Zone Area 3 West (grass)"
+      ],
+      "firered": [
+        "Kanto Sea Route 21 (grass)",
+        "Treasure Beach (grass)",
+        "Cinnabar Island Cinnabar Lab (npc trade)"
+      ],
+      "leafgreen": [
+        "Kanto Sea Route 21 (grass)",
+        "Treasure Beach (grass)",
+        "Cinnabar Island Cinnabar Lab (npc trade)"
       ]
     }
   },
@@ -5926,6 +7217,14 @@
       ],
       "yellow": [
         "Kanto Safari Zone Area 1 East (grass)",
+        "Kanto Safari Zone Area 3 West (grass)"
+      ],
+      "firered": [
+        "Kanto Safari Zone Area 2 North (grass)",
+        "Kanto Safari Zone Area 3 West (grass)"
+      ],
+      "leafgreen": [
+        "Kanto Safari Zone Area 2 North (grass)",
         "Kanto Safari Zone Area 3 West (grass)"
       ]
     }
@@ -5982,6 +7281,22 @@
         "Kanto Sea Route 20 (super rod/surf)",
         "Cinnabar Island (super rod)",
         "Vermilion City (super rod)"
+      ],
+      "firered": [
+        "Kanto Route 12 (surf)",
+        "Kanto Sea Route 19 (surf)",
+        "Kanto Sea Route 20 (surf)",
+        "Cinnabar Island (surf)",
+        "Cerulean City (surf)",
+        "Vermilion City (surf)"
+      ],
+      "leafgreen": [
+        "Kanto Route 12 (surf)",
+        "Kanto Sea Route 19 (surf)",
+        "Kanto Sea Route 20 (surf)",
+        "Cinnabar Island (surf)",
+        "Cerulean City (surf)",
+        "Vermilion City (surf)"
       ]
     }
   },
@@ -6009,6 +7324,22 @@
         "Kanto Sea Route 19 (super rod)",
         "Kanto Sea Route 20 (super rod)",
         "Kanto Sea Route 21 (super rod)"
+      ],
+      "firered": [
+        "Icefall Cave Waterfall (surf)",
+        "Kindle Road (surf)",
+        "Treasure Beach (surf)",
+        "Bond Bridge (surf)",
+        "Resort Gorgeous (surf)",
+        "Water Labyrinth (surf)"
+      ],
+      "leafgreen": [
+        "Icefall Cave Waterfall (surf)",
+        "Kindle Road (surf)",
+        "Treasure Beach (surf)",
+        "Bond Bridge (surf)",
+        "Resort Gorgeous (surf)",
+        "Water Labyrinth (surf)"
       ]
     }
   },
@@ -6023,6 +7354,12 @@
       ],
       "soulsilver": [
         "Violet City Poke Mart (egg gift)"
+      ],
+      "firered": [
+        "Water Labyrinth (egg gift)"
+      ],
+      "leafgreen": [
+        "Water Labyrinth (egg gift)"
       ]
     }
   },
@@ -6100,7 +7437,8 @@
       "soulsilver": [
         "Mt Mortar B1F (gift)"
       ]
-    }
+    },
+    "breeding": "Breed a Hitmonlee, Hitmonchan or Hitmontop"
   },
   "Umbreon": {
     "evolvesFrom": "Eevee",
@@ -6119,6 +7457,22 @@
         "Ruins Of Alph Interior B (grass)",
         "Ruins Of Alph Interior C (grass)",
         "Ruins Of Alph Interior D (grass)"
+      ],
+      "firered": [
+        "Monean Chamber (grass)",
+        "Liptoo Chamber (grass)",
+        "Weepth Chamber (grass)",
+        "Dilford Chamber (grass)",
+        "Scufib Chamber (grass)",
+        "Rixy Chamber (grass)"
+      ],
+      "leafgreen": [
+        "Monean Chamber (grass)",
+        "Liptoo Chamber (grass)",
+        "Weepth Chamber (grass)",
+        "Dilford Chamber (grass)",
+        "Scufib Chamber (grass)",
+        "Rixy Chamber (grass)"
       ]
     }
   },
@@ -6170,6 +7524,16 @@
         "Kanto Route 14 (grass)",
         "Kanto Route 15 (grass)",
         "Cerulean Cave 1F (grass)"
+      ],
+      "firered": [
+        "Kanto Safari Zone Area 2 North (grass)",
+        "Kanto Safari Zone Area 3 West (grass)",
+        "Berry Forest (grass)"
+      ],
+      "leafgreen": [
+        "Kanto Safari Zone Area 2 North (grass)",
+        "Kanto Safari Zone Area 3 West (grass)",
+        "Berry Forest (grass)"
       ]
     }
   },
@@ -6210,6 +7574,22 @@
         "Kanto Route 15 (grass)",
         "Kanto Route 24 (grass)",
         "Kanto Route 25 (grass)"
+      ],
+      "firered": [
+        "Kanto Route 12 (grass)",
+        "Kanto Route 13 (grass)",
+        "Kanto Route 14 (grass)",
+        "Kanto Route 15 (grass)",
+        "Kanto Safari Zone Middle (grass)",
+        "Kanto Safari Zone Area 3 West (grass)"
+      ],
+      "leafgreen": [
+        "Kanto Route 12 (grass)",
+        "Kanto Route 13 (grass)",
+        "Kanto Route 14 (grass)",
+        "Kanto Route 15 (grass)",
+        "Kanto Safari Zone Middle (grass)",
+        "Kanto Safari Zone Area 3 West (grass)"
       ]
     }
   },
@@ -6287,6 +7667,14 @@
       ],
       "yellow": [
         "Kanto Power Plant (gift/grass)"
+      ],
+      "firered": [
+        "Kanto Route 10 (grass)",
+        "Kanto Power Plant (grass)"
+      ],
+      "leafgreen": [
+        "Kanto Route 10 (grass)",
+        "Kanto Power Plant (grass)"
       ]
     }
   },
@@ -6309,6 +7697,14 @@
       ],
       "yellow": [
         "Celadon City Prize Corner (gift)"
+      ],
+      "leafgreen": [
+        "Kanto Route 7 (grass)",
+        "Kanto Route 8 (grass)",
+        "Pokemon Mansion 1F (grass)",
+        "Pokemon Mansion 2F (grass)",
+        "Pokemon Mansion 3F (grass)",
+        "Pokemon Mansion B1F (grass)"
       ]
     }
   },
@@ -6346,6 +7742,20 @@
       "blue": [
         "Kanto Route 25 (grass)",
         "Viridian Forest (grass)"
+      ],
+      "firered": [
+        "Kanto Route 2 (south towards viridian city) (grass)",
+        "Kanto Route 24 (grass)",
+        "Kanto Route 25 (grass)",
+        "Viridian Forest (grass)",
+        "Pattern Bush (grass)"
+      ],
+      "leafgreen": [
+        "Kanto Route 2 (south towards viridian city) (grass)",
+        "Kanto Route 24 (grass)",
+        "Kanto Route 25 (grass)",
+        "Viridian Forest (grass)",
+        "Pattern Bush (grass)"
       ]
     }
   },
@@ -6378,6 +7788,14 @@
         "Kanto Route 15 (grass)",
         "Cerulean Cave 1F (grass)",
         "Cerulean Cave 2F (grass)"
+      ],
+      "leafgreen": [
+        "Kanto Route 12 (grass)",
+        "Kanto Route 13 (grass)",
+        "Kanto Route 14 (grass)",
+        "Kanto Route 15 (grass)",
+        "Berry Forest (grass)",
+        "Cape Brink (grass)"
       ]
     }
   },
@@ -6398,6 +7816,12 @@
         "Pokemon Mansion B1F (grass)"
       ],
       "blue": [
+        "Pokemon Mansion 1F (grass)",
+        "Pokemon Mansion 2F (grass)",
+        "Pokemon Mansion 3F (grass)",
+        "Pokemon Mansion B1F (grass)"
+      ],
+      "firered": [
         "Pokemon Mansion 1F (grass)",
         "Pokemon Mansion 2F (grass)",
         "Pokemon Mansion 3F (grass)",
@@ -6481,6 +7905,18 @@
         "Cerulean Cave 2F (grass)",
         "Cerulean Cave B1F (grass)",
         "Johto Safari Zone Peak (grass)"
+      ],
+      "firered": [
+        "Cerulean Cave 1F (grass)",
+        "Cerulean Cave 2F (grass)",
+        "Cerulean Cave B1F (grass)",
+        "Ruin Valley (grass)"
+      ],
+      "leafgreen": [
+        "Cerulean Cave 1F (grass)",
+        "Cerulean Cave 2F (grass)",
+        "Cerulean Cave B1F (grass)",
+        "Ruin Valley (grass)"
       ]
     }
   },
@@ -6501,6 +7937,11 @@
         "Union Cave B1F (surf)",
         "Route 47 (cave gate) (surf)",
         "Route 47 (inside cave) (grass)"
+      ],
+      "firered": [
+        "Icefall Cave Entrance (surf)",
+        "Ruin Valley (grass/surf)",
+        "Four Island (surf)"
       ]
     }
   },
@@ -6542,6 +7983,12 @@
       ],
       "soulsilver": [
         "Route 35 (grass)"
+      ],
+      "firered": [
+        "Ruin Valley (grass)"
+      ],
+      "leafgreen": [
+        "Ruin Valley (grass)"
       ]
     }
   },
@@ -6578,6 +8025,12 @@
       ],
       "yellow": [
         "Kanto Power Plant (gift)"
+      ],
+      "firered": [
+        "Kanto Power Plant (static)"
+      ],
+      "leafgreen": [
+        "Kanto Power Plant (static)"
       ]
     }
   },
@@ -6642,6 +8095,22 @@
         "Seafoam Islands B3F (grass)",
         "Seafoam Islands B4F (grass)",
         "Mt Moon 1F (grass)"
+      ],
+      "firered": [
+        "Seafoam Islands 1F (grass)",
+        "Seafoam Islands B1F (grass)",
+        "Seafoam Islands B2F (grass)",
+        "Seafoam Islands B3F (grass)",
+        "Mt Moon 1F (grass)",
+        "Rock Tunnel 1F (grass)"
+      ],
+      "leafgreen": [
+        "Seafoam Islands 1F (grass)",
+        "Seafoam Islands B1F (grass)",
+        "Seafoam Islands B2F (grass)",
+        "Seafoam Islands B3F (grass)",
+        "Mt Moon 1F (grass)",
+        "Rock Tunnel 1F (grass)"
       ]
     }
   }

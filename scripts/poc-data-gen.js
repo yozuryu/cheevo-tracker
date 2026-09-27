@@ -40,6 +40,7 @@ const NUMERIC_TARGET_PATTERNS = [
   /(\d+)\s+pok[ée]mon\s+caught\b/i,                                    // "Defeat Falkner with 41 pokemon caught"
   /\ball\s+(\d+)\s*(?:other\s+)?(?:possible|available)\s*pok[ée]mon\b/i, // "while having all 43 available Pokemon" / "with all 122 possible Pokemon"
   /\ball\s+(\d+)\s*pok[ée]mon\s+(?:available|obtained|caught)\b/i,     // "with all 126 Pokemon available"
+  /(\d+)\s+pok[ée]mon\s+registered\b/i,                               // "Defeat Brock with 19 Pokémon registered as owned in the Pokédex" (LeafGreen)
 ];
 function extractTarget(description) {
   for (const p of NUMERIC_TARGET_PATTERNS) {
@@ -72,6 +73,28 @@ const SPECIES_PATTERNS = [
   /^Obtain (?:your starter |either |one of the following:?\s*)?(.+?)(?:\s*\[.*?\])?(?:\s+before\s+|\s+after\s+|$)/i, // "Obtain Caterpie" / "Obtain your starter Pikachu before ..." / "Obtain one of the following Nidoking, ..."
 ];
 
+// LeafGreen's author writes every catch with its own deadline ("... before obtaining
+// the Boulder Badge") instead of "Register X". Grouping still uses ID order + targets;
+// these only pull the species name out of the text.
+// "Evolve a Pidgey before ..." names the PRE-evolution — the achievement title is the species.
+const EVOLVE_TITLE_RE = /^Evolve an?\s+.+?\s+before\b/i;
+const DEADLINE_SPECIES_PATTERNS = [
+  /^Evolve your starter to (.+?)\s+before\b/i,                         // "Evolve your starter to Ivysaur, Charmeleon, or Wartortle before ..."
+  /^Obtain an? (.+?) from\b/i,                                          // "Obtain a Bulbasaur, Charmander, or Squirtle from Professor Oak."
+];
+// "Catch a Metapod or evolve a Caterpie before ..." / "Catch or buy a Magikarp before ..." /
+// "Receive a Hitmonlee or Hitmonchan before ..." / "Catch a female Nidoran before ..." (→ "Nidoran F").
+// Group 1 = gender (female/male), group 2 = the species (or "X or Y" choice).
+const OBTAIN_VERB = '(?:catch|capture|receive|revive|buy|trade for|perform an in-game trade for|exchange coins for)';
+const DEADLINE_OBTAIN_RE = new RegExp(
+  `^${OBTAIN_VERB}(?:\\s+or\\s+${OBTAIN_VERB})*\\s+(?:an?\\s+)?(?:(female|male)\\s+)?(.+?)(?:\\s+as a gift)?(?:\\s+or\\s+(?:evolve|catch)\\b.*?)?\\s+before\\b`, 'i');
+// Part of the set but neither one species nor a checkpoint — LeafGreen's habitat
+// achievements and "Catch 'Em All" ("Register all 11 forest habitat Pokémon ...").
+// Must mirror game/utils/poc.js.
+const EXTRA_PATTERNS = [
+  /^Register all \d+ [^.]*?Pok[ée]mon you can\b/i,
+];
+
 // A handful of achievements never name a real species in either title or
 // description text we can regex ("Choose your Eeveelution", SoulSilver's
 // generic "Starter Evolved" label) — the title is the only signal, via an
@@ -88,11 +111,18 @@ const KNOWN_CHOICE_GROUPS = {
   'Hoenn Evolved':   ['Grovyle', 'Combusken', 'Marshtomp'],
   'Hoenn Final':     ['Sceptile', 'Blaziken', 'Swampert'],
   'Eeveelution':     ['Vaporeon', 'Jolteon', 'Flareon'],
+  'Eeveelution I':   ['Vaporeon', 'Jolteon', 'Flareon'],   // FireRed: "Register any of the 3 available Eeveelutions ..."
+  'Eeveelution II':  ['Vaporeon', 'Jolteon', 'Flareon'],   // FireRed: "... 2 of the 3 ..."
+  'Eeveelution III': ['Vaporeon', 'Jolteon', 'Flareon'],   // FireRed: "... all 3 ..."
+  'Function Over Form': ['Omastar', 'Kabutops'],           // LeafGreen: "Evolve an Omanyte or Kabuto ..."
 };
 
 // "X, Y, or Z" / "X, Y or Z" / "X or Y" — handles both Oxford-comma and
 // bare-comma multi-choice phrasing without leaving a stray "or " fragment.
-const SPECIES_SPLIT_RE = /\s*,\s*(?:or\s+)?|\s+or\s+/i;
+// "X and Y" (FireRed's "Register Hitmonlee and Hitmonchan") splits too, but means
+// both are required — see isAllRequired.
+const SPECIES_SPLIT_RE = /\s*,\s*(?:or\s+|and\s+)?|\s+or\s+|\s+and\s+/i;
+const isAllRequired = raw => /\s+and\s+/i.test(raw) && !/\s+or\s+/i.test(raw);
 function splitSpeciesList(raw) {
   return raw.split(SPECIES_SPLIT_RE).map(s => s.trim()).filter(Boolean);
 }
@@ -124,6 +154,7 @@ const BREEDING_FALLBACK = {
   'Munchlax':  'Breed a Snorlax holding a Full Incense',
   'Happiny':   'Breed a Chansey holding a Luck Incense',
   'Mantyke':   'Breed a Mantine holding a Sea Incense',
+  'Tyrogue':   'Breed a Hitmonlee, Hitmonchan or Hitmontop',  // FireRed/LeafGreen: no wild or gift Tyrogue
 };
 
 // Known alternate spellings across differently-authored subsets / typos in
@@ -133,12 +164,14 @@ const CANON_OVERRIDES = {
   'Nidoran♂': 'Nidoran-M', 'Nidoran M': 'Nidoran-M', 'NidoranM': 'Nidoran-M', 'Nidoran Male': 'Nidoran-M',
   'Mr Mime': 'Mr. Mime', 'Mr.Mime': 'Mr. Mime',
   'Mime Jr': 'Mime Jr.',
+  'Exeggcutor': 'Exeggutor',   // LeafGreen subset typo
 };
 const SLUG_OVERRIDES = {
   'Nidoran-F': 'nidoran-f', 'Nidoran-M': 'nidoran-m',
   'Mr. Mime': 'mr-mime', 'Mime Jr.': 'mime-jr',
   "Farfetch'd": 'farfetchd', 'Ho-Oh': 'ho-oh',
 };
+const SLUG_TO_NAME = Object.fromEntries(Object.entries(SLUG_OVERRIDES).map(([name, slug]) => [slug, name]));
 // PokeAPI's /pokemon/{slug}/encounters needs the specific form slug for a few
 // species whose "default" form isn't the bare species name.
 const ENCOUNTER_SLUG_OVERRIDES = {
@@ -150,10 +183,17 @@ function classify(ach) {
   if (target !== null) {
     return { kind: 'marker', target, speciesName: extractMarkerSpecies(desc) };
   }
+  if (EXTRA_PATTERNS.some(p => p.test(desc))) return { kind: 'extra' };
   if (KNOWN_CHOICE_GROUPS[title]) {
     return { kind: 'species', names: KNOWN_CHOICE_GROUPS[title] };
   }
-  for (const p of SPECIES_PATTERNS) {
+  const obtained = desc.match(DEADLINE_OBTAIN_RE);
+  if (obtained) {
+    const names = obtained[1] ? [`${obtained[2].trim()} ${obtained[1].toLowerCase() === 'female' ? 'F' : 'M'}`] : splitSpeciesList(obtained[2].trim());
+    return { kind: 'species', names };
+  }
+  if (EVOLVE_TITLE_RE.test(desc)) return { kind: 'species', names: [title.trim()] };
+  for (const p of [...DEADLINE_SPECIES_PATTERNS, ...SPECIES_PATTERNS]) {
     const m = desc.match(p);
     if (m) return { kind: 'species', names: splitSpeciesList(m[1].trim()) };
   }
@@ -376,7 +416,9 @@ async function main() {
       const parentSlug = evolvesFrom.name;
       const match = (childEvo[slug] || []).find(d => d.from === parentSlug && d.details.length);
       if (match) {
-        entry.evolvesFrom = slugToCanon[parentSlug] || titleCase(parentSlug);
+        // A parent not fetched in this run (e.g. Mime Jr. for a Gen 1-only set) still gets its
+        // proper name from SLUG_OVERRIDES instead of a "Mime-Jr" slug fallback.
+        entry.evolvesFrom = slugToCanon[parentSlug] || SLUG_TO_NAME[parentSlug] || titleCase(parentSlug);
         entry.evolveMethod = fmtEvoDetail(match.details[0]);
       }
     }
@@ -402,7 +444,15 @@ async function main() {
   let existing = {};
   const outPath = path.resolve(output);
   if (fs.existsSync(outPath)) existing = JSON.parse(fs.readFileSync(outPath, 'utf8'));
-  const merged = { ...existing, ...reference };
+  // Merge per species, and per version inside `locations`: a species shared with games
+  // already in the file (e.g. Pidgey in HeartGold and FireRed) keeps the other games'
+  // locations instead of being replaced by this run's versions only.
+  const merged = { ...existing };
+  for (const [name, entry] of Object.entries(reference)) {
+    const prev = existing[name] || {};
+    const locations = { ...(prev.locations || {}), ...(entry.locations || {}) };
+    merged[name] = { ...prev, ...entry, ...(Object.keys(locations).length ? { locations } : {}) };
+  }
 
   const sorted = Object.fromEntries(Object.keys(merged).sort().map(k => [k, merged[k]]));
   fs.writeFileSync(outPath, JSON.stringify(sorted, null, 2) + '\n');
