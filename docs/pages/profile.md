@@ -162,7 +162,7 @@ lengths stay exact across DST boundaries.
   column band dims the others and swaps the legend row for a readout. Only the peak column carries
   a direct label.
 - **Mastery timeline** — lifetime, bucketed by month from `gameAwards[].awardedAt`. Mastery and
-  Beaten stack in one column with a 2px surface gap, using the same gold/grey the Consoles card
+  Beaten stack in one column with a 2px surface gap, using the same gold/silver the Consoles card
   does. Hovering a column dims the others and swaps
   the legend row for a readout, matching the acquisition chart (`tlHover` state, keyed by month). Empty months are filled, short histories pad back to a 24-month
   span, and the axis always runs to the current month so a drought is visible. Columns are
@@ -171,7 +171,7 @@ lengths stay exact across DST boundaries.
   `requestAnimationFrame` trick as the heatmap).
 - **Consoles** (`StackedBarRow`) — **everything is counted in games.** Bar length is games played
   on that console (relative to the console with the most), split into **1–3 segments** ordered
-  **in progress (`#66c0f4`) → beaten (grey `#8f98a0`) → mastered (gold)**. Mastered wins over
+  **in progress (`#66c0f4`) → beaten (silver `#b8c4ce`) → mastered (gold)**. Mastered wins over
   beaten, so a game is never counted twice. The mastered/beaten counts printed beside the bar are
   the same numbers the segments encode.
 
@@ -210,7 +210,7 @@ lengths stay exact across DST boundaries.
   `#e5b143` gold that means *mastered*, and `#c94040` is far from the `#ff6b6b` that means *error*.
 
   Nothing in this palette encodes the order; the labels, counts and percentages do. The one
-  sub-floor pair is grey↔blue at ΔE 13.9, the same pair already accepted on the Consoles card and
+  sub-floor pair is grey↔blue at ΔE 13.9; the Consoles card has a similar close pair (silver↔blue)
   mitigated the same way. Kept in sync with the game page's `DIFFICULTY_BANDS` — same ladder.
 
 Charts are hand-rolled divs (plus one stretched SVG for the trend line) — no chart library,
@@ -218,7 +218,7 @@ consistent with the heatmap.
 
 Chart palettes are checked with the `dataviz` skill's `scripts/validate_palette.js` against the
 `#1b2838` card surface before shipping. The award segments use the repo's status colors unchanged;
-grey↔`#66c0f4` falls below the validator's normal-vision floor, so every segment carries its own
+silver `#b8c4ce`↔`#66c0f4` is a close pair (ΔE2000 15.5, not yet re-run through the validator), so every segment carries its own
 count and icon as secondary encoding — see `docs/rules.md`. The app's `#66c0f4` / `#e5b143` accents sit outside the
 validator's dark lightness band but pass CVD separation, normal-vision separation and contrast by
 wide margins; they are kept for design-system consistency. Ordered scales must use the validated

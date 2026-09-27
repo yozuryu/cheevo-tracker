@@ -18,7 +18,7 @@ const TYPE_CONFIG = {
 const AWARD_CONFIG = {
   'mastered':        { label: 'Mastered',    color: '#e5b143', Icon: Trophy },
   'completed':       { label: 'Completed',   color: '#e5b143', Icon: Trophy },
-  'beaten-hardcore': { label: 'Beaten',      color: '#c6d4df', Icon: Medal  },
+  'beaten-hardcore': { label: 'Beaten',      color: '#b8c4ce', Icon: Medal  },
   'beaten-softcore': { label: 'Beaten (SC)', color: '#8f98a0', Icon: Medal  },
 };
 

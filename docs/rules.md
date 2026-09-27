@@ -47,7 +47,7 @@ Blue:              #66c0f4
 | Gold | `#e5b143` | Earned value: Points, Mastered |
 | White | `#c6d4df` | Identity: Rank |
 | Blue | `#66c0f4` | Engagement: Achievements |
-| Gray | `#8f98a0` | Lesser tier: Beaten |
+| Silver | `#b8c4ce` | Second tier: Beaten |
 | Muted | `#546270` | Context/breadth: Games |
 
 ### Completion status colors
@@ -55,17 +55,17 @@ Blue:              #66c0f4
 | Status | Color |
 |---|---|
 | Mastered | `#e5b143` (gold) |
-| Beaten | `#8f98a0` (gray) |
+| Beaten | `#b8c4ce` (silver) — pairs with gold like a medal; badge bg `#2a3440`, badge text `#c6d4df`; beaten award icons get a 1px silver border (mastered: 2px gold) |
 | In Progress | `#66c0f4` (blue) |
 | Not started / border | `#323f4c` |
 
 Note: the game page's award *badge* is a different surface — `AWARD_CONFIG` in `game/app.js`
-uses `#c6d4df` for beaten-hardcore and `#8f98a0` for beaten-softcore. The status colors above
+uses silver `#b8c4ce` for beaten-hardcore and gray `#8f98a0` for beaten-softcore. The status colors above
 govern everywhere else.
 
-**Charts use these colors unchanged.** Note that gray↔`#66c0f4` measures ΔE 13.9 under normal
-vision, below the 15 floor the `dataviz` skill's `validate_palette.js` enforces — gray has almost
-no chroma, so no blue at a similar lightness separates from it. Where both appear in one chart,
+**Charts use these colors unchanged.** Note that beaten silver↔`#66c0f4` is a close pair (ΔE2000
+15.5 — the old gray was 13.9 on the `dataviz` skill's `validate_palette.js` metric, below its 15 floor):
+silver has almost no chroma, so no blue at a similar lightness separates well from it. Where both appear in one chart,
 give every segment its own visible count and icon so identity never rests on color alone.
 
 ### Tilde tag colors

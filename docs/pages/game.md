@@ -119,7 +119,7 @@ Stripe: `w-[3px] self-stretch rounded-full`. Badge: `w-7 h-7 rounded-[2px]`.
 |---|---|---|
 | `mastered` | Mastered | `#e5b143` |
 | `completed` | Completed | `#e5b143` |
-| `beaten-hardcore` | Beaten | `#c6d4df` |
+| `beaten-hardcore` | Beaten | `#b8c4ce` (silver) |
 | `beaten-softcore` | Beaten (SC) | `#8f98a0` |
 
 ## Professor Oak Challenge Tab

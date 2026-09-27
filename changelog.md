@@ -1,10 +1,22 @@
 # Changelog
 
-## v26.09.27 — Not-found page
+## v26.09.27 — Not-found page + silver Beaten
+
+### Cache
+
+- Service worker `CACHE_NAME` bumped so installed copies pick up the new colors (static files are cache-first)
 
 ### Structure
 
 - New `404.html`: missing pages under `/cheevo-tracker/` now show a menu-styled "Area not found" card with links back to Cheevo Tracker and to the home page, instead of GitHub's default 404. It is plain HTML that reuses the root site's design system (`/assets/noah-ui.css` from yozuryu.github.io, same origin) and uses absolute URLs so it works at any depth
+- Updated `docs/rules.md`, `docs/pages/profile.md` and `docs/pages/game.md` for the silver Beaten color
+
+### Polish
+
+- Beaten is now silver `#b8c4ce` everywhere (was gray `#8f98a0`), matching Gaming Hub: game card left stripe, Game Awards header count, and the Stats tab's Mastery timeline, Consoles bars and legends
+- Beaten badges on game cards and in the Game Awards tooltip use badge background `#2a3440`, text `#c6d4df` and a silver border (were slate `#546270` with white text)
+- Beaten icons in the Game Awards panel get a 1px solid silver border (was a faint gold border that looked like a weaker Mastered); Mastered keeps its 2px gold border
+- Game page award badge for hardcore Beaten uses silver (was `#c6d4df`); softcore Beaten stays gray
 
 ## v26.08.30 — Stats Tab + Contextual Analytics
 

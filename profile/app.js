@@ -68,7 +68,7 @@ const GameCard = ({ game }) => {
   const stripeColor = game.isMastered
     ? 'border-l-[#e5b143]'
     : game.isBeaten
-    ? 'border-l-[#8f98a0]'
+    ? 'border-l-[#b8c4ce]'
     : game.achievementsUnlocked > 0
     ? 'border-l-[#66c0f4]'
     : game.achievementsTotal > 0
@@ -143,7 +143,7 @@ const GameCard = ({ game }) => {
                 </span>
               )}
               {game.isBeaten && !game.isMastered && (
-                <span className="shrink-0 text-[9px] text-white bg-[#546270] px-1.5 py-[1px] rounded-sm font-bold uppercase tracking-wider border border-[#c6d4df]/30 flex items-center gap-1">
+                <span className="shrink-0 text-[9px] text-[#c6d4df] bg-[#2a3440] px-1.5 py-[1px] rounded-sm font-bold uppercase tracking-wider border border-[#b8c4ce]/40 flex items-center gap-1">
                   <Medal size={10} /> Beaten
                 </span>
               )}
@@ -281,7 +281,7 @@ const RAchievementModal = ({ game, onClose, loadingDetails }) => {
                 <span className="shrink-0 text-[9px] text-[#101214] bg-[#e5b143] px-1.5 py-[1px] rounded-sm font-bold uppercase tracking-wider flex items-center gap-1"><Trophy size={10} /> Mastered</span>
               )}
               {game.isBeaten && !game.isMastered && (
-                <span className="shrink-0 text-[9px] text-white bg-[#546270] px-1.5 py-[1px] rounded-sm font-bold uppercase tracking-wider border border-[#c6d4df]/30 flex items-center gap-1"><Medal size={10} /> Beaten</span>
+                <span className="shrink-0 text-[9px] text-[#c6d4df] bg-[#2a3440] px-1.5 py-[1px] rounded-sm font-bold uppercase tracking-wider border border-[#b8c4ce]/40 flex items-center gap-1"><Medal size={10} /> Beaten</span>
               )}
             </div>
             {/* Progress bars */}
@@ -1818,12 +1818,12 @@ const PointAcquisitionChart = ({ data }) => {
 };
 
 // Segment colours are the repo's status colours (docs/rules.md): gold = mastered,
-// grey = beaten, blue = in progress. Grey↔#66c0f4 measures ΔE 13.9 under normal
-// vision, below the dataviz skill's 15 floor, so every segment is also labelled with
-// its own count and a Trophy/Medal icon — identity never rests on colour alone.
+// silver = beaten, blue = in progress. Silver↔#66c0f4 is a close pair (ΔE2000 15.5,
+// was 18.7 with the old grey #8f98a0), so every segment is also labelled with its own
+// count and a Trophy/Medal icon — identity never rests on colour alone.
 const AWARD_SEGMENTS = {
   mastered: '#e5b143',
-  beaten:   '#8f98a0',
+  beaten:   '#b8c4ce',
   other:    '#66c0f4',
 };
 
@@ -2125,7 +2125,7 @@ const StatsTab = ({ achievements, achLoading, games, gameAwards, heatmapData }) 
                         onMouseEnter={() => setTlHover(m.key)}
                         onMouseLeave={() => setTlHover(h => (h === m.key ? null : h))}>
                         {m.mastered > 0 && <div style={{ height: `${Math.max(m.mastered * scale, 2)}px`, background: '#e5b143', borderRadius: '4px 4px 0 0', marginBottom: m.beaten > 0 ? '2px' : 0 }} />}
-                        {m.beaten > 0   && <div style={{ height: `${Math.max(m.beaten * scale, 2)}px`,   background: '#8f98a0', borderRadius: m.mastered > 0 ? 0 : '4px 4px 0 0' }} />}
+                        {m.beaten > 0   && <div style={{ height: `${Math.max(m.beaten * scale, 2)}px`,   background: '#b8c4ce', borderRadius: m.mastered > 0 ? 0 : '4px 4px 0 0' }} />}
                         {total === 0    && <div style={{ height: '1px', background: '#101214' }} />}
                       </div>
                     );
@@ -2149,7 +2149,7 @@ const StatsTab = ({ achievements, achLoading, games, gameAwards, heatmapData }) 
                       <span className="w-2 h-2 rounded-[1px] bg-[#e5b143]" /> Mastered
                     </span>
                     <span className="flex items-center gap-1.5 text-[9px] text-[#546270]">
-                      <span className="w-2 h-2 rounded-[1px] bg-[#8f98a0]" /> Beaten
+                      <span className="w-2 h-2 rounded-[1px] bg-[#b8c4ce]" /> Beaten
                     </span>
                   </>
                 );
@@ -2157,7 +2157,7 @@ const StatsTab = ({ achievements, achLoading, games, gameAwards, heatmapData }) 
                   <span className="text-[10px] text-[#c6d4df] tabular-nums">
                     {MONTH_ABBR[hovered.month - 1]} {hovered.year}
                     <span className="text-[#e5b143] ml-2">{hovered.mastered} mastered</span>
-                    <span className="text-[#8f98a0] ml-2">{hovered.beaten} beaten</span>
+                    <span className="text-[#b8c4ce] ml-2">{hovered.beaten} beaten</span>
                   </span>
                 );
               })()}
@@ -3368,7 +3368,7 @@ export default function App() {
                   return (
                     <div className="ml-auto flex items-center gap-2">
                       {mastered > 0 && <span className="flex items-center gap-0.5 text-[9px] font-semibold" style={{ color: '#e5b143' }}><Trophy size={9} />{mastered}</span>}
-                      {beaten   > 0 && <span className="flex items-center gap-0.5 text-[9px] font-semibold" style={{ color: '#8f98a0' }}><Medal size={9} />{beaten}</span>}
+                      {beaten   > 0 && <span className="flex items-center gap-0.5 text-[9px] font-semibold" style={{ color: '#b8c4ce' }}><Medal size={9} />{beaten}</span>}
                     </div>
                   );
                 })()}
@@ -3379,7 +3379,7 @@ export default function App() {
                     <img
                       src={award.icon}
                       alt={award.title}
-                      className={`w-full aspect-square rounded-[2px] border transition-all duration-200 bg-black relative z-10 group-hover:scale-110 ${award.type === 'Mastery/Completion' ? 'border-2 border-[#e5b143]' : 'border border-[#e5b143]/30 group-hover:border-[#e5b143]/80'}`}
+                      className={`w-full aspect-square rounded-[2px] border transition-all duration-200 bg-black relative z-10 group-hover:scale-110 ${award.type === 'Mastery/Completion' ? 'border-2 border-[#e5b143]' : 'border border-[#b8c4ce]'}`}
                     />
                     <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[200px] bg-[#1b2838] border border-[#2a475e] rounded-[2px] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-[100] shadow-xl pointer-events-none overflow-hidden">
                       <div className="h-[2px] bg-gradient-to-r from-[#e5b143] to-[#e5b143]/20"></div>
@@ -3404,7 +3404,7 @@ export default function App() {
                           <span className="text-[9px] text-[#546270] uppercase tracking-[0.08em]">Award</span>
                           {award.type === 'Mastery/Completion'
                             ? <span className="text-[8px] font-bold uppercase tracking-wider px-1.5 py-[1px] rounded-[2px] bg-[#e5b143] text-[#101214]">Mastered</span>
-                            : <span className="text-[8px] font-bold uppercase tracking-wider px-1.5 py-[1px] rounded-[2px] bg-[#546270] text-white border border-[#c6d4df]/20">Beaten</span>
+                            : <span className="text-[8px] font-bold uppercase tracking-wider px-1.5 py-[1px] rounded-[2px] bg-[#2a3440] text-[#c6d4df] border border-[#b8c4ce]/40">Beaten</span>
                           }
                         </div>
                         <div className="flex items-center justify-between">
