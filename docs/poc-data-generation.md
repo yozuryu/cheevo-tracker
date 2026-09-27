@@ -75,6 +75,7 @@ Start a static server from the repo root (`python3 -m http.server 8934`) and ope
 - The currently-active checkpoint auto-expands.
 - A few locked species show sensible location/evolution hints — spot-check against your own game knowledge, since the data is API-sourced but summarized/formatted by the script.
 - Species with no structured hint fall back to readable achievement description text (not a blank line).
+- With **Debug Mode** on, the console shows no `[POC] checkpoint counts off target` warning. If it does, one or more species achievements have IDs out of order: find the one that's grouped too early or too late (compare with the sibling version, or with where the Pokémon is actually catchable) and pin it with the subset's `moves: { <speciesAchId>: <markerAchId> }` in `POC_GAMES`.
 
 ## Things that don't generalize automatically
 

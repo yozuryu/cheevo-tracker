@@ -4,7 +4,9 @@
 // so achievement text is matched against multiple known phrasings. Grouping into
 // checkpoints relies only on achievement ID order + the "N pokemon caught" targets
 // embedded in each checkpoint-clear achievement — never on hardcoded species lists,
-// so this keeps working if RA authors add/reorder achievements.
+// so this keeps working if RA authors add/reorder achievements. The one escape hatch
+// is a per-subset `moves` map for the rare achievement whose ID sits in the wrong
+// place; `checkPocTargets` flags those (see game/app.js, debug mode).
 
 // Each POC subset is its own RA game ID with its own achievement set — the tab
 // shows up when browsing the SUBSET's page directly (e.g. game/?id=22862),
@@ -15,7 +17,10 @@ export const POC_GAMES = {
   '7212': { // Pokémon HeartGold Version | Pokémon SoulSilver Version
     subsets: [
       { id: 22862, label: 'HeartGold', version: 'heartgold' },
-      { id: 22693, label: 'SoulSilver', version: 'soulsilver' },
+      // Pikachu's catch achievement has an early ID (it lands under Badge I, making every
+      // Johto checkpoint one over its target), but Pikachu is Kanto-only: it belongs
+      // under Badge IX (Misty), as HeartGold's text says ("before ... the Cascade Badge").
+      { id: 22693, label: 'SoulSilver', version: 'soulsilver', moves: { 298763: 299119 } },
     ],
   },
   '724': { // Pokémon Red Version | Pokémon Blue Version
@@ -142,7 +147,8 @@ export function classifyPocAchievement(ach) {
 // checkpoint-clear achievement) closes out every species-catch achievement that
 // precedes it in ID order; anything after the last marker becomes a trailing
 // "Finale" checkpoint (used by sets that don't gate the last legendary behind a marker).
-export function buildPocCheckpoints(achievements) {
+// `moves` ({ speciesAchId: markerAchId }) overrides ID order for misplaced achievements.
+export function buildPocCheckpoints(achievements, { moves = {} } = {}) {
   const items = [...achievements].sort((a, b) => a.id - b.id);
   const classified = items.map(a => ({ ach: a, c: classifyPocAchievement(a) }));
 
@@ -153,7 +159,9 @@ export function buildPocCheckpoints(achievements) {
   const trailing = [];
   for (const { ach, c } of classified) {
     if (c.kind !== 'species') continue;
-    const marker = markers.find(m => m.id > ach.id);
+    const marker = moves[ach.id] != null
+      ? markers.find(m => m.id === moves[ach.id])
+      : markers.find(m => m.id > ach.id);
     const entry = { ach, names: c.names, isChoice: c.isChoice };
     (marker ? marker.entries : trailing).push(entry);
   }
@@ -182,4 +190,20 @@ export function buildPocCheckpoints(achievements) {
     });
   }
   return checkpoints;
+}
+
+// Sanity check: each checkpoint's running species count should equal its marker's
+// target. A mismatch means an achievement is grouped under the wrong checkpoint
+// (usually an ID out of order — fix with the subset's `moves`). A "Capture X with N
+// caught" marker counts N *before* X, so its own species is left out of that check.
+export function checkPocTargets(checkpoints) {
+  const issues = [];
+  let count = 0;
+  for (const cp of checkpoints) {
+    const own = cp.entries.filter(e => e.ach === cp.markerAch).length;
+    count += cp.entries.length - own;
+    if (cp.target != null && cp.target !== count) issues.push({ checkpoint: cp.title, target: cp.target, count });
+    count += own;
+  }
+  return issues;
 }

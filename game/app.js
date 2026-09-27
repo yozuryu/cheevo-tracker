@@ -5,7 +5,7 @@ import { MEDIA_URL, SITE_URL, TILDE_TAG_COLORS } from '../profile/utils/constant
 import { getMediaUrl, parseTitle, formatDate, formatTimeAgo } from '../profile/utils/helpers.js';
 import { getCredentials, clearCredentials, getGameInfoAndUserProgress, getGameHashes, getGameProgression, getGameExtended, getActiveClaims, getGameRankAndScore, getComments, getGameLeaderboards, getUserGameLeaderboards, getLeaderboardEntries, getGame, fetchSocial, getSocialProfileMap } from '../profile/utils/ra-api.js';
 import { Topbar, Footer } from '../assets/ui.js';
-import { findPocSubset, buildPocCheckpoints } from './utils/poc.js';
+import { findPocSubset, buildPocCheckpoints, checkPocTargets } from './utils/poc.js';
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
@@ -454,7 +454,16 @@ function GameApp() {
   const achList  = useMemo(() => game ? Object.values(game.achievements) : [], [game]);
 
   const pocCheckpoints = useMemo(
-    () => (game && pocSubset) ? buildPocCheckpoints(achList) : [],
+    () => {
+      if (!game || !pocSubset) return [];
+      const cps = buildPocCheckpoints(achList, pocSubset);
+      // Debug mode: flag checkpoints whose species count doesn't match their target
+      if (localStorage.getItem('raDebugMode') === 'true') {
+        const issues = checkPocTargets(cps);
+        if (issues.length) console.warn('[POC] checkpoint counts off target — an achievement is likely grouped wrong:', issues);
+      }
+      return cps;
+    },
     [game, pocSubset, achList]
   );
   const currentCheckpointKey = useMemo(() => {

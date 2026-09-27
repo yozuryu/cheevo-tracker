@@ -1,15 +1,16 @@
 # Changelog
 
-## v26.09.27 — Not-found page + silver Beaten
+## v26.09.27 — Not-found page + silver Beaten + POC fix
 
 ### Cache
 
-- Service worker `CACHE_NAME` bumped so installed copies pick up the new colors (static files are cache-first)
+- Service worker `CACHE_NAME` bumped (twice) so installed copies pick up the new colors and the Professor Oak fix — static files are cache-first
 
 ### Structure
 
 - New `404.html`: missing pages under `/cheevo-tracker/` now show a menu-styled "Area not found" card with links back to Cheevo Tracker and to the home page, instead of GitHub's default 404. It is plain HTML that reuses the root site's design system (`/assets/noah-ui.css` from yozuryu.github.io, same origin) and uses absolute URLs so it works at any depth
 - Updated `docs/rules.md`, `docs/pages/profile.md` and `docs/pages/game.md` for the silver Beaten color
+- Updated `docs/pages/game.md` (checkpoint parsing: `moves` override, `checkPocTargets`) and `docs/poc-data-generation.md` (Step 5: check for the debug warning and fix with `moves`)
 
 ### Polish
 
@@ -17,6 +18,11 @@
 - Beaten badges on game cards and in the Game Awards tooltip use badge background `#2a3440`, text `#c6d4df` and a silver border (were slate `#546270` with white text)
 - Beaten icons in the Game Awards panel get a 1px solid silver border (was a faint gold border that looked like a weaker Mastered); Mastered keeps its 2px gold border
 - Game page award badge for hardcore Beaten uses silver (was `#c6d4df`); softcore Beaten stays gray
+
+### Game Page
+
+- Professor Oak Challenge: **Pikachu** in the SoulSilver subset was listed under **Badge I** — its achievement has an early ID, which made every Johto checkpoint one over its target. It's Kanto-only, so it's now pinned under **Badge IX** (Misty) via a new per-subset `moves` override in `POC_GAMES`; every SoulSilver and HeartGold checkpoint now matches its "all N available Pokemon" target
+- New `checkPocTargets` sanity check — with **Debug Mode** on, the Professor Oak tab logs a `[POC]` console warning if any checkpoint's species count doesn't match its target, so a misplaced achievement is caught instead of silently shown under the wrong badge
 
 ## v26.08.30 — Stats Tab + Contextual Analytics
 
