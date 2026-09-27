@@ -1,6 +1,6 @@
 # Changelog
 
-## v26.09.27 — Not-found page + silver Beaten + POC fixes, FireRed & LeafGreen
+## v26.09.27 — Not-found page + silver Beaten + POC fixes, FireRed & LeafGreen + new icon
 
 ### Cache
 
@@ -20,6 +20,7 @@
 - Beaten badges on game cards and in the Game Awards tooltip use badge background `#2a3440`, text `#c6d4df` and a silver border (were slate `#546270` with white text)
 - Beaten icons in the Game Awards panel get a 1px solid silver border (was a faint gold border that looked like a weaker Mastered); Mastered keeps its 2px gold border
 - Game page award badge for hardcore Beaten uses silver (was `#c6d4df`); softcore Beaten stays gray
+- New app icon: a **pixel trophy that fills up** — gold rising inside an 8-bit cup, a trophy and a progress bar in one. Replaces the old "CT" logo in `appicon.png`, `icon-192.png`, `icon-512.png` and `favicon.ico` (16/32/48); source kept as `assets/appicon.svg`, plus a crisp `favicon.svg` linked next to the `.ico` on every page
 
 ### Game Page
 
